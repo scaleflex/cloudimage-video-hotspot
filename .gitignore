@@ -1,0 +1,8 @@
+node_modules/
+dist/
+!/dist/js-cloudimage-video-hotspot.min.js
+!/dist/js-cloudimage-video-hotspot.min.js.map
+dist-demo/
+coverage/
+*.local
+.DS_Store

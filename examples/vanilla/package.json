@@ -1,0 +1,14 @@
+{
+  "name": "ci-video-hotspot-vanilla-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "js-cloudimage-video-hotspot": "file:../../"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}

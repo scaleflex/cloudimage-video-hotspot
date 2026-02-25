@@ -1,0 +1,316 @@
+import { createElement, addClass, removeClass } from '../utils/dom';
+import { addListener } from '../utils/events';
+import { formatTime } from '../utils/time';
+import type { VideoChapter } from '../core/types';
+import { ProgressBar } from './progress-bar';
+import type { ProgressBarOptions } from './progress-bar';
+
+// Lucide SVG icons
+const PLAY_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>';
+const PAUSE_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+const VOLUME_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>';
+const VOLUME_MUTE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>';
+const FULLSCREEN_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>';
+const FULLSCREEN_EXIT_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" x2="21" y1="10" y2="3"/><line x1="3" x2="10" y1="21" y2="14"/></svg>';
+
+export interface ControlsOptions {
+  onPlay: () => void;
+  onPause: () => void;
+  onSeek: (time: number) => void;
+  onVolumeChange: (volume: number) => void;
+  onMuteToggle: () => void;
+  onFullscreenToggle: () => void;
+  onSpeedChange: (rate: number) => void;
+  getDuration: () => number;
+  getCurrentTime: () => number;
+  getBufferedEnd: () => number;
+  isPaused: () => boolean;
+  isMuted: () => boolean;
+  getVolume: () => number;
+  getPlaybackRate: () => number;
+  isFullscreen: () => boolean;
+  showFullscreen: boolean;
+  chapters?: VideoChapter[];
+  showChapterNav: boolean;
+  onChapterSelect?: (chapterId: string) => void;
+  progressBarOptions: Omit<ProgressBarOptions, 'onSeek' | 'getDuration' | 'getCurrentTime' | 'getBufferedEnd'>;
+}
+
+export class Controls {
+  readonly element: HTMLElement;
+  private playBtn: HTMLButtonElement;
+  private timeDisplay: HTMLElement;
+  private volumeBtn: HTMLButtonElement;
+  private volumeSlider: HTMLInputElement;
+  private speedBtn: HTMLButtonElement;
+  private fullscreenBtn: HTMLButtonElement | null;
+  private chapterBtn: HTMLButtonElement | null = null;
+  private chapterDropdown: HTMLElement | null = null;
+  readonly progressBar: ProgressBar;
+  private cleanups: (() => void)[] = [];
+  private options: ControlsOptions;
+  private idleTimer: ReturnType<typeof setTimeout> | undefined;
+
+  constructor(options: ControlsOptions) {
+    this.options = options;
+
+    this.element = createElement('div', 'ci-video-hotspot-controls');
+
+    // Progress bar
+    this.progressBar = new ProgressBar({
+      ...options.progressBarOptions,
+      onSeek: options.onSeek,
+      getDuration: options.getDuration,
+      getCurrentTime: options.getCurrentTime,
+      getBufferedEnd: options.getBufferedEnd,
+    });
+    this.element.appendChild(this.progressBar.element);
+
+    // Controls row
+    const row = createElement('div', 'ci-video-hotspot-controls-row');
+
+    // Left group
+    const leftGroup = createElement('div', 'ci-video-hotspot-controls-left');
+
+    // Play/Pause
+    this.playBtn = createElement('button', 'ci-video-hotspot-controls-play-btn', {
+      'aria-label': 'Play',
+      'type': 'button',
+    });
+    this.playBtn.innerHTML = PLAY_SVG;
+    leftGroup.appendChild(this.playBtn);
+
+    // Volume
+    const volumeGroup = createElement('div', 'ci-video-hotspot-controls-volume');
+    this.volumeBtn = createElement('button', 'ci-video-hotspot-controls-volume-btn', {
+      'aria-label': 'Mute',
+      'type': 'button',
+    });
+    this.volumeBtn.innerHTML = VOLUME_SVG;
+    this.volumeSlider = document.createElement('input');
+    this.volumeSlider.type = 'range';
+    this.volumeSlider.className = 'ci-video-hotspot-controls-volume-slider';
+    this.volumeSlider.min = '0';
+    this.volumeSlider.max = '1';
+    this.volumeSlider.step = '0.05';
+    this.volumeSlider.value = String(options.getVolume());
+    this.volumeSlider.setAttribute('aria-label', 'Volume');
+    volumeGroup.appendChild(this.volumeBtn);
+    volumeGroup.appendChild(this.volumeSlider);
+    leftGroup.appendChild(volumeGroup);
+
+    // Time display
+    this.timeDisplay = createElement('span', 'ci-video-hotspot-controls-time');
+    this.timeDisplay.textContent = '0:00 / 0:00';
+    leftGroup.appendChild(this.timeDisplay);
+
+    row.appendChild(leftGroup);
+
+    // Right group
+    const rightGroup = createElement('div', 'ci-video-hotspot-controls-right');
+
+    // Chapter navigation
+    if (options.showChapterNav && options.chapters && options.chapters.length > 0) {
+      this.chapterBtn = createElement('button', 'ci-video-hotspot-controls-chapter-btn', {
+        'aria-label': 'Chapters',
+        'aria-expanded': 'false',
+        'type': 'button',
+      });
+      this.chapterBtn.textContent = 'Chapters';
+      rightGroup.appendChild(this.chapterBtn);
+
+      this.chapterDropdown = createElement('div', 'ci-video-hotspot-chapters');
+      this.chapterDropdown.setAttribute('role', 'listbox');
+      for (const ch of options.chapters) {
+        const item = createElement('button', 'ci-video-hotspot-chapter-item', {
+          'role': 'option',
+          'data-chapter-id': ch.id,
+          'type': 'button',
+        });
+        item.innerHTML = `<span class="ci-video-hotspot-chapter-time">${formatTime(ch.startTime)}</span><span class="ci-video-hotspot-chapter-title">${ch.title}</span>`;
+        this.chapterDropdown.appendChild(item);
+      }
+      rightGroup.appendChild(this.chapterDropdown);
+    }
+
+    // Speed
+    this.speedBtn = createElement('button', 'ci-video-hotspot-controls-speed-btn', {
+      'aria-label': 'Playback speed',
+      'type': 'button',
+    });
+    this.speedBtn.textContent = '1x';
+    rightGroup.appendChild(this.speedBtn);
+
+    // Fullscreen
+    if (options.showFullscreen) {
+      this.fullscreenBtn = createElement('button', 'ci-video-hotspot-controls-fullscreen-btn', {
+        'aria-label': 'Enter fullscreen',
+        'type': 'button',
+      });
+      this.fullscreenBtn.innerHTML = FULLSCREEN_SVG;
+      rightGroup.appendChild(this.fullscreenBtn);
+    } else {
+      this.fullscreenBtn = null;
+    }
+
+    row.appendChild(rightGroup);
+    this.element.appendChild(row);
+
+    this.bindEvents();
+  }
+
+  private bindEvents(): void {
+    // Play/Pause
+    this.cleanups.push(addListener(this.playBtn, 'click', (e) => {
+      e.stopPropagation();
+      if (this.options.isPaused()) {
+        this.options.onPlay();
+      } else {
+        this.options.onPause();
+      }
+    }));
+
+    // Volume button (mute toggle)
+    this.cleanups.push(addListener(this.volumeBtn, 'click', (e) => {
+      e.stopPropagation();
+      this.options.onMuteToggle();
+    }));
+
+    // Volume slider
+    this.cleanups.push(addListener(this.volumeSlider, 'input', () => {
+      this.options.onVolumeChange(parseFloat(this.volumeSlider.value));
+    }));
+
+    // Speed toggle
+    const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+    this.cleanups.push(addListener(this.speedBtn, 'click', (e) => {
+      e.stopPropagation();
+      const current = this.options.getPlaybackRate();
+      const idx = speeds.indexOf(current);
+      const next = speeds[(idx + 1) % speeds.length];
+      this.options.onSpeedChange(next);
+    }));
+
+    // Fullscreen
+    if (this.fullscreenBtn) {
+      this.cleanups.push(addListener(this.fullscreenBtn, 'click', (e) => {
+        e.stopPropagation();
+        this.options.onFullscreenToggle();
+      }));
+    }
+
+    // Chapter toggle
+    if (this.chapterBtn && this.chapterDropdown) {
+      this.cleanups.push(addListener(this.chapterBtn, 'click', (e) => {
+        e.stopPropagation();
+        const isOpen = this.chapterDropdown!.classList.contains('ci-video-hotspot-chapters--open');
+        if (isOpen) {
+          removeClass(this.chapterDropdown!, 'ci-video-hotspot-chapters--open');
+          this.chapterBtn!.setAttribute('aria-expanded', 'false');
+        } else {
+          addClass(this.chapterDropdown!, 'ci-video-hotspot-chapters--open');
+          this.chapterBtn!.setAttribute('aria-expanded', 'true');
+        }
+      }));
+
+      // Chapter item clicks
+      this.cleanups.push(addListener(this.chapterDropdown, 'click', (e) => {
+        const target = (e.target as HTMLElement).closest('[data-chapter-id]') as HTMLElement;
+        if (target) {
+          e.stopPropagation();
+          const chapterId = target.dataset.chapterId;
+          if (chapterId) {
+            this.options.onChapterSelect?.(chapterId);
+            removeClass(this.chapterDropdown!, 'ci-video-hotspot-chapters--open');
+            this.chapterBtn!.setAttribute('aria-expanded', 'false');
+          }
+        }
+      }));
+    }
+  }
+
+  /** Update controls state */
+  update(): void {
+    const isPaused = this.options.isPaused();
+    const currentTime = this.options.getCurrentTime();
+    const duration = this.options.getDuration();
+    const isMuted = this.options.isMuted();
+    const rate = this.options.getPlaybackRate();
+    const isFs = this.options.isFullscreen();
+
+    // Play/Pause button
+    this.playBtn.innerHTML = isPaused ? PLAY_SVG : PAUSE_SVG;
+    this.playBtn.setAttribute('aria-label', isPaused ? 'Play' : 'Pause');
+
+    // Time display
+    this.timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+
+    // Volume
+    this.volumeBtn.innerHTML = isMuted ? VOLUME_MUTE_SVG : VOLUME_SVG;
+    this.volumeBtn.setAttribute('aria-label', isMuted ? 'Unmute' : 'Mute');
+    if (!isMuted) {
+      this.volumeSlider.value = String(this.options.getVolume());
+    }
+
+    // Speed
+    this.speedBtn.textContent = `${rate}x`;
+
+    // Fullscreen
+    if (this.fullscreenBtn) {
+      this.fullscreenBtn.innerHTML = isFs ? FULLSCREEN_EXIT_SVG : FULLSCREEN_SVG;
+      this.fullscreenBtn.setAttribute('aria-label', isFs ? 'Exit fullscreen' : 'Enter fullscreen');
+    }
+
+    // Progress bar
+    this.progressBar.update(currentTime);
+  }
+
+  /** Update active chapter styling */
+  setActiveChapter(chapterId: string | undefined): void {
+    if (!this.chapterDropdown) return;
+    const items = this.chapterDropdown.querySelectorAll('.ci-video-hotspot-chapter-item');
+    items.forEach((item) => {
+      const el = item as HTMLElement;
+      if (el.dataset.chapterId === chapterId) {
+        addClass(el, 'ci-video-hotspot-chapter-item--active');
+        el.setAttribute('aria-selected', 'true');
+      } else {
+        removeClass(el, 'ci-video-hotspot-chapter-item--active');
+        el.setAttribute('aria-selected', 'false');
+      }
+    });
+  }
+
+  /** Show controls (reset idle timer) */
+  show(): void {
+    removeClass(this.element, 'ci-video-hotspot-controls--hidden');
+  }
+
+  /** Hide controls */
+  hide(): void {
+    addClass(this.element, 'ci-video-hotspot-controls--hidden');
+  }
+
+  /** Start idle timer -- hide controls after inactivity */
+  startIdleTimer(delay: number = 3000): void {
+    this.clearIdleTimer();
+    this.idleTimer = setTimeout(() => {
+      this.hide();
+    }, delay);
+  }
+
+  clearIdleTimer(): void {
+    if (this.idleTimer !== undefined) {
+      clearTimeout(this.idleTimer);
+      this.idleTimer = undefined;
+    }
+  }
+
+  destroy(): void {
+    this.clearIdleTimer();
+    this.cleanups.forEach((fn) => fn());
+    this.cleanups = [];
+    this.progressBar.destroy();
+    this.element.remove();
+  }
+}

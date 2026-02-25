@@ -1,0 +1,99 @@
+{
+  "name": "js-cloudimage-video-hotspot",
+  "version": "1.0.0",
+  "description": "Interactive video hotspots with time-based markers, popovers, and accessibility",
+  "license": "MIT",
+  "author": "Scaleflex",
+  "homepage": "https://github.com/scaleflex/js-cloudimage-video-hotspot#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scaleflex/js-cloudimage-video-hotspot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/scaleflex/js-cloudimage-video-hotspot/issues"
+  },
+  "main": "dist/js-cloudimage-video-hotspot.cjs.js",
+  "module": "dist/js-cloudimage-video-hotspot.esm.js",
+  "unpkg": "dist/js-cloudimage-video-hotspot.min.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/js-cloudimage-video-hotspot.esm.js",
+      "require": "./dist/js-cloudimage-video-hotspot.cjs.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js",
+      "require": "./dist/react/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "dev": "vite --config config/vite.demo.config.ts",
+    "build": "npm run build:bundle && npm run build:react && npm run typecheck:emit",
+    "build:bundle": "vite build --config config/vite.config.ts",
+    "build:react": "vite build --config config/vite.react.config.ts",
+    "build:demo": "vite build --config config/vite.demo.config.ts",
+    "typecheck": "tsc --noEmit",
+    "typecheck:emit": "tsc --project tsconfig.build.json --emitDeclarationOnly --declaration --outDir dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/ tests/ --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^25.2.3",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.1",
+    "jsdom": "^25.0.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  },
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0",
+    "hls.js": ">=1.0.0",
+    "@vimeo/player": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "hls.js": {
+      "optional": true
+    },
+    "@vimeo/player": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "video",
+    "hotspot",
+    "interactive",
+    "shoppable",
+    "popover",
+    "timeline",
+    "keyframes",
+    "accessibility",
+    "wcag",
+    "typescript",
+    "cloudimage",
+    "react"
+  ]
+}

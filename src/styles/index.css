@@ -1,0 +1,1290 @@
+/* === CIVideoHotspot Stylesheet === */
+
+.ci-video-hotspot-container {
+  /* === Marker === */
+  --ci-video-hotspot-marker-size: 28px;
+  --ci-video-hotspot-marker-color: #ffffff;
+  --ci-video-hotspot-marker-bg: rgba(0, 0, 0, 0.6);
+  --ci-video-hotspot-marker-border-width: 2px;
+  --ci-video-hotspot-marker-border-color: rgba(255, 255, 255, 0.8);
+  --ci-video-hotspot-marker-border: var(--ci-video-hotspot-marker-border-width) solid var(--ci-video-hotspot-marker-border-color);
+  --ci-video-hotspot-marker-border-radius: 50%;
+  --ci-video-hotspot-marker-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* === Marker Pulse Animation === */
+  --ci-video-hotspot-pulse-color: rgba(255, 255, 255, 0.3);
+  --ci-video-hotspot-pulse-size: 44px;
+  --ci-video-hotspot-pulse-duration: 1.8s;
+
+  /* === Popover === */
+  --ci-video-hotspot-popover-bg: #ffffff;
+  --ci-video-hotspot-popover-color: #1a1a1a;
+  --ci-video-hotspot-popover-border: 1px solid rgba(0, 0, 0, 0.1);
+  --ci-video-hotspot-popover-border-radius: 12px;
+  --ci-video-hotspot-popover-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --ci-video-hotspot-popover-padding: 16px;
+  --ci-video-hotspot-popover-max-width: 320px;
+  --ci-video-hotspot-popover-max-height: 400px;
+  --ci-video-hotspot-popover-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --ci-video-hotspot-popover-font-size: 14px;
+  --ci-video-hotspot-popover-line-height: 1.5;
+  --ci-video-hotspot-popover-z-index: 1000;
+
+  /* === Popover Arrow === */
+  --ci-video-hotspot-arrow-size: 8px;
+  --ci-video-hotspot-arrow-color: var(--ci-video-hotspot-popover-bg);
+
+  /* === Popover Content (built-in template) === */
+  --ci-video-hotspot-title-font-size: 16px;
+  --ci-video-hotspot-title-font-weight: 600;
+  --ci-video-hotspot-title-color: #1a1a1a;
+  --ci-video-hotspot-price-color: #2d8c3c;
+  --ci-video-hotspot-price-font-size: 18px;
+  --ci-video-hotspot-price-font-weight: 700;
+  --ci-video-hotspot-description-color: #666666;
+  --ci-video-hotspot-cta-bg: #0058a3;
+  --ci-video-hotspot-cta-color: #ffffff;
+  --ci-video-hotspot-cta-border-radius: 8px;
+  --ci-video-hotspot-cta-padding: 8px 16px;
+  --ci-video-hotspot-original-price-color: #999999;
+  --ci-video-hotspot-badge-bg: #ff4444;
+  --ci-video-hotspot-badge-color: #ffffff;
+
+  /* === Controls === */
+  --ci-video-hotspot-controls-bg: rgba(0, 0, 0, 0.75);
+  --ci-video-hotspot-controls-color: #ffffff;
+  --ci-video-hotspot-controls-height: 48px;
+
+  /* === Progress Bar === */
+  --ci-video-hotspot-progress-height: 4px;
+  --ci-video-hotspot-progress-bg: rgba(255, 255, 255, 0.2);
+  --ci-video-hotspot-progress-fill: #ff4444;
+  --ci-video-hotspot-progress-buffered: rgba(255, 255, 255, 0.3);
+  --ci-video-hotspot-progress-indicator-color: #ffcc00;
+  --ci-video-hotspot-progress-indicator-size: 8px;
+  --ci-video-hotspot-progress-chapter-color: rgba(255, 255, 255, 0.5);
+
+  /* === Hotspot Nav === */
+  --ci-video-hotspot-nav-bg: rgba(0, 0, 0, 0.7);
+  --ci-video-hotspot-nav-color: #ffffff;
+
+  /* === Transitions === */
+  --ci-video-hotspot-hover-transition: 200ms ease;
+  --ci-video-hotspot-popover-transition: 300ms ease;
+  --ci-video-hotspot-hotspot-transition: 300ms ease;
+  --ci-video-hotspot-controls-transition: 300ms ease;
+
+  /* === Focus Ring === */
+  --ci-video-hotspot-focus-ring: #4A90D9;
+
+  /* === Gallery === */
+  --ci-video-hotspot-gallery-arrow-bg: rgba(0, 0, 0, 0.5);
+  --ci-video-hotspot-gallery-arrow-color: #ffffff;
+  --ci-video-hotspot-gallery-arrow-size: 32px;
+  --ci-video-hotspot-gallery-dot-color: rgba(255, 255, 255, 0.5);
+  --ci-video-hotspot-gallery-dot-active: #ffffff;
+  --ci-video-hotspot-gallery-dot-size: 8px;
+  --ci-video-hotspot-gallery-transition: 300ms ease;
+
+  /* === Rating === */
+  --ci-video-hotspot-rating-star-color: #f5a623;
+  --ci-video-hotspot-rating-star-empty: #d0d0d0;
+  --ci-video-hotspot-rating-star-size: 16px;
+  --ci-video-hotspot-rating-count-color: #888888;
+
+  /* === Wishlist === */
+  --ci-video-hotspot-wishlist-color: #999999;
+  --ci-video-hotspot-wishlist-active-color: #e74c3c;
+  --ci-video-hotspot-wishlist-size: 32px;
+
+  /* === Variants === */
+  --ci-video-hotspot-variant-pill-bg: #f5f5f5;
+  --ci-video-hotspot-variant-pill-color: #333333;
+  --ci-video-hotspot-variant-pill-border: 1px solid #dddddd;
+  --ci-video-hotspot-variant-pill-radius: 6px;
+  --ci-video-hotspot-variant-pill-padding: 4px 12px;
+  --ci-video-hotspot-variant-selected-bg: #0058a3;
+  --ci-video-hotspot-variant-selected-color: #ffffff;
+  --ci-video-hotspot-variant-selected-border: 1px solid #0058a3;
+  --ci-video-hotspot-variant-disabled-opacity: 0.4;
+  --ci-video-hotspot-variant-swatch-size: 28px;
+  --ci-video-hotspot-variant-swatch-border: 2px solid transparent;
+  --ci-video-hotspot-variant-swatch-selected-border: 2px solid #0058a3;
+  --ci-video-hotspot-variant-label-color: #666666;
+
+  /* === Countdown === */
+  --ci-video-hotspot-countdown-bg: #fff3cd;
+  --ci-video-hotspot-countdown-color: #856404;
+  --ci-video-hotspot-countdown-padding: 8px 12px;
+  --ci-video-hotspot-countdown-border-radius: 6px;
+  --ci-video-hotspot-countdown-label-color: #666666;
+  --ci-video-hotspot-countdown-expired-bg: #f8d7da;
+  --ci-video-hotspot-countdown-expired-color: #721c24;
+
+  /* === Custom Fields === */
+  --ci-video-hotspot-custom-field-label-color: #888888;
+  --ci-video-hotspot-custom-field-value-color: #333333;
+
+  /* === Secondary CTA === */
+  --ci-video-hotspot-secondary-cta-bg: transparent;
+  --ci-video-hotspot-secondary-cta-color: #0058a3;
+  --ci-video-hotspot-secondary-cta-border: 1px solid #0058a3;
+  --ci-video-hotspot-secondary-cta-border-radius: 8px;
+  --ci-video-hotspot-secondary-cta-padding: 8px 16px;
+}
+
+/* === Scoped box-sizing === */
+.ci-video-hotspot-container *,
+.ci-video-hotspot-container *::before,
+.ci-video-hotspot-container *::after {
+  box-sizing: border-box;
+}
+
+/* === Container === */
+.ci-video-hotspot-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  background: #000;
+  font-family: var(--ci-video-hotspot-popover-font-family);
+  line-height: 1;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* === Video === */
+.ci-video-hotspot-video {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* === Overlay (markers layer) === */
+.ci-video-hotspot-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* === Markers layer === */
+.ci-video-hotspot-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* === Marker (button) === */
+.ci-video-hotspot-marker {
+  position: absolute;
+  width: var(--ci-video-hotspot-marker-size);
+  height: var(--ci-video-hotspot-marker-size);
+  padding: 0;
+  border: var(--ci-video-hotspot-marker-border);
+  border-radius: var(--ci-video-hotspot-marker-border-radius);
+  background: var(--ci-video-hotspot-marker-bg);
+  color: var(--ci-video-hotspot-marker-color);
+  box-shadow: var(--ci-video-hotspot-marker-shadow);
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+  transition: transform var(--ci-video-hotspot-hover-transition),
+              box-shadow var(--ci-video-hotspot-hover-transition),
+              opacity var(--ci-video-hotspot-hotspot-transition);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+  outline: none;
+  opacity: 1;
+}
+
+.ci-video-hotspot-marker:hover {
+  transform: translate(-50%, -50%) scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.ci-video-hotspot-marker:focus-visible {
+  outline: 3px solid var(--ci-video-hotspot-focus-ring);
+  outline-offset: 2px;
+}
+
+.ci-video-hotspot-marker--active {
+  transform: translate(-50%, -50%) scale(1.2);
+  z-index: 2;
+}
+
+/* === Hotspot Entrance/Exit Animations === */
+.ci-video-hotspot-marker--fade-in {
+  animation: ci-video-hotspot-fade-in var(--ci-video-hotspot-hotspot-transition) forwards;
+}
+
+.ci-video-hotspot-marker--fade-out {
+  animation: ci-video-hotspot-fade-out var(--ci-video-hotspot-hotspot-transition) forwards;
+}
+
+.ci-video-hotspot-marker--scale-in {
+  animation: ci-video-hotspot-scale-in var(--ci-video-hotspot-hotspot-transition) forwards;
+}
+
+.ci-video-hotspot-marker--scale-out {
+  animation: ci-video-hotspot-scale-out var(--ci-video-hotspot-hotspot-transition) forwards;
+}
+
+@keyframes ci-video-hotspot-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ci-video-hotspot-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; pointer-events: none; }
+}
+
+@keyframes ci-video-hotspot-scale-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes ci-video-hotspot-scale-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0.3); pointer-events: none; }
+}
+
+/* === Dot-label marker === */
+.ci-video-hotspot-marker--dot-label { overflow: visible; }
+
+.ci-video-hotspot-marker-label {
+  position: absolute;
+  left: calc(50% + var(--ci-video-hotspot-marker-size) / 2 + 4px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--ci-video-hotspot-marker-color);
+  background: var(--ci-video-hotspot-marker-bg);
+  border: var(--ci-video-hotspot-marker-border);
+  border-radius: 100px;
+  box-shadow: var(--ci-video-hotspot-marker-shadow);
+}
+
+/* Disable breathe on dot-label */
+.ci-video-hotspot-marker--dot-label.ci-video-hotspot-marker--pulse {
+  animation: none;
+}
+
+/* === Numbered marker === */
+.ci-video-hotspot-marker--numbered {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* === Pulse animation === */
+.ci-video-hotspot-marker--pulse::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--ci-video-hotspot-pulse-size);
+  height: var(--ci-video-hotspot-pulse-size);
+  border-radius: 50%;
+  background: var(--ci-video-hotspot-pulse-color);
+  transform: translate(-50%, -50%) scale(1);
+  animation: ci-video-hotspot-pulse var(--ci-video-hotspot-pulse-duration) ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ci-video-hotspot-pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* Breathe animation */
+.ci-video-hotspot-marker--pulse {
+  animation: ci-video-hotspot-breathe 2.4s ease-in-out infinite;
+}
+
+.ci-video-hotspot-marker--pulse:hover,
+.ci-video-hotspot-marker--pulse.ci-video-hotspot-marker--active {
+  animation: none;
+}
+
+@keyframes ci-video-hotspot-breathe {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+
+/* === Popover === */
+.ci-video-hotspot-popover {
+  position: absolute;
+  z-index: var(--ci-video-hotspot-popover-z-index);
+  max-width: var(--ci-video-hotspot-popover-max-width);
+  background: var(--ci-video-hotspot-popover-bg);
+  color: var(--ci-video-hotspot-popover-color);
+  border: var(--ci-video-hotspot-popover-border);
+  border-radius: var(--ci-video-hotspot-popover-border-radius);
+  box-shadow: var(--ci-video-hotspot-popover-shadow);
+  font-family: var(--ci-video-hotspot-popover-font-family);
+  font-size: var(--ci-video-hotspot-popover-font-size);
+  line-height: var(--ci-video-hotspot-popover-line-height);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity var(--ci-video-hotspot-popover-transition),
+              transform var(--ci-video-hotspot-popover-transition);
+}
+
+.ci-video-hotspot-popover--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* === Popover Arrow === */
+.ci-video-hotspot-popover-arrow {
+  position: absolute;
+  width: calc(var(--ci-video-hotspot-arrow-size) * 2);
+  height: calc(var(--ci-video-hotspot-arrow-size) * 2);
+  background: var(--ci-video-hotspot-arrow-color);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.ci-video-hotspot-popover[data-placement="top"] .ci-video-hotspot-popover-arrow {
+  bottom: calc(var(--ci-video-hotspot-arrow-size) * -1);
+}
+
+.ci-video-hotspot-popover[data-placement="bottom"] .ci-video-hotspot-popover-arrow {
+  top: calc(var(--ci-video-hotspot-arrow-size) * -1);
+}
+
+.ci-video-hotspot-popover[data-placement="left"] .ci-video-hotspot-popover-arrow {
+  right: calc(var(--ci-video-hotspot-arrow-size) * -1);
+}
+
+.ci-video-hotspot-popover[data-placement="right"] .ci-video-hotspot-popover-arrow {
+  left: calc(var(--ci-video-hotspot-arrow-size) * -1);
+}
+
+/* === Popover Content === */
+.ci-video-hotspot-popover-content {
+  padding: var(--ci-video-hotspot-popover-padding);
+  max-height: var(--ci-video-hotspot-popover-max-height);
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: var(--ci-video-hotspot-popover-border-radius);
+}
+
+.ci-video-hotspot-popover-image-wrapper {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: calc(var(--ci-video-hotspot-popover-border-radius) - 4px) calc(var(--ci-video-hotspot-popover-border-radius) - 4px) 0 0;
+  margin: calc(var(--ci-video-hotspot-popover-padding) * -1);
+  margin-bottom: 12px;
+  width: calc(100% + var(--ci-video-hotspot-popover-padding) * 2);
+}
+
+.ci-video-hotspot-popover-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ci-video-hotspot-popover-body {
+  line-height: 1.5;
+  text-align: left;
+}
+
+.ci-video-hotspot-popover-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ci-video-hotspot-badge-color);
+  background: var(--ci-video-hotspot-badge-bg);
+  border-radius: 4px;
+}
+
+.ci-video-hotspot-popover-title {
+  margin: 0 0 4px;
+  font-size: var(--ci-video-hotspot-title-font-size);
+  font-weight: var(--ci-video-hotspot-title-font-weight);
+  color: var(--ci-video-hotspot-title-color);
+}
+
+.ci-video-hotspot-popover-price {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: var(--ci-video-hotspot-price-font-size);
+  font-weight: var(--ci-video-hotspot-price-font-weight);
+  color: var(--ci-video-hotspot-price-color);
+}
+
+.ci-video-hotspot-popover-price-row {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.ci-video-hotspot-popover-price-row .ci-video-hotspot-popover-price { margin-bottom: 0; }
+
+.ci-video-hotspot-popover-original-price {
+  font-size: calc(var(--ci-video-hotspot-price-font-size) - 2px);
+  font-weight: 500;
+  color: var(--ci-video-hotspot-original-price-color);
+  text-decoration: line-through;
+}
+
+.ci-video-hotspot-popover-description {
+  margin: 0 0 12px;
+  color: var(--ci-video-hotspot-description-color);
+}
+
+.ci-video-hotspot-popover-cta {
+  display: inline-block;
+  padding: var(--ci-video-hotspot-cta-padding);
+  background: var(--ci-video-hotspot-cta-bg);
+  color: var(--ci-video-hotspot-cta-color);
+  border-radius: var(--ci-video-hotspot-cta-border-radius);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: opacity 200ms ease;
+}
+
+.ci-video-hotspot-popover-cta:hover {
+  opacity: 0.9;
+}
+
+.ci-video-hotspot-popover-cta:focus-visible {
+  outline: 3px solid var(--ci-video-hotspot-focus-ring);
+  outline-offset: 2px;
+}
+
+/* === Video Controls === */
+.ci-video-hotspot-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--ci-video-hotspot-controls-bg);
+  color: var(--ci-video-hotspot-controls-color);
+  z-index: 10;
+  transition: opacity var(--ci-video-hotspot-controls-transition),
+              transform var(--ci-video-hotspot-controls-transition);
+  pointer-events: auto;
+}
+
+.ci-video-hotspot-controls--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(100%);
+}
+
+.ci-video-hotspot-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--ci-video-hotspot-controls-height);
+  padding: 0 12px;
+  gap: 8px;
+}
+
+.ci-video-hotspot-controls-left,
+.ci-video-hotspot-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Controls buttons */
+.ci-video-hotspot-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 4px;
+  transition: background 150ms ease;
+}
+
+.ci-video-hotspot-controls button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ci-video-hotspot-controls button:focus-visible {
+  outline: 2px solid var(--ci-video-hotspot-focus-ring);
+  outline-offset: -2px;
+}
+
+.ci-video-hotspot-controls button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ci-video-hotspot-controls button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Play button */
+.ci-video-hotspot-controls-play-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Volume group */
+.ci-video-hotspot-controls-volume {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ci-video-hotspot-controls-volume-slider {
+  width: 70px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.ci-video-hotspot-controls-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.ci-video-hotspot-controls-volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: none;
+}
+
+/* Time display */
+.ci-video-hotspot-controls-time {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0.9;
+}
+
+/* Speed button */
+.ci-video-hotspot-controls-speed-btn {
+  width: auto !important;
+  padding: 0 8px !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Chapter button */
+.ci-video-hotspot-controls-chapter-btn {
+  width: auto !important;
+  padding: 0 8px !important;
+  font-size: 13px;
+}
+
+/* === Progress Bar === */
+.ci-video-hotspot-progress {
+  position: relative;
+  padding: 8px 12px 0;
+  cursor: pointer;
+}
+
+.ci-video-hotspot-progress-bar {
+  position: relative;
+  width: 100%;
+  height: var(--ci-video-hotspot-progress-height);
+  background: var(--ci-video-hotspot-progress-bg);
+  border-radius: 2px;
+  overflow: visible;
+  transition: height 150ms ease;
+}
+
+.ci-video-hotspot-progress:hover .ci-video-hotspot-progress-bar {
+  height: 6px;
+}
+
+.ci-video-hotspot-progress-buffered {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--ci-video-hotspot-progress-buffered);
+  border-radius: 2px;
+}
+
+.ci-video-hotspot-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--ci-video-hotspot-progress-fill);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.ci-video-hotspot-progress-handle {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  background: var(--ci-video-hotspot-progress-fill);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 150ms ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ci-video-hotspot-progress:hover .ci-video-hotspot-progress-handle,
+.ci-video-hotspot-progress--dragging .ci-video-hotspot-progress-handle {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Progress tooltip */
+.ci-video-hotspot-progress-tooltip {
+  position: absolute;
+  top: -28px;
+  transform: translateX(-50%);
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+
+.ci-video-hotspot-progress-tooltip--visible {
+  opacity: 1;
+}
+
+/* === Timeline Indicators (hotspot dots/ranges on progress bar) === */
+.ci-video-hotspot-progress-indicators {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ci-video-hotspot-progress-indicator {
+  position: absolute;
+  top: 50%;
+  width: var(--ci-video-hotspot-progress-indicator-size);
+  height: var(--ci-video-hotspot-progress-indicator-size);
+  background: var(--ci-video-hotspot-progress-indicator-color);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  z-index: 1;
+  transition: transform 150ms ease;
+}
+
+.ci-video-hotspot-progress-indicator:hover {
+  transform: translate(-50%, -50%) scale(1.5);
+}
+
+/* Range-style indicator */
+.ci-video-hotspot-progress-indicator--range {
+  width: auto;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--ci-video-hotspot-progress-indicator-color);
+  opacity: 0.4;
+  transform: none;
+  top: 0;
+  pointer-events: auto;
+}
+
+.ci-video-hotspot-progress-indicator--range:hover {
+  opacity: 0.7;
+  transform: none;
+}
+
+/* Chapter markers on progress bar */
+.ci-video-hotspot-progress-chapters {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.ci-video-hotspot-progress-chapter {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--ci-video-hotspot-progress-chapter-color);
+  transform: translateX(-50%);
+}
+
+/* === Hotspot Navigation === */
+.ci-video-hotspot-nav {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--ci-video-hotspot-nav-bg);
+  color: var(--ci-video-hotspot-nav-color);
+  border-radius: 20px;
+  z-index: 10;
+  font-size: 13px;
+  pointer-events: auto;
+}
+
+.ci-video-hotspot-nav button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  transition: background 150ms ease;
+}
+
+.ci-video-hotspot-nav button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.ci-video-hotspot-nav button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.ci-video-hotspot-nav button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ci-video-hotspot-nav-counter {
+  font-variant-numeric: tabular-nums;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+/* === Chapter Dropdown === */
+.ci-video-hotspot-chapters {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  max-height: 300px;
+  overflow-y: auto;
+  background: rgba(28, 28, 28, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 200ms ease, transform 200ms ease;
+  z-index: 20;
+}
+
+.ci-video-hotspot-chapters--open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.ci-video-hotspot-chapter-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  text-align: left;
+  transition: background 150ms ease;
+}
+
+.ci-video-hotspot-chapter-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ci-video-hotspot-chapter-item--active {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ci-video-hotspot-chapter-time {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.6;
+  font-size: 12px;
+  min-width: 40px;
+}
+
+.ci-video-hotspot-chapter-title {
+  flex: 1;
+}
+
+/* === Container States === */
+.ci-video-hotspot-container--playing {
+  cursor: default;
+}
+
+.ci-video-hotspot-container--loading .ci-video-hotspot-video {
+  opacity: 0.5;
+}
+
+/* === Fullscreen === */
+.ci-video-hotspot-container--fullscreen {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+}
+
+.ci-video-hotspot-container--fullscreen .ci-video-hotspot-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* === Popover Template Root === */
+.ci-video-hotspot-popover-template {
+  display: contents;
+}
+
+/* === Popover Top Row (Badge + Wishlist) === */
+.ci-video-hotspot-popover-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+/* === Gallery === */
+.ci-video-hotspot-gallery {
+  position: relative;
+  margin: calc(var(--ci-video-hotspot-popover-padding) * -1);
+  margin-bottom: 12px;
+  width: calc(100% + var(--ci-video-hotspot-popover-padding) * 2);
+  overflow: hidden;
+  border-radius: calc(var(--ci-video-hotspot-popover-border-radius) - 4px) calc(var(--ci-video-hotspot-popover-border-radius) - 4px) 0 0;
+}
+
+.ci-video-hotspot-gallery-viewport {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.ci-video-hotspot-gallery-track {
+  display: flex;
+  height: 100%;
+}
+
+.ci-video-hotspot-gallery-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.ci-video-hotspot-gallery-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.ci-video-hotspot-gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--ci-video-hotspot-gallery-arrow-size);
+  height: var(--ci-video-hotspot-gallery-arrow-size);
+  border: none;
+  border-radius: 50%;
+  background: var(--ci-video-hotspot-gallery-arrow-bg);
+  color: var(--ci-video-hotspot-gallery-arrow-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 2;
+  transition: opacity 200ms ease;
+}
+
+.ci-video-hotspot-gallery-arrow:hover {
+  opacity: 0.8;
+}
+
+.ci-video-hotspot-gallery-arrow--prev {
+  left: 8px;
+}
+
+.ci-video-hotspot-gallery-arrow--next {
+  right: 8px;
+}
+
+.ci-video-hotspot-gallery-arrow:focus-visible {
+  outline: 3px solid var(--ci-video-hotspot-focus-ring);
+  outline-offset: 2px;
+}
+
+.ci-video-hotspot-gallery-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.ci-video-hotspot-gallery-dot {
+  width: var(--ci-video-hotspot-gallery-dot-size);
+  height: var(--ci-video-hotspot-gallery-dot-size);
+  border: none;
+  border-radius: 50%;
+  background: var(--ci-video-hotspot-gallery-dot-color);
+  cursor: pointer;
+  padding: 0;
+  transition: background 200ms ease, transform 200ms ease;
+}
+
+.ci-video-hotspot-gallery-dot--active {
+  background: var(--ci-video-hotspot-gallery-dot-active);
+  transform: scale(1.3);
+}
+
+.ci-video-hotspot-gallery-dot:focus-visible {
+  outline: 2px solid var(--ci-video-hotspot-focus-ring);
+  outline-offset: 2px;
+}
+
+/* === Rating === */
+.ci-video-hotspot-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.ci-video-hotspot-rating-stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--ci-video-hotspot-rating-star-color);
+}
+
+.ci-video-hotspot-rating-star {
+  width: var(--ci-video-hotspot-rating-star-size);
+  height: var(--ci-video-hotspot-rating-star-size);
+}
+
+.ci-video-hotspot-rating-star--empty {
+  color: var(--ci-video-hotspot-rating-star-empty);
+}
+
+.ci-video-hotspot-rating-count {
+  font-size: 13px;
+  color: var(--ci-video-hotspot-rating-count-color);
+}
+
+/* === Wishlist === */
+.ci-video-hotspot-wishlist {
+  width: var(--ci-video-hotspot-wishlist-size);
+  height: var(--ci-video-hotspot-wishlist-size);
+  border: none;
+  background: transparent;
+  color: var(--ci-video-hotspot-wishlist-color);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: color 200ms ease, transform 200ms ease;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.ci-video-hotspot-wishlist:hover {
+  color: var(--ci-video-hotspot-wishlist-active-color);
+  transform: scale(1.1);
+}
+
+.ci-video-hotspot-wishlist--active {
+  color: var(--ci-video-hotspot-wishlist-active-color);
+}
+
+.ci-video-hotspot-wishlist--active svg {
+  fill: currentColor;
+}
+
+.ci-video-hotspot-wishlist:focus-visible {
+  outline: 3px solid var(--ci-video-hotspot-focus-ring);
+  outline-offset: 2px;
+}
+
+/* === Variants === */
+.ci-video-hotspot-variants {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ci-video-hotspot-variant-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ci-video-hotspot-variant-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ci-video-hotspot-variant-label-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ci-video-hotspot-variant-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ci-video-hotspot-variant-pill {
+  padding: var(--ci-video-hotspot-variant-pill-padding);
+  background: var(--ci-video-hotspot-variant-pill-bg);
+  color: var(--ci-video-hotspot-variant-pill-color);
+  border: var(--ci-video-hotspot-variant-pill-border);
+  border-radius: var(--ci-video-hotspot-variant-pill-radius);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.ci-video-hotspot-variant-pill:hover:not(:disabled) {
+  border-color: #999;
+}
+
+.ci-video-hotspot-variant-pill.ci-video-hotspot-variant--selected {
+  background: var(--ci-video-hotspot-variant-selected-bg);
+  color: var(--ci-video-hotspot-variant-selected-color);
+  border: var(--ci-video-hotspot-variant-selected-border);
+}
+
+.ci-video-hotspot-variant-swatch {
+  width: var(--ci-video-hotspot-variant-swatch-size);
+  height: var(--ci-video-hotspot-variant-swatch-size);
+  border-radius: 50%;
+  border: var(--ci-video-hotspot-variant-swatch-border);
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.ci-video-hotspot-variant-swatch:hover:not(:disabled) {
+  transform: scale(1.1);
+}
+
+.ci-video-hotspot-variant-swatch.ci-video-hotspot-variant--selected {
+  border: var(--ci-video-hotspot-variant-swatch-selected-border);
+  transform: scale(1.1);
+}
+
+.ci-video-hotspot-variant--disabled {
+  opacity: var(--ci-video-hotspot-variant-disabled-opacity);
+  cursor: not-allowed;
+  position: relative;
+}
+
+.ci-video-hotspot-variant-pill.ci-video-hotspot-variant--disabled {
+  text-decoration: line-through;
+}
+
+/* === Countdown === */
+.ci-video-hotspot-countdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--ci-video-hotspot-countdown-padding);
+  background: var(--ci-video-hotspot-countdown-bg);
+  color: var(--ci-video-hotspot-countdown-color);
+  border-radius: var(--ci-video-hotspot-countdown-border-radius);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.ci-video-hotspot-countdown-label {
+  color: var(--ci-video-hotspot-countdown-label-color);
+  font-weight: 500;
+}
+
+.ci-video-hotspot-countdown-timer {
+  font-variant-numeric: tabular-nums;
+}
+
+.ci-video-hotspot-countdown--expired {
+  background: var(--ci-video-hotspot-countdown-expired-bg);
+  color: var(--ci-video-hotspot-countdown-expired-color);
+}
+
+/* === Custom Fields === */
+.ci-video-hotspot-custom-fields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0 0 12px;
+  padding: 0;
+  font-size: 13px;
+}
+
+.ci-video-hotspot-custom-field-label {
+  color: var(--ci-video-hotspot-custom-field-label-color);
+  margin: 0;
+}
+
+.ci-video-hotspot-custom-field-value {
+  color: var(--ci-video-hotspot-custom-field-value-color);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* === CTA Row === */
+.ci-video-hotspot-popover-cta-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ci-video-hotspot-popover-cta-row .ci-video-hotspot-popover-cta {
+  flex: 1;
+  text-align: center;
+}
+
+/* CTA as button (Add to Cart) */
+button.ci-video-hotspot-popover-cta {
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+button.ci-video-hotspot-popover-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Secondary CTA === */
+.ci-video-hotspot-secondary-cta {
+  display: inline-block;
+  padding: var(--ci-video-hotspot-secondary-cta-padding);
+  background: var(--ci-video-hotspot-secondary-cta-bg);
+  color: var(--ci-video-hotspot-secondary-cta-color);
+  border: var(--ci-video-hotspot-secondary-cta-border);
+  border-radius: var(--ci-video-hotspot-secondary-cta-border-radius);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  text-align: center;
+  transition: opacity 200ms ease;
+  font-family: inherit;
+}
+
+.ci-video-hotspot-secondary-cta:hover {
+  opacity: 0.8;
+}
+
+.ci-video-hotspot-secondary-cta:focus-visible {
+  outline: 3px solid var(--ci-video-hotspot-focus-ring);
+  outline-offset: 2px;
+}
+
+/* === Dark Theme === */
+.ci-video-hotspot-theme-dark {
+  --ci-video-hotspot-popover-bg: #1a1a1a;
+  --ci-video-hotspot-popover-color: #f0f0f0;
+  --ci-video-hotspot-popover-border: 1px solid rgba(255, 255, 255, 0.1);
+  --ci-video-hotspot-popover-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --ci-video-hotspot-title-color: #f0f0f0;
+  --ci-video-hotspot-description-color: #aaaaaa;
+  --ci-video-hotspot-original-price-color: #777777;
+
+  /* Dark: Rating */
+  --ci-video-hotspot-rating-star-empty: #555555;
+  --ci-video-hotspot-rating-count-color: #999999;
+
+  /* Dark: Variants */
+  --ci-video-hotspot-variant-pill-bg: #2a2a2a;
+  --ci-video-hotspot-variant-pill-color: #e0e0e0;
+  --ci-video-hotspot-variant-pill-border: 1px solid #444444;
+  --ci-video-hotspot-variant-label-color: #999999;
+
+  /* Dark: Countdown */
+  --ci-video-hotspot-countdown-bg: rgba(255, 193, 7, 0.15);
+  --ci-video-hotspot-countdown-color: #ffc107;
+  --ci-video-hotspot-countdown-label-color: #aaaaaa;
+  --ci-video-hotspot-countdown-expired-bg: rgba(220, 53, 69, 0.15);
+  --ci-video-hotspot-countdown-expired-color: #f5a6ad;
+
+  /* Dark: Custom Fields */
+  --ci-video-hotspot-custom-field-label-color: #888888;
+  --ci-video-hotspot-custom-field-value-color: #e0e0e0;
+
+  /* Dark: Secondary CTA */
+  --ci-video-hotspot-secondary-cta-color: #6db3f2;
+  --ci-video-hotspot-secondary-cta-border: 1px solid #6db3f2;
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+  .ci-video-hotspot-marker,
+  .ci-video-hotspot-marker::before,
+  .ci-video-hotspot-popover,
+  .ci-video-hotspot-controls {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

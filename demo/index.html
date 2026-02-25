@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CIVideoHotspot Demo</title>
+  <link rel="stylesheet" href="./demo.css">
+</head>
+<body>
+  <div class="demo-page">
+    <header class="demo-header">
+      <h1>js-cloudimage-video-hotspot</h1>
+      <p>Interactive video hotspots with time-based markers, popovers, and accessibility. Zero dependencies.</p>
+    </header>
+
+    <section class="demo-section">
+      <h2>Shoppable Video Demo</h2>
+      <p>Click on the hotspot markers that appear during playback. Hotspot indicators on the timeline show when interactive moments occur.</p>
+      <div id="demo-shoppable" class="demo-player"></div>
+    </section>
+
+    <section class="demo-section">
+      <h2>Keyframe Motion Demo</h2>
+      <p>Hotspots can follow moving objects using keyframe animation. Watch the markers smoothly track positions across the video.</p>
+      <div id="demo-keyframes" class="demo-player"></div>
+    </section>
+
+    <section class="demo-section">
+      <h2>Chapters Demo</h2>
+      <p>Videos can be segmented into chapters with hotspot groups. Use the Chapters dropdown in the controls to navigate.</p>
+      <div id="demo-chapters" class="demo-player"></div>
+    </section>
+
+    <section class="demo-section">
+      <h2>Dark Theme</h2>
+      <div id="demo-dark" class="demo-player"></div>
+    </section>
+
+    <section class="demo-section">
+      <h2>HTML Data-Attributes (Auto-Init)</h2>
+      <div
+        id="demo-auto"
+        data-ci-video-hotspot-src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+        data-ci-video-hotspot-poster=""
+        data-ci-video-hotspot-trigger="click"
+        data-ci-video-hotspot-items='[{"id":"auto1","x":"50%","y":"50%","startTime":2,"endTime":10,"label":"Center point","data":{"title":"Auto-initialized","description":"This hotspot was created from data attributes"}}]'
+      ></div>
+    </section>
+  </div>
+
+  <script type="module" src="./demo.ts"></script>
+</body>
+</html>
