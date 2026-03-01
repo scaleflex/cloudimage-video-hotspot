@@ -1,4 +1,5 @@
 import type { VideoHotspotItem, PopoverData, ProductVariant, AddToCartEvent } from '../core/types';
+import type { AnalyticsEmit } from '../core/analytics';
 import { sanitizeHTML, isSafeUrl } from './sanitize';
 import { createGallery } from './components/gallery';
 import { createRating } from './components/rating';
@@ -17,16 +18,18 @@ import { createSecondaryCta } from './components/secondary-cta';
 export function renderBuiltInTemplate(
   data: PopoverData,
   cleanups: (() => void)[] = [],
-  hotspotId: string = '',
+  hotspot: VideoHotspotItem | null = null,
+  emitAnalytics?: AnalyticsEmit,
 ): HTMLElement {
   const root = document.createElement('div');
   root.className = 'ci-video-hotspot-popover-template';
 
   // === Gallery (multiple images) or single image fallback ===
   const galleryImages = data.images && data.images.length > 0 ? data.images : data.image ? [data.image] : [];
+  let galleryResult: ReturnType<typeof createGallery> = null;
   if (galleryImages.length > 1) {
-    const gallery = createGallery(galleryImages, data.title || '', cleanups);
-    if (gallery) root.appendChild(gallery.element);
+    galleryResult = createGallery(galleryImages, data.title || '', cleanups);
+    if (galleryResult) root.appendChild(galleryResult.element);
   } else if (galleryImages.length === 1) {
     // Single image — use the classic image wrapper
     const wrapper = document.createElement('div');
@@ -57,11 +60,15 @@ export function renderBuiltInTemplate(
       topRow.appendChild(badge);
     }
 
+    const wishlistCallback = (wishlisted: boolean, h: VideoHotspotItem) => {
+      (data.onWishlistToggle as ((wishlisted: boolean, hotspot: VideoHotspotItem) => void) | undefined)?.(wishlisted, h);
+      emitAnalytics?.('wishlist_toggle', h.id, { wishlisted });
+    };
     const wishlistResult = createWishlist(
       data.wishlist,
       data.wishlisted,
-      hotspotId,
-      data.onWishlistToggle as ((wishlisted: boolean, hotspotId: string) => void) | undefined,
+      hotspot,
+      hotspot ? wishlistCallback : undefined,
       cleanups,
     );
     if (wishlistResult) {
@@ -106,13 +113,21 @@ export function renderBuiltInTemplate(
     body.appendChild(priceRow);
   }
 
+  // Gallery update function for variant image switching
+  const galleryUpdateFn = galleryResult ? (imageUrl: string) => galleryResult!.setMainImage(imageUrl) : null;
+
   // Variants
+  const variantCallback = (v: ProductVariant, all: ProductVariant[], h: VideoHotspotItem) => {
+    (data.onVariantSelect as ((v: ProductVariant, all: ProductVariant[], h: VideoHotspotItem) => void) | undefined)?.(v, all, h);
+    emitAnalytics?.('variant_select', h.id, { variantId: v.id, variantType: v.type, variantLabel: v.label });
+  };
   const variantsResult = createVariants(
     data.variants,
-    hotspotId,
+    hotspot,
     priceValueEl,
-    data.onVariantSelect as ((v: ProductVariant, all: ProductVariant[], id: string) => void) | undefined,
+    hotspot ? variantCallback : undefined,
     cleanups,
+    galleryUpdateFn,
   );
   if (variantsResult) body.appendChild(variantsResult.element);
 
@@ -139,13 +154,20 @@ export function renderBuiltInTemplate(
     const onClick = (e: Event) => {
       e.stopPropagation();
       const event: AddToCartEvent = {
-        hotspotId,
+        hotspot: hotspot!,
+        quantity: 1,
         sku: data.sku,
         title: data.title,
         price: priceValueEl?.textContent || data.price,
         selectedVariants: variantsResult ? variantsResult.getSelected() : [],
       };
       (data.onAddToCart as (e: AddToCartEvent) => void)(event);
+      emitAnalytics?.('add_to_cart', hotspot!.id, {
+        sku: data.sku,
+        title: data.title,
+        price: priceValueEl?.textContent || data.price,
+        quantity: 1,
+      });
     };
 
     btn.addEventListener('click', onClick);
@@ -158,6 +180,14 @@ export function renderBuiltInTemplate(
     a.rel = 'noopener';
     a.textContent = data.ctaText || 'View details';
     ctaEl = a;
+
+    if (emitAnalytics && hotspot) {
+      const onCtaClick = () => {
+        emitAnalytics('cta_click', hotspot.id, { url: data.url });
+      };
+      a.addEventListener('click', onCtaClick);
+      cleanups.push(() => a.removeEventListener('click', onCtaClick));
+    }
   }
 
   // Countdown (created after CTA so it can disable on expiry)
@@ -169,7 +199,7 @@ export function renderBuiltInTemplate(
   if (customFieldsEl) body.appendChild(customFieldsEl);
 
   // CTAs container
-  const secondaryCtaEl = createSecondaryCta(data.secondaryCta);
+  const secondaryCtaEl = createSecondaryCta(data.secondaryCta, hotspot, cleanups);
   if (ctaEl || secondaryCtaEl) {
     const ctaRow = document.createElement('div');
     ctaRow.className = 'ci-video-hotspot-popover-cta-row';
@@ -194,6 +224,7 @@ export function renderPopoverContent(
   hotspot: VideoHotspotItem,
   renderFn?: (hotspot: VideoHotspotItem) => string | HTMLElement,
   cleanups?: (() => void)[],
+  emitAnalytics?: AnalyticsEmit,
 ): string | HTMLElement {
   if (renderFn) {
     return renderFn(hotspot);
@@ -204,7 +235,7 @@ export function renderPopoverContent(
   }
 
   if (hotspot.data) {
-    return renderBuiltInTemplate(hotspot.data, cleanups || [], hotspot.id);
+    return renderBuiltInTemplate(hotspot.data, cleanups || [], hotspot, emitAnalytics);
   }
 
   return '';

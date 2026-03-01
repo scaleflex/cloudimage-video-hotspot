@@ -9,6 +9,7 @@ import type {
   TriggerMode,
 } from './types';
 import { mergeConfig, validateConfig, parseDataAttributes, resolveChapterEndTimes } from './config';
+import { createAnalyticsEmitter, type AnalyticsEmit } from './analytics';
 import { TimelineEngine } from './timeline';
 import { VideoPlayer } from '../player/video-player';
 import { Controls } from '../player/controls';
@@ -46,6 +47,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   private focusTraps = new Map<string, ReturnType<typeof createFocusTrap>>();
   private openPopovers = new Set<string>();
 
+  private emitAnalytics: AnalyticsEmit;
   private animFrameId: number | null = null;
   private cleanups: (() => void)[] = [];
   private hotspotCleanups = new Map<string, (() => void)[]>();
@@ -59,6 +61,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     validateConfig(config);
     this.config = mergeConfig(config);
     this.rootEl = getElement(element);
+    this.emitAnalytics = createAnalyticsEmitter(config.onAnalytics, () => this.player?.getCurrentTime() ?? 0);
 
     acquireLiveRegion();
     injectStyles(css);
@@ -379,8 +382,15 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       placement,
       triggerMode,
       renderFn: this.config.renderPopover,
-      onOpen: (h) => this.config.onOpen?.(h),
-      onClose: (h) => this.config.onClose?.(h),
+      onOpen: (h) => {
+        this.config.onOpen?.(h);
+        this.emitAnalytics('popover_open', h.id);
+      },
+      onClose: (h) => {
+        this.config.onClose?.(h);
+        this.emitAnalytics('popover_close', h.id);
+      },
+      emitAnalytics: this.emitAnalytics,
     });
     popover.mount(this.overlayEl, marker);
     this.popovers.set(hotspot.id, popover);
@@ -414,6 +424,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
         e.stopPropagation();
 
         this.config.onHotspotClick?.(e, hotspot as VideoHotspotItem);
+        this.emitAnalytics('hotspot_click', hotspot.id);
         hotspot.onClick?.(e, hotspot as VideoHotspotItem);
 
         if (popover.isVisible()) {
@@ -445,6 +456,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     }
 
     this.config.onHotspotShow?.(hotspot as VideoHotspotItem);
+    this.emitAnalytics('hotspot_show', hotspot.id);
     announceToScreenReader(`Hotspot appeared: ${hotspot.label}`);
   }
 
@@ -557,8 +569,8 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     };
   }
 
-  play(): void {
-    this.player.play();
+  play(): Promise<void> {
+    return this.player.play();
   }
 
   pause(): void {
@@ -770,6 +782,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     const newConfig = { ...this.config, ...config } as CIVideoHotspotConfig;
     validateConfig(newConfig);
     this.config = mergeConfig(newConfig);
+    this.emitAnalytics = createAnalyticsEmitter(newConfig.onAnalytics, () => this.player?.getCurrentTime() ?? 0);
     this.buildDOM();
     this.initPlayer();
     this.initTimeline();

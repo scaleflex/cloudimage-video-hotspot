@@ -52,6 +52,8 @@ export interface ProductVariant {
   color?: string;
   /** Price override when this variant is selected */
   price?: string;
+  /** Image URL to show in gallery when this variant is selected */
+  image?: string;
   /** Whether this variant is available (default: true) */
   available?: boolean;
   /** Whether this variant is initially selected */
@@ -60,11 +62,32 @@ export interface ProductVariant {
 
 /** Event payload for add-to-cart actions */
 export interface AddToCartEvent {
-  hotspotId: string;
+  hotspot: VideoHotspotItem;
+  quantity: number;
   sku?: string;
   title?: string;
   price?: string;
   selectedVariants: ProductVariant[];
+}
+
+/** Analytics event types */
+export type AnalyticsEventType =
+  | 'hotspot_show'
+  | 'hotspot_click'
+  | 'popover_open'
+  | 'popover_close'
+  | 'cta_click'
+  | 'add_to_cart'
+  | 'variant_select'
+  | 'wishlist_toggle';
+
+/** Unified analytics event emitted via onAnalytics callback */
+export interface AnalyticsEvent {
+  type: AnalyticsEventType;
+  hotspotId: string;
+  timestamp: number;
+  videoTime: number;
+  data?: Record<string, unknown>;
 }
 
 /** Data fields for the built-in popover template */
@@ -95,8 +118,10 @@ export interface PopoverData {
   countdown?: string | Date;
   /** Label displayed above the countdown timer */
   countdownLabel?: string;
+  /** Currency symbol for display (e.g. '$', '€') */
+  currency?: string;
   /** Secondary CTA button text and URL */
-  secondaryCta?: { text: string; url?: string };
+  secondaryCta?: { text: string; url?: string; onClick?: (hotspot: VideoHotspotItem) => void };
   /** Custom key-value fields displayed below description */
   customFields?: { label: string; value: string }[];
   /** Product SKU for cart events */
@@ -105,9 +130,9 @@ export interface PopoverData {
   /** Called when add-to-cart CTA is clicked */
   onAddToCart?: (event: AddToCartEvent) => void;
   /** Called when wishlist button is toggled */
-  onWishlistToggle?: (wishlisted: boolean, hotspotId: string) => void;
+  onWishlistToggle?: (wishlisted: boolean, hotspot: VideoHotspotItem) => void;
   /** Called when a variant is selected */
-  onVariantSelect?: (variant: ProductVariant, allSelected: ProductVariant[], hotspotId: string) => void;
+  onVariantSelect?: (variant: ProductVariant, allSelected: ProductVariant[], hotspot: VideoHotspotItem) => void;
 
   [key: string]: unknown;
 }
@@ -269,6 +294,8 @@ export interface CIVideoHotspotConfig {
   onFullscreenChange?: (isFullscreen: boolean) => void;
   /** Called when the video is ready to play */
   onReady?: () => void;
+  /** Unified analytics callback for all interaction events */
+  onAnalytics?: (event: AnalyticsEvent) => void;
 
   /** Optional Cloudimage integration for poster/thumbnails */
   cloudimage?: CloudimageConfig;
@@ -285,7 +312,7 @@ export interface CIVideoHotspotInstance {
   };
 
   // Video playback
-  play(): void;
+  play(): Promise<void>;
   pause(): void;
   togglePlay(): void;
   seek(time: number): void;

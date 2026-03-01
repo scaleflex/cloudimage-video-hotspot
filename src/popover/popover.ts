@@ -1,4 +1,5 @@
 import type { VideoHotspotItem, Placement } from '../core/types';
+import type { AnalyticsEmit } from '../core/analytics';
 import { createElement, addClass, removeClass } from '../utils/dom';
 import { computePosition } from './position';
 import { renderPopoverContent } from './template';
@@ -9,6 +10,7 @@ export interface PopoverOptions {
   renderFn?: (hotspot: VideoHotspotItem) => string | HTMLElement;
   onOpen?: (hotspot: VideoHotspotItem) => void;
   onClose?: (hotspot: VideoHotspotItem) => void;
+  emitAnalytics?: AnalyticsEmit;
 }
 
 export class Popover {
@@ -44,7 +46,7 @@ export class Popover {
     this.element.appendChild(this.contentEl);
 
     // Render content
-    const content = renderPopoverContent(hotspot, options.renderFn, this.componentCleanups);
+    const content = renderPopoverContent(hotspot, options.renderFn, this.componentCleanups, options.emitAnalytics);
     if (typeof content === 'string') {
       this.contentEl.innerHTML = content;
     } else if (content instanceof HTMLElement) {
