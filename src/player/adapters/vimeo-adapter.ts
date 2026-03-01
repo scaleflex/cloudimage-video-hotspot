@@ -128,7 +128,7 @@ export class VimeoAdapter extends VideoPlayerAdapter {
 
   get ready(): boolean { return this._ready; }
 
-  play(): void { this.vimeoPlayer?.play().catch(() => {}); }
+  play(): Promise<void> { return this.vimeoPlayer?.play().catch(() => {}) ?? Promise.resolve(); }
   pause(): void { this.vimeoPlayer?.pause().catch(() => {}); }
 
   seek(time: number): void {
@@ -143,6 +143,7 @@ export class VimeoAdapter extends VideoPlayerAdapter {
     const v = Math.max(0, Math.min(1, level));
     this._volume = v;
     this.vimeoPlayer?.setVolume(v).catch(() => {});
+    this.emit('volumechange');
   }
 
   getVolume(): number { return this._volume; }
@@ -150,12 +151,14 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   setMuted(muted: boolean): void {
     this._muted = muted;
     this.vimeoPlayer?.setVolume(muted ? 0 : this._volume).catch(() => {});
+    this.emit('volumechange');
   }
 
   isMuted(): boolean { return this._muted; }
 
   setPlaybackRate(rate: number): void {
     this.vimeoPlayer?.setPlaybackRate(rate).catch(() => {});
+    this.emit('ratechange');
   }
 
   getPlaybackRate(): number {

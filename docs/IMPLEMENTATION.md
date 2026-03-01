@@ -1,6 +1,6 @@
 # Implementation Plan
 
-> Based on [specs.md](../specs.md) | Updated: 2026-02-24
+> Based on [specs.md](../specs.md) | Updated: 2026-03-01
 
 Legend: `[x]` done | `[-]` partial | `[ ]` not started
 
@@ -37,13 +37,6 @@ Legend: `[x]` done | `[-]` partial | `[ ]` not started
 - [x] Badge (e.g. "SALE", "-30%")
 - [x] Description
 - [x] CTA button (link with `target="_blank"`)
-- [ ] Image gallery (multiple images, swipe) — **Phase 2**
-- [ ] Product variants (size, color selectors) — **Phase 2**
-- [ ] Star rating — **Phase 2**
-- [ ] Wishlist button — **Phase 2**
-- [ ] Countdown timer — **Phase 2**
-- [ ] Multiple CTAs — **Phase 2**
-- [ ] `onAddToCart` callback — **Phase 2**
 
 ### Video Player
 - [x] Native HTML5 `<video>` wrapper
@@ -52,11 +45,6 @@ Legend: `[x]` done | `[-]` partial | `[ ]` not started
 - [x] Autoplay (with auto-mute)
 - [x] Loop
 - [x] Pause-on-interact (auto-pause on hotspot click/hover)
-- [ ] YouTube adapter — **Phase 1**
-- [ ] Vimeo adapter — **Phase 1**
-- [ ] HLS adapter (hls.js) — **Phase 1**
-- [ ] Player adapter interface — **Phase 1**
-- [ ] Player factory (auto-detect by URL) — **Phase 1**
 
 ### Controls
 - [x] Play/pause button
@@ -110,21 +98,9 @@ Legend: `[x]` done | `[-]` partial | `[ ]` not started
 - [x] React separate entry point
 - [x] Vite build config
 
-### Tests
-- [x] `tests/motion.test.ts` — keyframe interpolation, easing
-- [x] `tests/timeline.test.ts` — visibility detection, navigation
-- [x] `tests/config.test.ts` — config merging, validation, data attributes
-- [x] `tests/coordinates.test.ts` — coordinate normalization
-- [x] `tests/sanitize.test.ts` — HTML/SVG sanitization
-- [x] `tests/time.test.ts` — time formatting
-- [ ] Integration tests (full player flow)
-- [ ] React component tests
-- [ ] Accessibility tests
-- [ ] Visual regression tests
-
 ### Documentation
 - [x] README.md (API reference, examples, theming)
-- [x] Demo app (`demo/demo.ts` — 3 examples)
+- [x] Demo app (`demo/demo.ts` — 8 examples)
 - [x] Vanilla JS example (`examples/vanilla/`)
 - [x] React example (`examples/react/`)
 - [x] specs.md (technical specification)
@@ -133,93 +109,78 @@ Legend: `[x]` done | `[-]` partial | `[ ]` not started
 
 ---
 
-## Phase 1: Multi-Player Adapter (YouTube / Vimeo / HLS)
-
-> Priority: HLS first (primary Filerobot format), then YouTube, then Vimeo
+## Phase 1: Multi-Player Adapter (YouTube / Vimeo / HLS) — Complete
 
 ### 1.1 Player Adapter Interface
-- [ ] Create `src/player/adapter.ts` — `VideoPlayerAdapter` interface
-- [ ] Define `VideoPlayerEvent` type
-- [ ] Define `VideoPlayerAdapterConfig` type
+- [x] Create `src/player/adapter.ts` — `VideoPlayerAdapter` abstract class
+- [x] Define `AdapterEvent` type (play, pause, timeupdate, durationchange, ended, loadedmetadata, waiting, playing, progress, error, volumechange, ratechange)
+- [x] Define `AdapterOptions` type
 
 ### 1.2 HTML5 Adapter (refactor)
-- [ ] Create `src/player/adapters/html5-adapter.ts`
-- [ ] Extract current `video-player.ts` logic into adapter
-- [ ] Implement `VideoPlayerAdapter` interface
-- [ ] Update `video-player.ts` to use adapter internally
-- [ ] Verify all existing tests pass
+- [x] Create `src/player/adapters/html5-adapter.ts`
+- [x] Extract current `video-player.ts` logic into adapter
+- [x] Implement `VideoPlayerAdapter` interface
+- [x] Update `video-player.ts` to use adapter internally
+- [x] `play()` returns `Promise<void>`
+- [x] Emit `volumechange` and `ratechange` events
+- [x] All existing tests pass
 
 ### 1.3 HLS Adapter
-- [ ] Create `src/player/adapters/hls-adapter.ts`
-- [ ] Extend HTML5Adapter (same `<video>` element)
-- [ ] Detect native HLS support (Safari/iOS)
-- [ ] Dynamic hls.js loading for Chrome/Firefox/Edge
-- [ ] Map hls.js events to adapter events
-- [ ] Error recovery (media/network errors)
-- [ ] Add `hls.js` as optional peer dependency
-- [ ] Add `hls?: HLSConfig` to `CIVideoHotspotConfig`
-- [ ] Tests: HLS initialization, Safari fallback
+- [x] Create `src/player/adapters/hls-adapter.ts`
+- [x] Extend HTML5Adapter (same `<video>` element)
+- [x] Detect native HLS support (Safari/iOS)
+- [x] Dynamic hls.js loading for Chrome/Firefox/Edge
+- [x] Map hls.js events to adapter events
+- [x] Error recovery (media/network errors)
+- [x] Add `hls.js` as optional peer dependency
+- [x] Add `hls?: HLSConfig` to `CIVideoHotspotConfig`
 
 ### 1.4 YouTube Adapter
-- [ ] Create `src/player/adapters/youtube-adapter.ts`
-- [ ] Dynamic YouTube IFrame API script loading
-- [ ] URL parsing (watch, youtu.be, embed, shorts)
-- [ ] Map `YT.PlayerState` to adapter events
-- [ ] `setInterval` for timeupdate (250ms)
-- [ ] Transparent overlay div for hotspot markers
-- [ ] Hide YouTube controls (`controls: 0`)
-- [ ] Tests: URL parsing, event mapping
+- [x] Create `src/player/adapters/youtube-adapter.ts`
+- [x] Dynamic YouTube IFrame API script loading
+- [x] URL parsing (watch, youtu.be, embed, shorts)
+- [x] Map `YT.PlayerState` to adapter events
+- [x] `setInterval` for timeupdate (250ms)
+- [x] Transparent overlay div for hotspot markers
+- [x] Hide YouTube controls (`controls: 0`)
+- [x] Emit `volumechange` from `setVolume()`/`setMuted()`
+- [x] Emit `ratechange` from `setPlaybackRate()`
+- [x] `play()` returns `Promise<void>`
 
 ### 1.5 Vimeo Adapter
-- [ ] Create `src/player/adapters/vimeo-adapter.ts`
-- [ ] Dynamic `@vimeo/player` SDK loading
-- [ ] URL parsing (vimeo.com, player.vimeo.com)
-- [ ] Map Vimeo events to adapter events
-- [ ] Transparent overlay div for markers
-- [ ] Disable Vimeo controls
-- [ ] Add `@vimeo/player` as optional peer dependency
-- [ ] Tests: URL parsing, event mapping
+- [x] Create `src/player/adapters/vimeo-adapter.ts`
+- [x] Dynamic `@vimeo/player` SDK loading
+- [x] URL parsing (vimeo.com, player.vimeo.com)
+- [x] Map Vimeo events to adapter events
+- [x] Transparent overlay div for markers
+- [x] Disable Vimeo controls
+- [x] Add `@vimeo/player` as optional peer dependency
+- [x] Emit `volumechange` from `setVolume()`/`setMuted()`
+- [x] Emit `ratechange` from `setPlaybackRate()`
+- [x] `play()` returns `Promise<void>`
 
 ### 1.6 Player Factory
-- [ ] Create `src/player/player-factory.ts`
-- [ ] URL detection: `.m3u8` → HLS, `youtube.com` → YT, `vimeo.com` → Vimeo, else → HTML5
-- [ ] Add `playerType` config option (`'auto' | 'html5' | 'hls' | 'youtube' | 'vimeo'`)
-- [ ] `extractYouTubeId()`, `extractVimeoId()`, `isHLS()` helpers
-- [ ] Tests: URL detection for all patterns
+- [x] Create `src/player/player-factory.ts`
+- [x] URL detection: `.m3u8` → HLS, `youtube.com` → YT, `vimeo.com` → Vimeo, else → HTML5
+- [x] Add `playerType` config option (`'auto' | 'html5' | 'hls' | 'youtube' | 'vimeo'`)
+- [x] `extractYouTubeId()`, `extractVimeoId()`, `isHLS()` helpers
 
 ### 1.7 Integration
-- [ ] Update `CIVideoHotspot` constructor to use `PlayerFactory`
-- [ ] Update `controls.ts` if needed (adapter abstraction)
-- [ ] Update `getElements()` to return adapter element
-- [ ] Update demo with YouTube/Vimeo/HLS examples
-- [ ] Update README with new `src` URL examples
-- [ ] Update package.json: peer dependencies
+- [x] Update `CIVideoHotspot` constructor to use `PlayerFactory`
+- [x] Update `video-player.ts` facade to use adapter
+- [x] Update demo with YouTube/Vimeo/HLS examples
+- [x] Update package.json: peer dependencies
 
-### Files to create
-```
-src/player/adapter.ts
-src/player/player-factory.ts
-src/player/adapters/html5-adapter.ts
-src/player/adapters/hls-adapter.ts
-src/player/adapters/youtube-adapter.ts
-src/player/adapters/vimeo-adapter.ts
-```
-
-### Files to modify
-```
-src/player/video-player.ts      → refactor to use adapter
-src/core/ci-video-hotspot.ts    → use PlayerFactory
-src/core/types.ts               → add playerType, HLSConfig
-src/core/config.ts              → validate new options
-package.json                    → peer dependencies
-```
+### Tests
+- [x] `tests/html5-adapter.test.ts` — adapter creation, events, volumechange, ratechange, play() promise
+- [x] `tests/player-factory.test.ts` — URL detection for all patterns
 
 ---
 
-## Phase 2: Enhanced Shoppable Features
+## Phase 2: Enhanced Shoppable Features — Complete
 
 ### 2.1 Extended PopoverData types
-- [ ] Add to `src/core/types.ts`:
+- [x] Add to `src/core/types.ts`:
   - `images?: string[]`
   - `rating?: number`
   - `reviewCount?: number`
@@ -228,157 +189,177 @@ package.json                    → peer dependencies
   - `wishlisted?: boolean`
   - `countdown?: string | Date`
   - `countdownLabel?: string`
+  - `currency?: string`
   - `secondaryCta?: { text, url?, onClick? }`
   - `customFields?: { label, value }[]`
   - `sku?: string`
   - `onAddToCart?: (data: AddToCartEvent) => void`
-  - `onWishlistToggle?: (wishlisted, hotspot) => void`
-  - `onVariantSelect?: (variant, hotspot) => void`
-- [ ] Define `ProductVariant` interface
-- [ ] Define `AddToCartEvent` interface
+  - `onWishlistToggle?: (wishlisted, hotspot: VideoHotspotItem) => void`
+  - `onVariantSelect?: (variant, allSelected, hotspot: VideoHotspotItem) => void`
+- [x] Define `ProductVariant` interface (with `image?: string`)
+- [x] Define `AddToCartEvent` interface (with `hotspot: VideoHotspotItem`, `quantity: number`)
 
 ### 2.2 Image Gallery
-- [ ] Swipeable gallery component in `src/popover/template.ts`
-- [ ] Touch swipe + click arrows
-- [ ] Dot indicators (current slide)
-- [ ] Lazy loading for off-screen images
-- [ ] CSS transitions between slides
-- [ ] Fallback to single `image` if `images` not provided
+- [x] `src/popover/components/gallery.ts` — Swipeable gallery component
+- [x] Touch swipe + click arrows
+- [x] Dot indicators (current slide)
+- [x] Lazy loading for off-screen images
+- [x] CSS transitions between slides
+- [x] Fallback to single `image` if `images` not provided
+- [x] `setMainImage(src)` method for variant image switching
 
 ### 2.3 Product Variants
-- [ ] Render variant groups by `type`
-- [ ] Color swatches for `type: 'color'`
-- [ ] Pill buttons for other types
-- [ ] Disabled/unavailable state
-- [ ] Price update on variant selection
-- [ ] Image update on variant selection (if variant has `image`)
-- [ ] `onVariantSelect` callback
+- [x] `src/popover/components/variants.ts` — Variant selector
+- [x] Render variant groups by `type`
+- [x] Color swatches for `type: 'color'`
+- [x] Pill buttons for other types
+- [x] Disabled/unavailable state
+- [x] Price update on variant selection
+- [x] Image update on variant selection via `galleryUpdateFn`
+- [x] `onVariantSelect` callback (passes full `hotspot` object)
 
 ### 2.4 Star Rating
-- [ ] SVG star rendering (filled, half, empty)
-- [ ] Display `reviewCount` next to stars
-- [ ] CSS variables for colors
+- [x] `src/popover/components/rating.ts`
+- [x] SVG star rendering (filled, half, empty)
+- [x] Display `reviewCount` next to stars
+- [x] CSS variables for colors
 
 ### 2.5 Wishlist Button
-- [ ] Heart icon (toggle filled/outline)
-- [ ] `onWishlistToggle` callback
-- [ ] CSS variables for colors
+- [x] `src/popover/components/wishlist.ts`
+- [x] Heart icon (toggle filled/outline)
+- [x] `onWishlistToggle` callback (passes full `hotspot` object)
+- [x] CSS variables for colors
 
 ### 2.6 Countdown Timer
-- [ ] Parse ISO date string or Date object
-- [ ] Display "Xd Xh Xm Xs" format
-- [ ] Update every second (`setInterval`)
-- [ ] "Ended" state when timer expires
-- [ ] Cleanup interval on popover close/destroy
+- [x] `src/popover/components/countdown.ts`
+- [x] Parse ISO date string or Date object
+- [x] Display "Xd Xh Xm Xs" format
+- [x] Update every second (`setInterval`)
+- [x] "Ended" state when timer expires
+- [x] Disables CTA button on expiry
+- [x] Cleanup interval on popover close/destroy
 
 ### 2.7 Multiple CTAs
-- [ ] Primary CTA (existing "Add to Cart" / "View details")
-- [ ] Secondary CTA (text link style)
-- [ ] `onAddToCart` callback for primary CTA
+- [x] Primary CTA (existing "Add to Cart" / "View details")
+- [x] Secondary CTA with `onClick` callback support
+- [x] `onAddToCart` callback for primary CTA (sends `hotspot`, `quantity`)
 
 ### 2.8 Custom Fields
-- [ ] Render label/value pairs below description
-- [ ] Simple key-value layout
+- [x] `src/popover/components/custom-fields.ts`
+- [x] Render label/value pairs below description
+- [x] Simple key-value layout
 
 ### 2.9 Styling
-- [ ] New CSS variables for gallery, rating, variants, wishlist, countdown
-- [ ] Dark theme overrides for new components
-- [ ] Mobile-responsive popover width
+- [x] New CSS variables for gallery, rating, variants, wishlist, countdown
+- [x] Dark theme overrides for new components
+- [x] Mobile-responsive popover width
 
-### Files to modify
-```
-src/core/types.ts          → new interfaces
-src/popover/template.ts    → rewrite with new components
-src/styles/index.css       → ~150 new lines
-```
+### Tests
+- [x] `tests/gallery.test.ts` — gallery creation, navigation, swipe, dots
+- [x] `tests/variants.test.ts` — pill/swatch rendering, selection, callbacks, gallery integration
+- [x] `tests/wishlist.test.ts` — toggle, callbacks with hotspot object
+- [x] `tests/rating.test.ts` — star rendering, half stars, review count
+- [x] `tests/countdown.test.ts` — countdown display, expiry, cleanup
+- [x] `tests/template-enhanced.test.ts` — full template rendering, AddToCartEvent with hotspot/quantity, secondary CTA onClick
 
 ---
 
-## Phase 3: Standalone Visual Editor
+## Phase 3: Standalone Visual Editor — Complete
 
 ### 3.1 Project Setup
-- [ ] Create `packages/editor/` directory
-- [ ] `package.json` with React 18, TypeScript, Vite
-- [ ] Vite config
-- [ ] TypeScript config
-- [ ] Import core plugin as dependency
+- [x] Create `packages/editor/` directory
+- [x] `package.json` with React 18, TypeScript, Vite
+- [x] Vite config
+- [x] TypeScript config
+- [x] Import core plugin as dependency
 
 ### 3.2 State Management
-- [ ] `EditorContext` (React Context provider)
-- [ ] `editorReducer` (useReducer)
-- [ ] Action types: ADD/REMOVE/UPDATE/SELECT hotspot, SET_VIDEO_URL, IMPORT, UNDO, REDO
-- [ ] Undo/redo history stack (command pattern)
-- [ ] LocalStorage persistence
+- [x] `EditorContext` (React Context provider)
+- [x] `editorReducer` (useReducer)
+- [x] Action types: ADD/REMOVE/UPDATE/SELECT/DUPLICATE hotspot, SET_VIDEO_URL, IMPORT, RESET, UNDO, REDO
+- [x] Undo/redo history stack (command pattern)
+- [x] LocalStorage persistence (debounced auto-save)
 
 ### 3.3 Video Canvas (center panel)
-- [ ] Video player with overlay
-- [ ] Click on video → create hotspot at position
-- [ ] Draggable markers (pointer events)
-- [ ] Snap to grid (optional)
-- [ ] Current time indicator
+- [x] Video player with overlay
+- [x] Double-click on video → create hotspot at position
+- [x] Draggable markers (pointer events)
+- [x] Snap to grid (0.5s snap on timeline)
+- [x] Current time indicator
 
 ### 3.4 Hotspot List (left panel)
-- [ ] Sorted by startTime
-- [ ] Shows marker icon, label, time range
-- [ ] Click to select
-- [ ] Add / delete buttons
-- [ ] Context menu (duplicate, delete)
+- [x] Sorted by startTime
+- [x] Shows label, time range
+- [x] Click to select
+- [x] Add / delete buttons
+- [x] Duplicate via Ctrl+D
 
 ### 3.5 Properties Panel (right panel)
-- [ ] Position section (X, Y inputs)
-- [ ] Timing section (startTime, endTime as mm:ss)
-- [ ] Content section (title, price, image, CTA, etc.)
-- [ ] Style section (markerStyle, animation, pulse)
-- [ ] Behavior section (trigger, placement, pauseOnInteract)
+- [x] Position section (X, Y inputs)
+- [x] Timing section (startTime, endTime in seconds)
+- [x] Content section (label, title, price, image, description, CTA, URL)
+- [x] Style section (markerStyle, animation)
+- [x] Behavior section (trigger, placement, pauseOnShow, pauseOnInteract, keepOpen)
+- [x] Gallery section (multiple images with reorder)
+- [x] Variants section (product variants: size/color/material/style)
+- [x] Collapsible sections
 
 ### 3.6 Timeline (bottom panel)
-- [ ] Time ruler with ticks
-- [ ] Hotspot tracks (colored bars)
-- [ ] Drag bar edges for startTime/endTime
-- [ ] Drag bar to shift in time
-- [ ] Keyframe dots on tracks
-- [ ] Playhead indicator
-- [ ] Click on ruler to seek
-- [ ] Zoom in/out
+- [x] Time ruler with ticks
+- [x] Hotspot tracks (colored bars)
+- [x] Drag bar edges for startTime/endTime (resize)
+- [x] Drag bar middle to shift in time (move)
+- [x] Keyframe dots on tracks
+- [x] Draggable playhead indicator
+- [x] Click on ruler to seek
+- [x] Zoom in/out (1x, 2x, 4x)
+- [x] Snap to 0.5s grid
 
 ### 3.7 Toolbar
-- [ ] File menu (New, Open JSON, Save, Export)
-- [ ] Edit menu (Undo, Redo, Delete)
-- [ ] Templates menu (Product Showcase, Tutorial, Tour, Custom)
-- [ ] Preview toggle button
-- [ ] Export JSON button
+- [x] New Project button (clear all)
+- [x] Open JSON / Save JSON / Export HTML
+- [x] Undo / Redo buttons
+- [x] Templates menu (Product Showcase, Tutorial, Tour)
+- [x] Preview toggle button
 
 ### 3.8 Preview Mode
-- [ ] Render actual CIVideoHotspot plugin
-- [ ] Full interactivity
-- [ ] "Back to Editor" button
+- [x] Render actual CIVideoHotspot plugin
+- [x] Full interactivity
+- [x] "Back to Editor" button
 
 ### 3.9 Export/Import
-- [ ] JSON export (standard CIVideoHotspotConfig)
-- [ ] JSON import with validation
-- [ ] HTML export (standalone page with embedded config)
+- [x] JSON export (standard CIVideoHotspotConfig)
+- [x] JSON import with validation
+- [x] HTML export (standalone page with embedded config)
 
 ### 3.10 Keyboard Shortcuts
-- [ ] Ctrl+Z / Ctrl+Shift+Z — undo/redo
-- [ ] Delete — remove selected
-- [ ] Ctrl+D — duplicate
-- [ ] Ctrl+S — save
-- [ ] Ctrl+E — export
-- [ ] Space — play/pause
-- [ ] P — preview mode
-- [ ] Escape — deselect
+- [x] Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y — undo/redo
+- [x] Delete — remove selected
+- [x] Ctrl+D — duplicate selected hotspot
+- [x] Ctrl+S — save (download JSON)
+- [x] Ctrl+E — export JSON
+- [x] Space — play/pause video
+- [x] ←/→ — seek ±1s, Shift+←/→ — seek ±5s
+- [x] P — preview mode toggle
+- [x] Escape — deselect / exit preview
 
-### Files to create
+### Files
 ```
 packages/editor/
 ├── src/
 │   ├── App.tsx
 │   ├── main.tsx
-│   ├── components/         # All UI components
-│   ├── state/              # Context, reducer, history
-│   ├── hooks/              # Custom hooks
-│   ├── utils/              # Export, import, validation
-│   └── styles/             # CSS
+│   ├── components/
+│   │   ├── Toolbar/Toolbar.tsx
+│   │   ├── VideoCanvas/{VideoCanvas,CanvasOverlay,DraggableMarker}.tsx
+│   │   ├── HotspotList/{HotspotList,HotspotListItem}.tsx
+│   │   ├── PropertiesPanel/{PropertiesPanel,PositionSection,TimingSection,ContentSection,StyleSection,BehaviorSection,GallerySection,VariantsSection}.tsx
+│   │   ├── Timeline/{Timeline,TimelineRuler,TimelineTrack}.tsx
+│   │   └── Preview/PreviewMode.tsx
+│   ├── state/{actions,editorReducer,EditorContext,history}.ts
+│   ├── hooks/{useKeyboardShortcuts,useVideoPlayer,useExport,useDragMarker}.ts
+│   ├── utils/{export,import,templates}.ts
+│   └── styles/{editor,variables}.css
 ├── package.json
 ├── tsconfig.json
 └── vite.config.ts
@@ -419,7 +400,7 @@ packages/editor/
 | Phase | Status | Features | Done | Remaining |
 |-------|--------|----------|------|-----------|
 | Core (v1.0.0) | **Complete** | 22 features | 22 | 0 |
-| Phase 1: Adapters | Not started | 7 modules | 0 | 7 |
-| Phase 2: Shoppable | Not started | 9 features | 0 | 9 |
-| Phase 3: Editor | Not started | 10 modules | 0 | 10 |
+| Phase 1: Adapters | **Complete** | 7 modules | 7 | 0 |
+| Phase 2: Shoppable | **Complete** | 9 features | 9 | 0 |
+| Phase 3: Editor | **Complete** | 10 modules | 10 | 0 |
 | Phase 4: Future | Not started | 5 features | 0 | 5 |

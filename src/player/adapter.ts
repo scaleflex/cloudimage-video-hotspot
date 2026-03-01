@@ -4,7 +4,7 @@ import { EventEmitter } from '../utils/events';
 export type AdapterEvent =
   | 'play' | 'pause' | 'timeupdate' | 'durationchange'
   | 'ended' | 'loadedmetadata' | 'waiting' | 'playing'
-  | 'progress' | 'error';
+  | 'progress' | 'error' | 'volumechange' | 'ratechange';
 
 /** Options passed to every adapter constructor */
 export interface AdapterOptions {
@@ -24,7 +24,7 @@ export abstract class VideoPlayerAdapter extends EventEmitter {
   /** Insert the player element into the given container */
   abstract mount(container: HTMLElement): void;
 
-  abstract play(): void;
+  abstract play(): Promise<void>;
   abstract pause(): void;
   abstract seek(time: number): void;
   abstract getCurrentTime(): number;

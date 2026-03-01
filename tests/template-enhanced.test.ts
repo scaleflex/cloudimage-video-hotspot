@@ -2,6 +2,10 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderBuiltInTemplate, renderPopoverContent } from '../src/popover/template';
 import type { PopoverData, VideoHotspotItem } from '../src/core/types';
 
+const makeHotspot = (id = 'h1'): VideoHotspotItem => ({
+  id, x: 50, y: 50, startTime: 0, endTime: 10, label: 'Test',
+});
+
 describe('renderBuiltInTemplate (enhanced)', () => {
   it('renders basic title/price/image (backward compat)', () => {
     const data: PopoverData = {
@@ -44,7 +48,7 @@ describe('renderBuiltInTemplate (enhanced)', () => {
 
   it('renders wishlist button', () => {
     const cleanups: (() => void)[] = [];
-    const el = renderBuiltInTemplate({ wishlist: true }, cleanups, 'h1');
+    const el = renderBuiltInTemplate({ wishlist: true }, cleanups, makeHotspot());
     expect(el.querySelector('.ci-video-hotspot-wishlist')).not.toBeNull();
   });
 
@@ -106,6 +110,21 @@ describe('renderBuiltInTemplate (enhanced)', () => {
     expect(cta?.tagName).toBe('BUTTON');
   });
 
+  it('renders secondary CTA with onClick', () => {
+    const onClick = vi.fn();
+    const hotspot = makeHotspot();
+    const cleanups: (() => void)[] = [];
+    const el = renderBuiltInTemplate(
+      { secondaryCta: { text: 'Quick View', onClick } },
+      cleanups,
+      hotspot,
+    );
+    const cta = el.querySelector('.ci-video-hotspot-secondary-cta') as HTMLButtonElement;
+    expect(cta.tagName).toBe('BUTTON');
+    cta.click();
+    expect(onClick).toHaveBeenCalledWith(hotspot);
+  });
+
   it('renders primary CTA as link for url', () => {
     const el = renderBuiltInTemplate({
       url: 'https://example.com',
@@ -116,13 +135,14 @@ describe('renderBuiltInTemplate (enhanced)', () => {
     expect(cta.textContent).toBe('Shop Now');
   });
 
-  it('renders add-to-cart CTA button for onAddToCart', () => {
+  it('renders add-to-cart CTA button with hotspot and quantity', () => {
     const onAddToCart = vi.fn();
+    const hotspot = makeHotspot();
     const cleanups: (() => void)[] = [];
     const el = renderBuiltInTemplate(
       { title: 'Shirt', price: '$20', onAddToCart, sku: 'SKU-001' },
       cleanups,
-      'h1',
+      hotspot,
     );
 
     const cta = el.querySelector('.ci-video-hotspot-popover-cta') as HTMLButtonElement;
@@ -131,7 +151,8 @@ describe('renderBuiltInTemplate (enhanced)', () => {
 
     cta.click();
     expect(onAddToCart).toHaveBeenCalledTimes(1);
-    expect(onAddToCart.mock.calls[0][0].hotspotId).toBe('h1');
+    expect(onAddToCart.mock.calls[0][0].hotspot).toBe(hotspot);
+    expect(onAddToCart.mock.calls[0][0].quantity).toBe(1);
     expect(onAddToCart.mock.calls[0][0].sku).toBe('SKU-001');
     expect(onAddToCart.mock.calls[0][0].title).toBe('Shirt');
     expect(onAddToCart.mock.calls[0][0].price).toBe('$20');

@@ -65,6 +65,34 @@ describe('HTML5Adapter', () => {
     expect(handler).toHaveBeenCalled();
   });
 
+  it('emits volumechange event', () => {
+    const handler = vi.fn();
+    adapter.on('volumechange', handler);
+
+    const video = adapter.getElement() as HTMLVideoElement;
+    video.dispatchEvent(new Event('volumechange'));
+
+    expect(handler).toHaveBeenCalled();
+  });
+
+  it('emits ratechange event', () => {
+    const handler = vi.fn();
+    adapter.on('ratechange', handler);
+
+    const video = adapter.getElement() as HTMLVideoElement;
+    video.dispatchEvent(new Event('ratechange'));
+
+    expect(handler).toHaveBeenCalled();
+  });
+
+  it('play() returns a promise', () => {
+    // Mock play() since jsdom doesn't implement HTMLMediaElement.prototype.play
+    const video = adapter.getElement() as HTMLVideoElement;
+    video.play = vi.fn().mockResolvedValue(undefined);
+    const result = adapter.play();
+    expect(result).toBeInstanceOf(Promise);
+  });
+
   it('reports ready = false initially', () => {
     expect(adapter.ready).toBe(false);
   });

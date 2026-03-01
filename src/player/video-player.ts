@@ -72,8 +72,8 @@ export class VideoPlayer {
     this.adapter.mount(container);
   }
 
-  play(): void {
-    this.adapter.play();
+  play(): Promise<void> {
+    return this.adapter.play();
   }
 
   pause(): void {

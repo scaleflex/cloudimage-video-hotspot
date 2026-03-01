@@ -1,5 +1,6 @@
 export interface GalleryResult {
   element: HTMLElement;
+  setMainImage(src: string): void;
 }
 
 const ARROW_LEFT = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
@@ -192,5 +193,13 @@ export function createGallery(
   // Initial state
   updateControls();
 
-  return { element: container };
+  function setMainImage(src: string): void {
+    const firstSlide = track.querySelector('.ci-video-hotspot-gallery-slide img') as HTMLImageElement | null;
+    if (firstSlide) {
+      firstSlide.src = src;
+    }
+    goTo(0);
+  }
+
+  return { element: container, setMainImage };
 }

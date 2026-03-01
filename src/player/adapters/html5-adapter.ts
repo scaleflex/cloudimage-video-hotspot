@@ -83,6 +83,14 @@ export class HTML5Adapter extends VideoPlayerAdapter {
     this.cleanups.push(addListener(this.videoEl, 'progress', () => {
       this.emit('progress');
     }));
+
+    this.cleanups.push(addListener(this.videoEl, 'volumechange', () => {
+      this.emit('volumechange');
+    }));
+
+    this.cleanups.push(addListener(this.videoEl, 'ratechange', () => {
+      this.emit('ratechange');
+    }));
   }
 
   mount(container: HTMLElement): void {
@@ -93,8 +101,8 @@ export class HTML5Adapter extends VideoPlayerAdapter {
     return this._ready;
   }
 
-  play(): void {
-    this.videoEl.play().catch(() => {});
+  play(): Promise<void> {
+    return this.videoEl.play().catch(() => {});
   }
 
   pause(): void {

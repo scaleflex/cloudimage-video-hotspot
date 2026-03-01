@@ -1,4 +1,4 @@
-import type { ProductVariant } from '../../core/types';
+import type { ProductVariant, VideoHotspotItem } from '../../core/types';
 
 export interface VariantsResult {
   element: HTMLElement;
@@ -8,10 +8,11 @@ export interface VariantsResult {
 /** Create variant selector (pills + color swatches). Returns null if no variants. */
 export function createVariants(
   variants: ProductVariant[] | undefined,
-  hotspotId: string,
+  hotspot: VideoHotspotItem | null,
   priceEl: HTMLElement | null,
-  onSelect: ((variant: ProductVariant, allSelected: ProductVariant[], hotspotId: string) => void) | undefined,
+  onSelect: ((variant: ProductVariant, allSelected: ProductVariant[], hotspot: VideoHotspotItem) => void) | undefined,
   cleanups: (() => void)[],
+  galleryUpdateFn: ((imageUrl: string) => void) | null = null,
 ): VariantsResult | null {
   if (!variants || variants.length === 0) return null;
 
@@ -95,7 +96,12 @@ export function createVariants(
           priceEl.textContent = variant.price;
         }
 
-        onSelect?.(variant, Array.from(selected.values()), hotspotId);
+        // Update gallery image if variant has image
+        if (variant.image && galleryUpdateFn) {
+          galleryUpdateFn(variant.image);
+        }
+
+        if (hotspot) onSelect?.(variant, Array.from(selected.values()), hotspot);
       };
 
       btn.addEventListener('click', onClick);

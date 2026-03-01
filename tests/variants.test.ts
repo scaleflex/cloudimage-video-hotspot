@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { createVariants } from '../src/popover/components/variants';
-import type { ProductVariant } from '../src/core/types';
+import type { ProductVariant, VideoHotspotItem } from '../src/core/types';
+
+const makeHotspot = (id = 'h1'): VideoHotspotItem => ({
+  id, x: 50, y: 50, startTime: 0, endTime: 10, label: 'Test',
+});
 
 describe('createVariants', () => {
   const sizeVariants: ProductVariant[] = [
@@ -16,16 +20,16 @@ describe('createVariants', () => {
   ];
 
   it('returns null for undefined variants', () => {
-    expect(createVariants(undefined, 'h1', null, undefined, [])).toBeNull();
+    expect(createVariants(undefined, makeHotspot(), null, undefined, [])).toBeNull();
   });
 
   it('returns null for empty variants', () => {
-    expect(createVariants([], 'h1', null, undefined, [])).toBeNull();
+    expect(createVariants([], makeHotspot(), null, undefined, [])).toBeNull();
   });
 
   it('renders size pills', () => {
     const cleanups: (() => void)[] = [];
-    const result = createVariants(sizeVariants, 'h1', null, undefined, cleanups);
+    const result = createVariants(sizeVariants, makeHotspot(), null, undefined, cleanups);
     expect(result).not.toBeNull();
 
     const pills = result!.element.querySelectorAll('.ci-video-hotspot-variant-pill');
@@ -34,7 +38,7 @@ describe('createVariants', () => {
 
   it('renders color swatches', () => {
     const cleanups: (() => void)[] = [];
-    const result = createVariants(colorVariants, 'h1', null, undefined, cleanups);
+    const result = createVariants(colorVariants, makeHotspot(), null, undefined, cleanups);
 
     const swatches = result!.element.querySelectorAll('.ci-video-hotspot-variant-swatch');
     expect(swatches.length).toBe(2);
@@ -42,7 +46,7 @@ describe('createVariants', () => {
 
   it('marks selected variant', () => {
     const cleanups: (() => void)[] = [];
-    const result = createVariants(sizeVariants, 'h1', null, undefined, cleanups);
+    const result = createVariants(sizeVariants, makeHotspot(), null, undefined, cleanups);
 
     const selected = result!.element.querySelectorAll('.ci-video-hotspot-variant--selected');
     expect(selected.length).toBe(1);
@@ -51,7 +55,7 @@ describe('createVariants', () => {
 
   it('marks disabled variant', () => {
     const cleanups: (() => void)[] = [];
-    const result = createVariants(sizeVariants, 'h1', null, undefined, cleanups);
+    const result = createVariants(sizeVariants, makeHotspot(), null, undefined, cleanups);
 
     const disabled = result!.element.querySelectorAll('.ci-video-hotspot-variant--disabled');
     expect(disabled.length).toBe(1);
@@ -60,7 +64,7 @@ describe('createVariants', () => {
 
   it('clicking a pill selects it and deselects others', () => {
     const cleanups: (() => void)[] = [];
-    const result = createVariants(sizeVariants, 'h1', null, undefined, cleanups);
+    const result = createVariants(sizeVariants, makeHotspot(), null, undefined, cleanups);
 
     const pills = result!.element.querySelectorAll('.ci-video-hotspot-variant-pill');
     // Click 'S' (index 0)
@@ -72,17 +76,18 @@ describe('createVariants', () => {
     expect(pills[1].getAttribute('aria-checked')).toBe('false');
   });
 
-  it('calls onSelect callback', () => {
+  it('calls onSelect callback with hotspot object', () => {
     const onSelect = vi.fn();
+    const hotspot = makeHotspot();
     const cleanups: (() => void)[] = [];
-    const result = createVariants(sizeVariants, 'h1', null, onSelect, cleanups);
+    const result = createVariants(sizeVariants, hotspot, null, onSelect, cleanups);
 
     const pills = result!.element.querySelectorAll('.ci-video-hotspot-variant-pill');
     (pills[2] as HTMLElement).click();
 
     expect(onSelect).toHaveBeenCalledTimes(1);
     expect(onSelect.mock.calls[0][0].id).toBe('l');
-    expect(onSelect.mock.calls[0][2]).toBe('h1');
+    expect(onSelect.mock.calls[0][2]).toBe(hotspot);
   });
 
   it('updates price element when variant has price', () => {
@@ -94,7 +99,7 @@ describe('createVariants', () => {
     priceEl.textContent = '$29';
 
     const cleanups: (() => void)[] = [];
-    const result = createVariants(variants, 'h1', priceEl, undefined, cleanups);
+    const result = createVariants(variants, makeHotspot(), priceEl, undefined, cleanups);
 
     const pills = result!.element.querySelectorAll('.ci-video-hotspot-variant-pill');
     (pills[1] as HTMLElement).click();
@@ -102,10 +107,25 @@ describe('createVariants', () => {
     expect(priceEl.textContent).toBe('$39');
   });
 
+  it('calls galleryUpdateFn when variant has image', () => {
+    const galleryFn = vi.fn();
+    const variants: ProductVariant[] = [
+      { id: 'a', type: 'color', label: 'Red', color: '#f00', image: 'red.jpg' },
+      { id: 'b', type: 'color', label: 'Blue', color: '#00f', image: 'blue.jpg' },
+    ];
+    const cleanups: (() => void)[] = [];
+    const result = createVariants(variants, makeHotspot(), null, undefined, cleanups, galleryFn);
+
+    const swatches = result!.element.querySelectorAll('.ci-video-hotspot-variant-swatch');
+    (swatches[1] as HTMLElement).click();
+
+    expect(galleryFn).toHaveBeenCalledWith('blue.jpg');
+  });
+
   it('getSelected returns currently selected variants', () => {
     const cleanups: (() => void)[] = [];
     const allVariants = [...sizeVariants, ...colorVariants];
-    const result = createVariants(allVariants, 'h1', null, undefined, cleanups);
+    const result = createVariants(allVariants, makeHotspot(), null, undefined, cleanups);
 
     const selected = result!.getSelected();
     expect(selected.length).toBe(2);
@@ -115,7 +135,7 @@ describe('createVariants', () => {
 
   it('uses role=radiogroup with aria-label', () => {
     const cleanups: (() => void)[] = [];
-    const result = createVariants(sizeVariants, 'h1', null, undefined, cleanups);
+    const result = createVariants(sizeVariants, makeHotspot(), null, undefined, cleanups);
 
     const group = result!.element.querySelector('[role="radiogroup"]');
     expect(group).not.toBeNull();
@@ -124,7 +144,7 @@ describe('createVariants', () => {
 
   it('pushes cleanups for each button', () => {
     const cleanups: (() => void)[] = [];
-    createVariants(sizeVariants, 'h1', null, undefined, cleanups);
+    createVariants(sizeVariants, makeHotspot(), null, undefined, cleanups);
     expect(cleanups.length).toBe(sizeVariants.length);
   });
 });

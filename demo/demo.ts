@@ -71,7 +71,88 @@ new CIVideoHotspot('#demo-shoppable', {
   },
 });
 
-// === 2. Keyframe Motion Demo ===
+// === 2. Enhanced Shoppable Demo (Phase 2) ===
+const countdownDate = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString();
+new CIVideoHotspot('#demo-enhanced', {
+  src: SAMPLE_VIDEO,
+  trigger: 'click',
+  pauseOnInteract: true,
+  hotspotNavigation: true,
+  timelineIndicators: 'dot',
+  hotspots: [
+    {
+      id: 'enhanced-product',
+      x: '45%',
+      y: '40%',
+      startTime: 3,
+      endTime: 30,
+      label: 'Premium Sneakers',
+      animation: 'scale',
+      data: {
+        title: 'Premium Running Sneakers',
+        price: '$129.99',
+        originalPrice: '$179.99',
+        badge: '-28%',
+        description: 'Lightweight performance sneakers with responsive cushioning and breathable mesh upper.',
+        images: [
+          'https://picsum.photos/320/180?random=10',
+          'https://picsum.photos/320/180?random=11',
+          'https://picsum.photos/320/180?random=12',
+          'https://picsum.photos/320/180?random=13',
+        ],
+        rating: 4.5,
+        reviewCount: 238,
+        wishlist: true,
+        wishlisted: false,
+        variants: [
+          { id: 's7', type: 'size', label: '7', available: true },
+          { id: 's8', type: 'size', label: '8', available: true, selected: true },
+          { id: 's9', type: 'size', label: '9', available: true },
+          { id: 's10', type: 'size', label: '10', available: true },
+          { id: 's11', type: 'size', label: '11', available: false },
+          { id: 'c-black', type: 'color', label: 'Black', color: '#1a1a1a', selected: true },
+          { id: 'c-white', type: 'color', label: 'White', color: '#ffffff' },
+          { id: 'c-red', type: 'color', label: 'Red', color: '#e53e3e' },
+        ],
+        countdown: countdownDate,
+        countdownLabel: 'Sale ends in',
+        customFields: [
+          { label: 'Material', value: 'Mesh / Synthetic' },
+          { label: 'Weight', value: '280g' },
+          { label: 'Drop', value: '8mm' },
+        ],
+        sku: 'SNK-RUN-001',
+        ctaText: 'Add to Cart',
+        secondaryCta: {
+          text: 'Quick View',
+          onClick: (hotspot) => {
+            console.log('Secondary CTA clicked for:', hotspot.id);
+          },
+        },
+        onAddToCart: (event) => {
+          console.log('Add to Cart:', event);
+          console.log('  Hotspot:', event.hotspot.id);
+          console.log('  Quantity:', event.quantity);
+          console.log('  SKU:', event.sku);
+          console.log('  Price:', event.price);
+          console.log('  Selected Variants:', event.selectedVariants.map(v => `${v.type}: ${v.label}`).join(', '));
+        },
+        onWishlistToggle: (wishlisted, hotspot) => {
+          console.log(`Wishlist ${wishlisted ? 'added' : 'removed'}: ${hotspot.id}`);
+        },
+        onVariantSelect: (variant, allSelected, hotspot) => {
+          console.log(`Variant selected on ${hotspot.id}: ${variant.type} = ${variant.label}`);
+          console.log('  All selected:', allSelected.map(v => `${v.type}: ${v.label}`).join(', '));
+        },
+      },
+    },
+  ],
+  onHotspotShow(hotspot) {
+    console.log('[Enhanced] Hotspot appeared:', hotspot.id);
+  },
+});
+
+// === 3. Keyframe Motion Demo ===
 new CIVideoHotspot('#demo-keyframes', {
   src: SAMPLE_VIDEO,
   trigger: 'click',
@@ -114,7 +195,7 @@ new CIVideoHotspot('#demo-keyframes', {
   ],
 });
 
-// === 3. Chapters Demo ===
+// === 4. Chapters Demo ===
 new CIVideoHotspot('#demo-chapters', {
   src: SAMPLE_VIDEO,
   trigger: 'click',
@@ -160,7 +241,7 @@ new CIVideoHotspot('#demo-chapters', {
   ],
 });
 
-// === 4. Dark Theme ===
+// === 5. Dark Theme ===
 new CIVideoHotspot('#demo-dark', {
   src: SAMPLE_VIDEO,
   theme: 'dark',
@@ -182,7 +263,7 @@ new CIVideoHotspot('#demo-dark', {
   ],
 });
 
-// === 5. HLS Stream Demo ===
+// === 6. HLS Stream Demo ===
 // Requires: npm i hls.js (peer dependency)
 // Uses auto-detection via .m3u8 extension
 new CIVideoHotspot('#demo-hls', {
@@ -206,7 +287,7 @@ new CIVideoHotspot('#demo-hls', {
   ],
 });
 
-// === 6. YouTube Demo ===
+// === 7. YouTube Demo ===
 // No dependencies needed — YouTube IFrame API is loaded dynamically
 new CIVideoHotspot('#demo-youtube', {
   src: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -229,7 +310,7 @@ new CIVideoHotspot('#demo-youtube', {
   ],
 });
 
-// === 7. Vimeo Demo ===
+// === 8. Vimeo Demo ===
 // Requires: npm i @vimeo/player (peer dependency) or loads from CDN
 new CIVideoHotspot('#demo-vimeo', {
   src: 'https://vimeo.com/76979871',
@@ -252,5 +333,5 @@ new CIVideoHotspot('#demo-vimeo', {
   ],
 });
 
-// === 8. Auto-Init ===
+// === 9. Auto-Init ===
 CIVideoHotspot.autoInit();

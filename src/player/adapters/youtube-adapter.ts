@@ -122,7 +122,7 @@ export class YouTubeAdapter extends VideoPlayerAdapter {
 
   get ready(): boolean { return this._ready; }
 
-  play(): void { this.ytPlayer?.playVideo(); }
+  play(): Promise<void> { this.ytPlayer?.playVideo(); return Promise.resolve(); }
   pause(): void { this.ytPlayer?.pauseVideo(); }
 
   seek(time: number): void {
@@ -140,6 +140,7 @@ export class YouTubeAdapter extends VideoPlayerAdapter {
 
   setVolume(level: number): void {
     this.ytPlayer?.setVolume(Math.max(0, Math.min(1, level)) * 100);
+    this.emit('volumechange');
   }
 
   getVolume(): number {
@@ -148,6 +149,7 @@ export class YouTubeAdapter extends VideoPlayerAdapter {
 
   setMuted(muted: boolean): void {
     muted ? this.ytPlayer?.mute() : this.ytPlayer?.unMute();
+    this.emit('volumechange');
   }
 
   isMuted(): boolean {
@@ -156,6 +158,7 @@ export class YouTubeAdapter extends VideoPlayerAdapter {
 
   setPlaybackRate(rate: number): void {
     this.ytPlayer?.setPlaybackRate(rate);
+    this.emit('ratechange');
   }
 
   getPlaybackRate(): number {
