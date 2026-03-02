@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       input: {
         main: resolve(__dirname, '../demo/index.html'),
+        editor: resolve(__dirname, '../demo/editor.html'),
       },
     },
   },

@@ -41,6 +41,10 @@ export abstract class VideoPlayerAdapter extends EventEmitter {
   /** Return the root element (video or wrapper div) */
   abstract getElement(): HTMLElement;
 
+  /** Return the underlying HTMLVideoElement, if available.
+   *  Returns null for iframe-based adapters (YouTube, Vimeo). */
+  getVideoElement(): HTMLVideoElement | null { return null; }
+
   abstract destroy(): void;
 
   get ready(): boolean { return false; }

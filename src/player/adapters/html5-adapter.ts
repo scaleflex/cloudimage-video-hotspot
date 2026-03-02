@@ -160,6 +160,10 @@ export class HTML5Adapter extends VideoPlayerAdapter {
     return this.videoEl;
   }
 
+  getVideoElement(): HTMLVideoElement {
+    return this.videoEl;
+  }
+
   destroy(): void {
     this.cleanups.forEach((fn) => fn());
     this.cleanups = [];

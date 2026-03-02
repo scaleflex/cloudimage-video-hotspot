@@ -621,6 +621,11 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     return this.player.getPlaybackRate();
   }
 
+  /** Return the underlying HTMLVideoElement, if available (null for YouTube/Vimeo). */
+  getVideoElement(): HTMLVideoElement | null {
+    return this.player.getVideoElement();
+  }
+
   // === Public API: Hotspot Management ===
 
   open(id: string): void {

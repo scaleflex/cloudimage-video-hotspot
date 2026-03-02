@@ -212,6 +212,15 @@ export interface VideoHotspotItem {
 
   /** Chapter ID this hotspot belongs to (for grouping) */
   chapterId?: string;
+
+  /** Metadata about object tracking (editor-only) */
+  trackingMeta?: {
+    source: 'browser' | 'import';
+    algorithm: string;
+    avgConfidence: number;
+    region?: { x: number; y: number; width: number; height: number };
+    trackedAt: string;
+  };
 }
 
 /** Main library configuration */

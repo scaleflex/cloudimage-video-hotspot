@@ -132,6 +132,10 @@ export class VideoPlayer {
     return this.adapter.getBufferedEnd();
   }
 
+  getVideoElement(): HTMLVideoElement | null {
+    return this.adapter.getVideoElement();
+  }
+
   destroy(): void {
     this.adapter.destroy();
   }
