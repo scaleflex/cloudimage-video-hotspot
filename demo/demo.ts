@@ -1,12 +1,12 @@
 import CIVideoHotspot from '../src/index';
+import './editor-demo';
 import { initConfigurator } from './configurator';
 
-const DEMO_VIDEO = './3250231-uhd_3840_2160_25fps.mp4';
+// ──────────────────── Viewer (standalone player with hotspots) ────────────────────
 const HERO_VIDEO = './Rest room.mp4';
 const HERO_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-// ──────────────────── Hero ────────────────────
-const heroHotspots = [
+const viewerHotspots = [
   {
     id: 'hotspot-4',
     x: '48.47%',
@@ -96,33 +96,36 @@ const heroHotspots = [
   },
 ];
 
-const heroViewer = new CIVideoHotspot('#hero-viewer', {
-  src: HERO_VIDEO,
-  autoplay: true,
-  loop: true,
-  trigger: 'hover',
-  pauseOnInteract: true,
-  hotspotNavigation: false,
-  timelineIndicators: 'none',
-  hotspots: heroHotspots,
-  onReady: () => {
-    const bar = document.querySelector('#hero-viewer .ci-video-hotspot-progress-bar') as HTMLElement | null;
-    if (!bar) return;
-    const duration = heroViewer.getDuration() || 60;
-    heroHotspots.forEach((h, i) => {
-      const dot = document.createElement('div');
-      dot.className = 'timeline-start-dot';
-      dot.style.left = `${(h.startTime / duration) * 100}%`;
-      dot.style.backgroundColor = HERO_COLORS[i % HERO_COLORS.length];
-      dot.title = h.label;
-      dot.addEventListener('click', (e) => {
-        e.stopPropagation();
-        heroViewer.goToHotspot(h.id);
+const heroEl = document.getElementById('hero-viewer');
+if (heroEl) {
+  const heroViewer = new CIVideoHotspot(heroEl, {
+    src: HERO_VIDEO,
+    autoplay: true,
+    loop: true,
+    trigger: 'hover',
+    pauseOnInteract: true,
+    hotspotNavigation: false,
+    timelineIndicators: 'none',
+    hotspots: viewerHotspots,
+    onReady: () => {
+      const bar = heroEl.querySelector('.ci-video-hotspot-progress-bar') as HTMLElement | null;
+      if (!bar) return;
+      const duration = heroViewer.getDuration() || 60;
+      viewerHotspots.forEach((h, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'timeline-start-dot';
+        dot.style.left = `${(h.startTime / duration) * 100}%`;
+        dot.style.backgroundColor = HERO_COLORS[i % HERO_COLORS.length];
+        dot.title = h.label;
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          heroViewer.goToHotspot(h.id);
+        });
+        bar.appendChild(dot);
       });
-      bar.appendChild(dot);
-    });
-  },
-});
+    },
+  });
+}
 
 /*
 // ──────────────────── Features ────────────────────
@@ -324,6 +327,27 @@ document.getElementById('api-prev')?.addEventListener('click', () => {
   apiPlayer.prevHotspot();
 });
 */
+
+// ──────────────────── Hero toggle (Editor ↔ Viewer) ────────────────────
+const heroToggle = document.getElementById('hero-toggle');
+if (heroToggle) {
+  const btns = heroToggle.querySelectorAll<HTMLButtonElement>('.demo-hero-toggle-btn');
+  const variants: Record<string, HTMLElement | null> = {
+    editor: document.getElementById('hero-variant-editor'),
+    viewer: document.getElementById('hero-variant-viewer'),
+  };
+
+  btns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const variant = btn.dataset.variant;
+      if (!variant) return;
+      btns.forEach((b) => b.classList.toggle('demo-hero-toggle-btn--active', b === btn));
+      Object.entries(variants).forEach(([key, el]) => {
+        el?.classList.toggle('demo-hero-variant--active', key === variant);
+      });
+    });
+  });
+}
 
 // ──────────────────── Configurator ────────────────────
 initConfigurator();

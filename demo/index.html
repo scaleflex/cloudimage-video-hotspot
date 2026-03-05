@@ -55,7 +55,69 @@
             GitHub
           </a>
         </div>
-        <div id="hero-viewer" class="demo-viewer demo-viewer--hero"></div>
+        <div class="demo-hero-showcase">
+          <!-- Side toggle -->
+          <div class="demo-hero-toggle" id="hero-toggle">
+            <button class="demo-hero-toggle-btn demo-hero-toggle-btn--active" data-variant="editor" title="Visual Editor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span>Editor</span>
+            </button>
+            <button class="demo-hero-toggle-btn" data-variant="viewer" title="Video Player">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Player</span>
+            </button>
+          </div>
+          <!-- Editor variant -->
+          <div class="demo-hero-variant demo-hero-variant--active" id="hero-variant-editor">
+            <div id="editor-root" class="demo-viewer demo-viewer--hero">
+              <div class="app" id="app">
+                <div class="app-top-bar app-top-bar--hidden" id="app-top-bar">
+                  <div class="app-mode-toggle" id="mode-toggle-bar">
+                    <button class="mode-btn" data-mode="view">View</button>
+                    <button class="mode-btn mode-btn--active" data-mode="editor">Editor</button>
+                  </div>
+                  <div class="app-video-url" id="video-url-bar">
+                    <input type="text" id="video-url-input" placeholder="Video URL (mp4, webm, m3u8, YouTube, Vimeo...)" spellcheck="false">
+                    <button class="app-video-url-btn" id="video-url-load">Load</button>
+                  </div>
+                  <div class="app-editor-toolbar" id="editor-toolbar">
+                    <label class="toolbar-load-btn">
+                      <input type="file" id="toolbar-import-file" accept=".json" hidden>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      Import
+                    </label>
+                    <button class="toolbar-btn" id="toolbar-export">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      Export
+                    </button>
+                    <button class="toolbar-btn" id="toolbar-copy">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      Copy JSON
+                    </button>
+                  </div>
+                </div>
+                <div class="app-main">
+                  <div class="app-video-area" id="video-area">
+                    <div class="app-mode-toggle app-mode-toggle--overlay" id="mode-toggle-overlay">
+                      <button class="mode-btn mode-btn--active" data-mode="view">View</button>
+                      <button class="mode-btn" data-mode="editor">Editor</button>
+                    </div>
+                    <div id="video-viewer"></div>
+                  </div>
+                  <aside class="app-sidebar" id="sidebar"></aside>
+                </div>
+              </div>
+            </div>
+            <!-- Card editor modal -->
+            <div class="card-editor-overlay" id="card-editor-overlay">
+              <div class="card-editor-modal" id="card-editor-modal"></div>
+            </div>
+          </div>
+          <!-- Viewer variant -->
+          <div class="demo-hero-variant" id="hero-variant-viewer">
+            <div id="hero-viewer" class="demo-viewer demo-viewer--hero"></div>
+          </div>
+        </div>
         <div class="demo-hero-meta">
           <span>&lt;20 KB gzipped</span>
           <span>Zero dependencies</span>
@@ -65,8 +127,6 @@
         </div>
       </div>
     </section>
-
-    <!-- Getting Started, Features, Themes, API sections commented out (see demo.ts) -->
 
     <!-- Interactive Configurator -->
     <section id="configurator" class="demo-section demo-section--alt">
