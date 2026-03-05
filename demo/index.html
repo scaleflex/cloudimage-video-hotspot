@@ -20,12 +20,9 @@
       </a>
       <div class="demo-nav-links">
         <a href="#hero" class="active">Demo</a>
-        <a href="#getting-started">Install</a>
-        <a href="#features">Features</a>
-        <a href="#themes">Themes</a>
+        <a href="#motion-types">Motion</a>
         <a href="#players">Players</a>
-        <a href="#advanced">Advanced</a>
-        <a href="#api">API</a>
+        <a href="#getting-started">Install</a>
         <a href="#configurator">Configurator</a>
         <a href="./editor.html">Visual Editor</a>
       </div>
@@ -124,6 +121,244 @@
           <span>TypeScript</span>
           <span>WCAG 2.1 AA</span>
           <span>React ready</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Motion Types -->
+    <section id="motion-types" class="demo-section">
+      <div class="demo-section-inner">
+        <div class="demo-section-header">
+          <div class="demo-section-label">Motion Types</div>
+          <h2>Hotspot <span class="demo-gradient-text">Motion</span></h2>
+          <p>Four interpolation modes let hotspots stay still, glide in a line, or follow any curved path you define.</p>
+        </div>
+
+        <!-- Row 1: Static -->
+        <div class="demo-feature-row demo-reveal">
+          <div class="demo-feature-video demo-card">
+            <div id="motion-static" class="demo-viewer"></div>
+          </div>
+          <div class="demo-feature-content">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" opacity="0.4"/></svg>
+              </div>
+              <div class="demo-feature-title">Static</div>
+            </div>
+            <p class="demo-feature-desc">The hotspot stays at a fixed position for its entire lifetime. No keyframes needed — just set <code>x</code> and <code>y</code> and let the pulsing dot draw attention.</p>
+          </div>
+        </div>
+
+        <!-- Row 2: Linear (reversed) -->
+        <div class="demo-feature-row demo-feature-row--reverse demo-reveal">
+          <div class="demo-feature-video demo-card">
+            <div id="motion-linear" class="demo-viewer"></div>
+            <svg class="demo-feature-trajectory" id="trajectory-linear"></svg>
+          </div>
+          <div class="demo-feature-content">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+              <div class="demo-feature-title">Linear</div>
+            </div>
+            <p class="demo-feature-desc">Two keyframes connected by straight-line interpolation. The hotspot moves smoothly from left to right at constant speed.</p>
+            <div class="demo-code-wrap">
+              <pre><code class="language-javascript">interpolation: 'linear'</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Curved Path -->
+        <div class="demo-feature-row demo-reveal">
+          <div class="demo-feature-video demo-card">
+            <div id="motion-curved" class="demo-viewer"></div>
+            <svg class="demo-feature-trajectory" id="trajectory-curved"></svg>
+          </div>
+          <div class="demo-feature-content">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3.333-6 6.667-10 10-10s6.667 4 10 10"/></svg>
+              </div>
+              <div class="demo-feature-title">Curved Path</div>
+            </div>
+            <p class="demo-feature-desc">Three keyframes with Catmull-Rom spline interpolation create a smooth V-shaped arc. The hotspot follows a natural curved trajectory.</p>
+            <div class="demo-code-wrap">
+              <pre><code class="language-javascript">interpolation: 'catmull-rom'</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 4: Complex Path (reversed) -->
+        <div class="demo-feature-row demo-feature-row--reverse demo-reveal">
+          <div class="demo-feature-video demo-card">
+            <div id="motion-complex" class="demo-viewer"></div>
+            <svg class="demo-feature-trajectory" id="trajectory-complex"></svg>
+          </div>
+          <div class="demo-feature-content">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20c4-8 8 4 12-4s4-12 8-4"/></svg>
+              </div>
+              <div class="demo-feature-title">Complex Path</div>
+            </div>
+            <p class="demo-feature-desc">Four or more keyframes trace an S-curve through the scene. Catmull-Rom interpolation ensures the motion feels fluid and organic.</p>
+            <div class="demo-code-wrap">
+              <pre><code class="language-javascript">interpolation: 'catmull-rom'</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Players / Video Sources -->
+    <section id="players" class="demo-section demo-section--alt">
+      <div class="demo-section-inner">
+        <div class="demo-section-header">
+          <div class="demo-section-label">Video Sources</div>
+          <h2>Works with any <span class="demo-gradient-text">player</span></h2>
+          <p>One API, every video format. Native HTML5, adaptive streaming, and embedded players &mdash; all with full hotspot support.</p>
+        </div>
+        <div class="demo-grid demo-grid--4 demo-reveal">
+          <!-- HTML5 -->
+          <div class="demo-card demo-player-card">
+            <div class="demo-player-logo">
+              <svg viewBox="0 0 120 120" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="100" height="100" rx="20" fill="#E44D26" opacity="0.12"/>
+                <path d="M35 30l5 55 20 8 20-8 5-55H35z" fill="#E44D26"/>
+                <path d="M60 35v53l16-6 4-47H60z" fill="#F16529"/>
+                <path d="M46 45h28l-1 12H53l1 10h18l-1 14-11 4-11-4-1-8h6l1 4 5 2 5-2 1-6H47l-2-22h30l1-8H44l-1 0z" fill="#fff"/>
+              </svg>
+            </div>
+            <h3 class="demo-player-name">HTML5 Video</h3>
+            <p class="demo-player-desc">MP4, WebM — native browser playback with zero overhead.</p>
+            <code class="demo-player-hint">playerType: 'html5'</code>
+          </div>
+          <!-- YouTube -->
+          <div class="demo-card demo-player-card">
+            <div class="demo-player-logo">
+              <svg viewBox="0 0 120 120" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="100" height="100" rx="20" fill="#FF0000" opacity="0.12"/>
+                <rect x="25" y="38" width="70" height="44" rx="12" fill="#FF0000"/>
+                <polygon points="52,48 52,72 72,60" fill="#fff"/>
+              </svg>
+            </div>
+            <h3 class="demo-player-name">YouTube</h3>
+            <p class="demo-player-desc">Embed any YouTube video and layer interactive hotspots on top.</p>
+            <code class="demo-player-hint">playerType: 'youtube'</code>
+          </div>
+          <!-- Vimeo -->
+          <div class="demo-card demo-player-card">
+            <div class="demo-player-logo">
+              <svg viewBox="0 0 120 120" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="100" height="100" rx="20" fill="#1AB7EA" opacity="0.12"/>
+                <path d="M85 48c-.3 6.5-4.8 15.4-13.6 26.6C62 86.2 54.3 92 48 92c-3.9 0-7.2-3.6-9.9-10.8l-5.4-19.8C30.6 54.2 28.3 50.6 25.8 50.6c-.5 0-2.1 1-5 3l-3-3.8c3.1-2.8 6.2-5.5 9.3-8.3 4.2-3.6 7.3-5.5 9.4-5.7 4.9-.5 8 2.9 9.2 10.2 1.3 7.9 2.2 12.8 2.7 14.7 1.5 6.8 3.1 10.2 4.9 10.2 1.4 0 3.5-2.2 6.2-6.5 2.8-4.4 4.3-7.7 4.5-9.9.4-3.7-1.1-5.5-4.4-5.5-1.6 0-3.2.4-4.9 1.1 3.3-10.7 9.5-15.9 18.6-15.6 6.8.2 10 4.6 9.6 13.3z" fill="#1AB7EA"/>
+              </svg>
+            </div>
+            <h3 class="demo-player-name">Vimeo</h3>
+            <p class="demo-player-desc">Professional Vimeo embeds with full hotspot integration.</p>
+            <code class="demo-player-hint">playerType: 'vimeo'</code>
+          </div>
+          <!-- HLS -->
+          <div class="demo-card demo-player-card">
+            <div class="demo-player-logo">
+              <svg viewBox="0 0 120 120" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="100" height="100" rx="20" fill="url(#hls-grad)" opacity="0.12"/>
+                <g transform="translate(30,35)">
+                  <rect x="0" y="8" width="12" height="34" rx="3" fill="url(#hls-grad)" opacity="0.6"/>
+                  <rect x="16" y="0" width="12" height="50" rx="3" fill="url(#hls-grad)" opacity="0.8"/>
+                  <rect x="32" y="12" width="12" height="26" rx="3" fill="url(#hls-grad)" opacity="0.5"/>
+                  <rect x="48" y="4" width="12" height="42" rx="3" fill="url(#hls-grad)" opacity="0.9"/>
+                </g>
+                <defs><linearGradient id="hls-grad" x1="0" y1="0" x2="120" y2="120"><stop stop-color="#2c99ff"/><stop offset="1" stop-color="#00d4aa"/></linearGradient></defs>
+              </svg>
+            </div>
+            <h3 class="demo-player-name">HLS Streaming</h3>
+            <p class="demo-player-desc">Adaptive bitrate via hls.js — ideal for live and long-form content.</p>
+            <code class="demo-player-hint">playerType: 'hls'</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section id="getting-started" class="demo-section">
+      <div class="demo-section-inner">
+        <div class="demo-section-header">
+          <div class="demo-section-label">Quick Start</div>
+          <h2>Up and running in under a minute</h2>
+          <p>Install from npm or load from CDN &mdash; choose the method that fits your workflow.</p>
+          <div class="demo-hero-sandboxes">
+            <span class="demo-hero-sandboxes-label">Try it live</span>
+            <a href="https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-video-hotspot/tree/main/examples/vanilla" class="demo-btn demo-btn--chip" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Vanilla
+            </a>
+            <a href="https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-video-hotspot/tree/main/examples/react" class="demo-btn demo-btn--chip" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.31 0-.592.068-.846.206C4.747 2.387 4.24 4.462 4.61 7.27c-2.554.834-4.11 2.19-4.11 3.734 0 1.55 1.57 2.92 4.137 3.752-.38 2.79.12 4.855 1.632 5.712.258.147.554.22.857.22 1.35 0 3.118-.966 4.904-2.635 1.794 1.68 3.569 2.655 4.925 2.655.3 0 .59-.073.846-.22 1.507-.854 2.01-2.93 1.64-5.746 2.531-.834 4.06-2.19 4.06-3.738 0-1.543-1.54-2.91-4.094-3.74.38-2.816-.12-4.9-1.637-5.756a1.667 1.667 0 0 0-.848-.213zm-.354 1.198c.364 0 .698.128.965.287.924.524 1.328 1.983 1.06 3.983a17.09 17.09 0 0 0-2.576-.476 17.4 17.4 0 0 0-1.676-2.013c1.435-1.348 2.78-1.781 4.027-1.781zm-8.25.182c1.225 0 2.607.463 4.072 1.812a17.4 17.4 0 0 0-1.65 1.988 16.89 16.89 0 0 0-2.583.49c-.256-1.984.143-3.433 1.064-3.951a.94.94 0 0 1 .497-.14zM12 6.545c.478.544.934 1.14 1.358 1.784a18.8 18.8 0 0 0-2.716 0A18.3 18.3 0 0 1 12 6.545zm-4.872 3.027c.21-.058.423-.11.638-.157a18.9 18.9 0 0 0-.907 2.588c-.51-.886-.926-1.727-1.247-2.475.487-.12 1-.22 1.516-.294zm9.744 0c.516.074 1.03.174 1.516.294-.321.748-.738 1.589-1.247 2.475-.177-.906-.495-1.767-.907-2.588.215.047.428.1.638.157zM12 8.1c.694 0 1.383.037 2.06.11a16.9 16.9 0 0 1 1.2 2.256c.45.93.83 1.87 1.136 2.804a16.1 16.1 0 0 1-1.137 2.795 16.9 16.9 0 0 1-1.2 2.253c-.676.073-1.365.11-2.06.11-.694 0-1.383-.037-2.06-.11a16.9 16.9 0 0 1-1.2-2.253 16.1 16.1 0 0 1-1.136-2.795 16.1 16.1 0 0 1 1.137-2.804 16.9 16.9 0 0 1 1.2-2.256A19 19 0 0 1 12 8.1zm-4.534 1.51c-.28.825-.482 1.67-.605 2.51a16.7 16.7 0 0 1-.596-2.484c.39-.085.792-.161 1.2-.226zm9.068 0c.41.065.81.14 1.2.226a16.7 16.7 0 0 1-.596 2.484 18.1 18.1 0 0 0-.604-2.51zM4.136 10.2c.48-.208.995-.39 1.534-.545.213.86.509 1.744.884 2.64-.375.895-.67 1.78-.884 2.638a10 10 0 0 1-1.534-.545C2.9 13.74 1.9 12.783 1.9 12c0-.784 1-1.741 2.236-2.392zM19.864 10.2c1.236.65 2.236 1.608 2.236 2.392 0 .784-1 1.741-2.236 2.392a10 10 0 0 1-1.534.545c-.213-.86-.509-1.743-.884-2.639.375-.895.67-1.78.884-2.64.539.156 1.054.338 1.534.546zM6.933 14.59c.177.906.495 1.767.907 2.588-.215-.047-.428-.1-.638-.157a10.2 10.2 0 0 1-1.516-.294c.321-.748.738-1.589 1.247-2.475zm10.134 0c.51.886.926 1.727 1.247 2.475-.487.12-1 .22-1.516.294-.21.058-.423.11-.638.157a18.9 18.9 0 0 0 .907-2.588zM12 15.127c-.478-.544-.934-1.14-1.358-1.784a18.8 18.8 0 0 0 2.716 0A18.3 18.3 0 0 1 12 15.127zm0 2.228a17.4 17.4 0 0 0 1.676 2.013c-1.435 1.348-2.78 1.781-4.027 1.781-.364 0-.698-.128-.965-.287-.924-.524-1.328-1.983-1.06-3.983a17.09 17.09 0 0 0 2.576.476c.556.728 1.13 1.391 1.676 2.013zm0 0a17.4 17.4 0 0 1-1.65-1.988 16.89 16.89 0 0 1 3.3 0A17.4 17.4 0 0 1 12 17.355zm3.8 2.594c-1.225 0-2.607-.463-4.072-1.812a17.4 17.4 0 0 0 1.65-1.988 16.89 16.89 0 0 0 2.583-.49c.256 1.984-.143 3.433-1.064 3.951a.94.94 0 0 1-.497.14z"/></svg>
+              React
+            </a>
+          </div>
+        </div>
+        <div class="demo-columns demo-reveal">
+          <div class="demo-column demo-card">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 00-2-2H6a2 2 0 00-2 2v9m16 0H4m16 0l1.28 2.55a1 1 0 01-.9 1.45H3.62a1 1 0 01-.9-1.45L4 16"/></svg>
+              </div>
+              <div class="demo-feature-title">Install via npm</div>
+            </div>
+            <div class="demo-code-wrap">
+              <pre><code class="language-bash">npm install js-cloudimage-video-hotspot</code></pre>
+              <button class="demo-copy-btn" aria-label="Copy to clipboard">
+                <svg class="demo-copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                <svg class="demo-check-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
+            <div class="demo-code-wrap">
+              <pre><code class="language-javascript">import CIVideoHotspot from 'js-cloudimage-video-hotspot';
+
+const player = new CIVideoHotspot('#my-video', {
+  src: 'https://example.com/room.mp4',
+  hotspots: [
+    {
+      id: 'sofa',
+      x: '40%', y: '60%',
+      startTime: 2, endTime: 10,
+      label: 'Modern Sofa',
+      data: { title: 'Sofa', price: '$899' }
+    }
+  ]
+});</code></pre>
+              <button class="demo-copy-btn" aria-label="Copy to clipboard">
+                <svg class="demo-copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                <svg class="demo-check-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="demo-column demo-card">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+              </div>
+              <div class="demo-feature-title">Use via CDN</div>
+            </div>
+            <div class="demo-code-wrap demo-code-wrap--fill">
+              <pre><code class="language-html">&lt;script src="https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/1.1.0/js-cloudimage-video-hotspot.min.js"&gt;&lt;/script&gt;
+
+&lt;div
+  data-ci-video-hotspot-src="/room.mp4"
+  data-ci-video-hotspot-items='[{"id":"sofa","x":"40%","y":"60%","startTime":2,"endTime":10,"label":"Sofa"}]'
+&gt;&lt;/div&gt;
+
+&lt;script&gt;CIVideoHotspot.autoInit();&lt;/script&gt;</code></pre>
+              <button class="demo-copy-btn" aria-label="Copy to clipboard">
+                <svg class="demo-copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                <svg class="demo-check-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>

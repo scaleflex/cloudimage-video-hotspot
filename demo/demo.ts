@@ -328,6 +328,180 @@ document.getElementById('api-prev')?.addEventListener('click', () => {
 });
 */
 
+// ──────────────────── Motion Types ────────────────────
+
+const MOTION_OPTS = {
+  src: HERO_VIDEO,
+  autoplay: true,
+  loop: true,
+  hotspotNavigation: false,
+  timelineIndicators: 'none' as const,
+  trigger: 'hover' as const,
+};
+
+// 1. Static
+const motionStaticEl = document.getElementById('motion-static');
+if (motionStaticEl) {
+  new CIVideoHotspot(motionStaticEl, {
+    ...MOTION_OPTS,
+    hotspots: [
+      {
+        id: 'ms1',
+        x: '50%',
+        y: '50%',
+        startTime: 0,
+        endTime: 999,
+        label: 'Static',
+        data: { title: 'Static Hotspot', description: 'Stays in one place throughout the video.' },
+      },
+    ],
+  });
+}
+
+// Helper: draw trajectory SVG
+function drawTrajectory(
+  svgId: string,
+  containerEl: HTMLElement,
+  points: { x: string; y: string }[],
+  smooth: boolean,
+) {
+  const svg = document.getElementById(svgId);
+  if (!svg || points.length < 2) return;
+
+  const rect = containerEl.getBoundingClientRect();
+  const w = rect.width;
+  const h = rect.height;
+
+  const coords = points.map((p) => ({
+    x: (parseFloat(p.x) / 100) * w,
+    y: (parseFloat(p.y) / 100) * h,
+  }));
+
+  svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  svg.setAttribute('preserveAspectRatio', 'none');
+
+  let d: string;
+  if (!smooth || coords.length < 3) {
+    d = `M ${coords[0].x} ${coords[0].y}` + coords.slice(1).map((c) => ` L ${c.x} ${c.y}`).join('');
+  } else {
+    // Catmull-Rom to cubic bezier
+    d = `M ${coords[0].x} ${coords[0].y}`;
+    for (let i = 0; i < coords.length - 1; i++) {
+      const p0 = coords[Math.max(i - 1, 0)];
+      const p1 = coords[i];
+      const p2 = coords[i + 1];
+      const p3 = coords[Math.min(i + 2, coords.length - 1)];
+
+      const cp1x = p1.x + (p2.x - p0.x) / 6;
+      const cp1y = p1.y + (p2.y - p0.y) / 6;
+      const cp2x = p2.x - (p3.x - p1.x) / 6;
+      const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+    }
+  }
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', d);
+  svg.appendChild(path);
+
+  // Draw keyframe dots
+  coords.forEach((c) => {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', String(c.x));
+    circle.setAttribute('cy', String(c.y));
+    circle.setAttribute('r', '4');
+    svg.appendChild(circle);
+  });
+}
+
+// 2. Linear
+const linearKeyframes = [
+  { time: 0, x: '20%', y: '50%' },
+  { time: 14, x: '80%', y: '50%' },
+];
+const motionLinearEl = document.getElementById('motion-linear');
+if (motionLinearEl) {
+  new CIVideoHotspot(motionLinearEl, {
+    ...MOTION_OPTS,
+    hotspots: [
+      {
+        id: 'ml1',
+        x: '20%',
+        y: '50%',
+        startTime: 0,
+        endTime: 999,
+        label: 'Linear',
+        interpolation: 'linear' as const,
+        keyframes: linearKeyframes,
+        data: { title: 'Linear Motion', description: 'Moves in a straight line from left to right.' },
+      },
+    ],
+    onReady: () => {
+      drawTrajectory('trajectory-linear', motionLinearEl, linearKeyframes, false);
+    },
+  });
+}
+
+// 3. Curved Path (3 points — V shape going up)
+const curvedKeyframes = [
+  { time: 0, x: '50%', y: '75%' },
+  { time: 7, x: '25%', y: '25%' },
+  { time: 14, x: '75%', y: '25%' },
+];
+const motionCurvedEl = document.getElementById('motion-curved');
+if (motionCurvedEl) {
+  new CIVideoHotspot(motionCurvedEl, {
+    ...MOTION_OPTS,
+    hotspots: [
+      {
+        id: 'mc1',
+        x: '50%',
+        y: '75%',
+        startTime: 0,
+        endTime: 999,
+        label: 'Curved',
+        interpolation: 'catmull-rom' as const,
+        keyframes: curvedKeyframes,
+        data: { title: 'Curved Path', description: 'Follows a smooth V-shaped arc via 3 keyframes.' },
+      },
+    ],
+    onReady: () => {
+      drawTrajectory('trajectory-curved', motionCurvedEl, curvedKeyframes, true);
+    },
+  });
+}
+
+// 4. Complex Path (4+ points — S-curve)
+const complexKeyframes = [
+  { time: 0, x: '50%', y: '80%' },
+  { time: 4, x: '75%', y: '55%' },
+  { time: 8, x: '35%', y: '40%' },
+  { time: 12, x: '25%', y: '20%' },
+];
+const motionComplexEl = document.getElementById('motion-complex');
+if (motionComplexEl) {
+  new CIVideoHotspot(motionComplexEl, {
+    ...MOTION_OPTS,
+    hotspots: [
+      {
+        id: 'mx1',
+        x: '50%',
+        y: '80%',
+        startTime: 0,
+        endTime: 999,
+        label: 'Complex',
+        interpolation: 'catmull-rom' as const,
+        keyframes: complexKeyframes,
+        data: { title: 'Complex Path', description: 'Traces an S-curve through 4 keyframes.' },
+      },
+    ],
+    onReady: () => {
+      drawTrajectory('trajectory-complex', motionComplexEl, complexKeyframes, true);
+    },
+  });
+}
+
 // ──────────────────── Hero toggle (Editor ↔ Viewer) ────────────────────
 const heroToggle = document.getElementById('hero-toggle');
 if (heroToggle) {
