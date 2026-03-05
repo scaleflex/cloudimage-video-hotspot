@@ -320,6 +320,7 @@ export interface CIVideoHotspotInstance {
   /** Get references to internal DOM elements */
   getElements(): {
     container: HTMLElement;
+    videoWrapper: HTMLElement;
     video: HTMLElement;
     overlay: HTMLElement;
     controls: HTMLElement | null;

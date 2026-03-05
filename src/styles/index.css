@@ -152,12 +152,18 @@
   -webkit-user-select: none;
 }
 
+/* === Video Wrapper (aspect-ratio box) === */
+.ci-video-hotspot-video-wrapper {
+  position: relative;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
 /* === Video === */
 .ci-video-hotspot-video {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
 
 /* === Overlay (markers layer) === */
@@ -909,12 +915,6 @@
   width: 100vw;
   height: 100vh;
   background: #000;
-}
-
-.ci-video-hotspot-container--fullscreen .ci-video-hotspot-video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
 }
 
 /* === Popover Template Root === */

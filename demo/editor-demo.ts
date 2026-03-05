@@ -327,6 +327,12 @@ function handleVideoClick(e: MouseEvent): void {
 }
 
 function getVideoRect(): DOMRect | null {
+  const wrapper = document.querySelector('.ci-video-hotspot-video-wrapper') as HTMLElement;
+  if (wrapper) {
+    const rect = wrapper.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) return rect;
+  }
+  // Fallback to container
   const container = document.querySelector('.ci-video-hotspot-container') as HTMLElement;
   if (container) {
     const rect = container.getBoundingClientRect();
@@ -1049,26 +1055,26 @@ function getSampleHotspots(): VideoHotspotItem[] {
   return [
     {
       id: 'hotspot-4',
-      x: '48.53%',
-      y: '45.64%',
+      x: '48.47%',
+      y: '44.88%',
       startTime: 0.6,
       endTime: 14.7,
       label: 'Television',
       interpolation: 'catmull-rom' as const,
       keyframes: [
-        { time: 0.6, x: '48.53%', y: '45.64%' },
-        { time: 1.6, x: '50%', y: '45.82%' },
-        { time: 2.3, x: '50.61%', y: '45.27%' },
-        { time: 3, x: '51.23%', y: '45.09%' },
-        { time: 4.5, x: '52.08%', y: '45.09%' },
-        { time: 5.3, x: '51.35%', y: '44.55%' },
-        { time: 6.2, x: '49.26%', y: '44.91%' },
-        { time: 7.3, x: '47.92%', y: '44.91%' },
-        { time: 9.4, x: '48.65%', y: '44.91%' },
-        { time: 10.7, x: '47.43%', y: '45.82%' },
-        { time: 12.2, x: '45.34%', y: '46.18%' },
-        { time: 13.2, x: '45.34%', y: '46%' },
-        { time: 14.7, x: '43.87%', y: '46.18%' },
+        { time: 0.6, x: '48.47%', y: '44.88%' },
+        { time: 1.6, x: '49.94%', y: '44.88%' },
+        { time: 2.3, x: '50.43%', y: '45.1%' },
+        { time: 3, x: '51.16%', y: '44.23%' },
+        { time: 4.5, x: '52.02%', y: '44.23%' },
+        { time: 5.3, x: '51.16%', y: '44.01%' },
+        { time: 6.2, x: '49.2%', y: '43.79%' },
+        { time: 7.3, x: '48.1%', y: '44.01%' },
+        { time: 9.4, x: '48.47%', y: '44.01%' },
+        { time: 10.7, x: '47.61%', y: '44.66%' },
+        { time: 12.2, x: '45.4%', y: '45.53%' },
+        { time: 13.2, x: '45.53%', y: '45.32%' },
+        { time: 14.7, x: '43.93%', y: '45.32%' },
       ],
       data: {
         title: 'Smart Television',
@@ -1082,22 +1088,22 @@ function getSampleHotspots(): VideoHotspotItem[] {
     },
     {
       id: 'hotspot-6',
-      x: '36.64%',
-      y: '69.64%',
+      x: '36.95%',
+      y: '73.2%',
       startTime: 2.2,
       endTime: 12.8,
       label: 'Pouf',
       interpolation: 'catmull-rom' as const,
       keyframes: [
-        { time: 2.2, x: '36.64%', y: '69.64%' },
-        { time: 4.1, x: '34.8%', y: '66.36%' },
-        { time: 5.9, x: '28.68%', y: '65.09%' },
-        { time: 7.2, x: '24.88%', y: '63.09%' },
-        { time: 8.6, x: '23.9%', y: '60%' },
-        { time: 9.3, x: '23.41%', y: '58.91%' },
-        { time: 10.6, x: '21.94%', y: '57.09%' },
-        { time: 11.7, x: '19.98%', y: '55.64%' },
-        { time: 12.8, x: '21.32%', y: '52.91%' },
+        { time: 2.2, x: '36.95%', y: '73.2%' },
+        { time: 4.1, x: '34.99%', y: '69.5%' },
+        { time: 5.9, x: '28.86%', y: '67.97%' },
+        { time: 7.2, x: '25.06%', y: '65.14%' },
+        { time: 8.6, x: '23.84%', y: '61.66%' },
+        { time: 9.3, x: '23.47%', y: '59.69%' },
+        { time: 10.6, x: '22%', y: '57.73%' },
+        { time: 11.7, x: '19.91%', y: '56.21%' },
+        { time: 12.8, x: '21.14%', y: '53.16%' },
       ],
       data: {
         title: 'Knitted Pouf',
@@ -1109,19 +1115,19 @@ function getSampleHotspots(): VideoHotspotItem[] {
     },
     {
       id: 'hotspot-7',
-      x: '74.39%',
-      y: '33.64%',
+      x: '74.2%',
+      y: '30.94%',
       startTime: 5.5,
       endTime: 14.1,
       label: 'Fireplace',
       interpolation: 'catmull-rom' as const,
       keyframes: [
-        { time: 5.5, x: '74.39%', y: '33.64%' },
-        { time: 6, x: '73.65%', y: '34.36%' },
-        { time: 6.6, x: '73.28%', y: '34.18%' },
-        { time: 8.2, x: '76.35%', y: '35.64%' },
-        { time: 9.6, x: '79.66%', y: '37.64%' },
-        { time: 12.6, x: '81.25%', y: '43.45%' },
+        { time: 5.5, x: '74.2%', y: '30.94%' },
+        { time: 6, x: '73.59%', y: '30.72%' },
+        { time: 6.6, x: '73.1%', y: '31.37%' },
+        { time: 8.2, x: '76.41%', y: '32.46%' },
+        { time: 9.6, x: '79.84%', y: '34.86%' },
+        { time: 12.6, x: '81.19%', y: '42.05%' },
         { time: 14.1, x: '80.02%', y: '46%' },
       ],
       data: {

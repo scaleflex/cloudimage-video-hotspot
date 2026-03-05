@@ -31,6 +31,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   private config: ResolvedConfig;
   private rootEl: HTMLElement;
   private containerEl!: HTMLElement;
+  private videoWrapperEl!: HTMLElement;
   private overlayEl!: HTMLElement;
   private markersEl!: HTMLElement;
 
@@ -56,6 +57,8 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   private wasPlayingBeforePause = false;
   private resolvedChapters: VideoChapter[] = [];
   private currentChapterId: string | undefined;
+  private videoAspectRatio = 16 / 9;
+  private resizeObserver: ResizeObserver | null = null;
 
   constructor(element: HTMLElement | string, config: CIVideoHotspotConfig) {
     validateConfig(config);
@@ -96,11 +99,19 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       addClass(this.containerEl, 'ci-video-hotspot-theme-dark');
     }
 
-    this.overlayEl = createElement('div', 'ci-video-hotspot-overlay');
-    this.markersEl = createElement('div', 'ci-video-hotspot-markers');
-    this.overlayEl.appendChild(this.markersEl);
+    this.videoWrapperEl = createElement('div', 'ci-video-hotspot-video-wrapper');
 
+    this.markersEl = createElement('div', 'ci-video-hotspot-markers');
+    this.videoWrapperEl.appendChild(this.markersEl);
+
+    this.overlayEl = createElement('div', 'ci-video-hotspot-overlay');
+
+    this.containerEl.appendChild(this.videoWrapperEl);
     this.containerEl.appendChild(this.overlayEl);
+
+    // Keep wrapper sized to video aspect ratio when container resizes
+    this.resizeObserver = new ResizeObserver(() => this.fitWrapper());
+    this.resizeObserver.observe(this.containerEl);
     this.rootEl.appendChild(this.containerEl);
 
     // Make container focusable for keyboard
@@ -163,6 +174,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       },
 
       onLoadedMetadata: () => {
+        this.updateWrapperAspectRatio();
         this.config.onReady?.();
       },
 
@@ -175,9 +187,9 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       },
     });
 
-    // Mount video element, then ensure it's before the overlay
-    this.player.mount(this.containerEl);
-    this.containerEl.insertBefore(this.player.element, this.overlayEl);
+    // Mount video element into wrapper, before the markers layer
+    this.player.mount(this.videoWrapperEl);
+    this.videoWrapperEl.insertBefore(this.player.element, this.markersEl);
   }
 
   private initTimeline(): void {
@@ -561,9 +573,54 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
   // === Public API: Video Playback ===
 
+  private updateWrapperAspectRatio(): void {
+    const videoEl = this.player.getVideoElement();
+    if (videoEl && videoEl.videoWidth && videoEl.videoHeight) {
+      this.videoAspectRatio = videoEl.videoWidth / videoEl.videoHeight;
+    }
+    this.fitWrapper();
+  }
+
+  private fitWrapper(): void {
+    const cw = this.containerEl.clientWidth;
+    if (!cw) return;
+
+    // Temporarily collapse wrapper to measure whether the container
+    // has a constrained height (from CSS height / flex / etc.)
+    const prevH = this.videoWrapperEl.style.height;
+    this.videoWrapperEl.style.height = '0px';
+    const ch = this.containerEl.clientHeight;
+    this.videoWrapperEl.style.height = prevH;
+
+    // If container has no constrained height, just fill width
+    if (ch <= 0) {
+      this.videoWrapperEl.style.width = `${cw}px`;
+      this.videoWrapperEl.style.height = `${cw / this.videoAspectRatio}px`;
+      return;
+    }
+
+    // Container has a constrained height — fit within the box
+    const containerRatio = cw / ch;
+    let w: number, h: number;
+
+    if (containerRatio > this.videoAspectRatio) {
+      // Container is wider than video — height is the constraint
+      h = ch;
+      w = ch * this.videoAspectRatio;
+    } else {
+      // Container is taller than video — width is the constraint
+      w = cw;
+      h = cw / this.videoAspectRatio;
+    }
+
+    this.videoWrapperEl.style.width = `${w}px`;
+    this.videoWrapperEl.style.height = `${h}px`;
+  }
+
   getElements() {
     return {
       container: this.containerEl,
+      videoWrapper: this.videoWrapperEl,
       video: this.player.element,
       overlay: this.overlayEl,
       controls: this.controls?.element ?? null,
@@ -839,6 +896,10 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
     // Stop render loop
     this.stopRenderLoop();
+
+    // Disconnect resize observer
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
 
     // Cleanup per-hotspot
     for (const [, cleanups] of this.hotspotCleanups) {
