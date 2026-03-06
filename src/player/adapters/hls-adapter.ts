@@ -1,6 +1,7 @@
 import { HTML5Adapter } from './html5-adapter';
 import type { AdapterOptions } from '../adapter';
 import type { HLSConfig } from '../../core/types';
+import { HLS_MAX_RETRIES, HLS_INITIAL_RETRY_MS } from '../../core/constants';
 
 /**
  * HLS adapter — extends HTML5Adapter.
@@ -10,6 +11,8 @@ import type { HLSConfig } from '../../core/types';
 export class HLSAdapter extends HTML5Adapter {
   private hls: any = null;
   private hlsConfig: HLSConfig;
+  private networkRetryCount = 0;
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
   constructor(options: AdapterOptions, hlsConfig?: HLSConfig) {
     super(options);
@@ -46,12 +49,21 @@ export class HLSAdapter extends HTML5Adapter {
       this.hls.loadSource(this.options.src);
       this.hls.attachMedia(this.videoEl);
 
-      // Fatal error recovery
+      // Fatal error recovery with exponential backoff
       this.hls.on(Hls.Events.ERROR, (_: any, data: any) => {
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              this.hls.startLoad();
+              if (this.networkRetryCount < HLS_MAX_RETRIES) {
+                const delay = HLS_INITIAL_RETRY_MS * Math.pow(2, this.networkRetryCount);
+                this.networkRetryCount++;
+                this.retryTimer = setTimeout(() => {
+                  this.retryTimer = null;
+                  this.hls?.startLoad();
+                }, delay);
+              } else {
+                this.emit('error', data);
+              }
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
               this.hls.recoverMediaError();
@@ -72,6 +84,10 @@ export class HLSAdapter extends HTML5Adapter {
   }
 
   destroy(): void {
+    if (this.retryTimer !== null) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
+    }
     if (this.hls) {
       this.hls.destroy();
       this.hls = null;

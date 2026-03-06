@@ -24,6 +24,29 @@ export function useCIVideoHotspot(options: UseCIVideoHotspotOptions): UseCIVideo
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.src]);
 
+  // Update instance when non-src config changes (hotspots, chapters, trigger, etc.)
+  useEffect(() => {
+    const instance = instanceRef.current;
+    if (!instance) return;
+
+    // Skip on initial mount — the constructor already used these values
+    const { src: _src, ...updateableOptions } = optionsRef.current;
+    instance.update(updateableOptions);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    options.hotspots,
+    options.chapters,
+    options.trigger,
+    options.placement,
+    options.theme,
+    options.controls,
+    options.hotspotNavigation,
+    options.fullscreenButton,
+    options.pauseOnInteract,
+    options.hotspotAnimation,
+    options.timelineIndicators,
+  ]);
+
   return {
     containerRef,
     instance: instanceRef,

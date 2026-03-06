@@ -24,8 +24,13 @@ export class VideoKeyboardHandler {
     const cleanup = addListener(container, 'keydown', (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
 
-      // Don't handle keys typed into form elements
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+      // Don't handle keys typed into form elements or contentEditable
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.tagName === 'SELECT' ||
+        target.isContentEditable
+      ) {
         return;
       }
 

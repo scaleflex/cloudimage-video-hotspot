@@ -48,7 +48,9 @@ export function createFocusTrap(
     active = false;
     cleanup?.();
     cleanup = null;
-    returnFocusTo.focus();
+    if (document.contains(returnFocusTo)) {
+      returnFocusTo.focus();
+    }
   }
 
   function destroy(): void {

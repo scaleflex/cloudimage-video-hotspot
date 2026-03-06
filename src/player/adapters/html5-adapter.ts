@@ -102,7 +102,12 @@ export class HTML5Adapter extends VideoPlayerAdapter {
   }
 
   play(): Promise<void> {
-    return this.videoEl.play().catch(() => {});
+    return this.videoEl.play().catch((err) => {
+      // AbortError is expected when play() is interrupted by pause() — don't emit
+      if (err?.name !== 'AbortError') {
+        this.emit('error', err);
+      }
+    });
   }
 
   pause(): void {

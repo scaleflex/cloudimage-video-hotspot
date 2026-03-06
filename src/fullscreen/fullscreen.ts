@@ -89,11 +89,8 @@ export function createFullscreenControl(
     }
   }
 
-  const changeCleanup = addListener(document, 'fullscreenchange', syncState);
-  cleanups.push(changeCleanup);
-
-  document.addEventListener('webkitfullscreenchange', syncState);
-  cleanups.push(() => document.removeEventListener('webkitfullscreenchange', syncState));
+  cleanups.push(addListener(document, 'fullscreenchange', syncState));
+  cleanups.push(addListener(document, 'webkitfullscreenchange' as keyof HTMLElementEventMap, syncState));
 
   function destroy(): void {
     if (isActive()) {

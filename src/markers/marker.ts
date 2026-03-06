@@ -81,7 +81,7 @@ function cleanSVGNode(node: Element): void {
       node.removeAttribute(attr.name);
     } else if (
       (name === 'href' || name === 'xlink:href') &&
-      /^\s*javascript\s*:/i.test(attr.value)
+      (/^\s*javascript\s*:/i.test(attr.value) || /^\s*data\s*:/i.test(attr.value))
     ) {
       node.removeAttribute(attr.name);
     }

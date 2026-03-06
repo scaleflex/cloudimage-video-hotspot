@@ -1,4 +1,5 @@
-type EventHandler = (...args: unknown[]) => void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type EventHandler = (...args: any[]) => void;
 
 /** Minimal typed event emitter */
 export class EventEmitter {

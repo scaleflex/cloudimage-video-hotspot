@@ -1,4 +1,4 @@
-import type { CIVideoHotspotConfig, ResolvedConfig, VideoHotspotItem, VideoChapter } from './types';
+import type { CIVideoHotspotConfig, ResolvedConfig, VideoChapter } from './types';
 
 /** Default configuration values */
 const DEFAULTS: Partial<CIVideoHotspotConfig> = {
@@ -19,9 +19,14 @@ const DEFAULTS: Partial<CIVideoHotspotConfig> = {
   playerType: 'auto',
 };
 
-/** Merge user config with defaults */
+/** Merge user config with defaults, deep-merging known nested objects */
 export function mergeConfig(config: CIVideoHotspotConfig): ResolvedConfig {
   const merged = { ...DEFAULTS, ...config } as ResolvedConfig;
+
+  // Deep merge known nested objects
+  if (DEFAULTS.hls || config.hls) {
+    merged.hls = { ...(DEFAULTS.hls || {}), ...(config.hls || {}) };
+  }
 
   // Auto-mute if autoplay
   if (merged.autoplay && config.muted === undefined) {
@@ -98,11 +103,6 @@ export function parseDataAttributes(el: HTMLElement): Partial<CIVideoHotspotConf
   }
 
   return config as Partial<CIVideoHotspotConfig>;
-}
-
-/** Sort hotspots by startTime for efficient navigation */
-export function sortHotspotsByTime(hotspots: VideoHotspotItem[]): VideoHotspotItem[] {
-  return [...hotspots].sort((a, b) => a.startTime - b.startTime);
 }
 
 /** Resolve chapter endTimes based on next chapter start or video duration */

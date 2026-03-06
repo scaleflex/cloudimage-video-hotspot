@@ -127,7 +127,14 @@ export class Controls {
           'data-chapter-id': ch.id,
           'type': 'button',
         });
-        item.innerHTML = `<span class="ci-video-hotspot-chapter-time">${formatTime(ch.startTime)}</span><span class="ci-video-hotspot-chapter-title">${ch.title}</span>`;
+        const timeSpan = document.createElement('span');
+        timeSpan.className = 'ci-video-hotspot-chapter-time';
+        timeSpan.textContent = formatTime(ch.startTime);
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'ci-video-hotspot-chapter-title';
+        titleSpan.textContent = ch.title;
+        item.appendChild(timeSpan);
+        item.appendChild(titleSpan);
         this.chapterDropdown.appendChild(item);
       }
       rightGroup.appendChild(this.chapterDropdown);

@@ -24,6 +24,7 @@ export class ProgressBar {
   private indicatorsEl: HTMLElement;
   private chaptersEl: HTMLElement;
   private cleanups: (() => void)[] = [];
+  private indicatorCleanups: (() => void)[] = [];
   private isDragging = false;
   private options: ProgressBarOptions;
 
@@ -154,7 +155,11 @@ export class ProgressBar {
 
   /** Render hotspot indicators on the timeline */
   renderIndicators(): void {
+    // Clean up previous indicator listeners
+    this.indicatorCleanups.forEach((fn) => fn());
+    this.indicatorCleanups = [];
     this.indicatorsEl.innerHTML = '';
+
     const ranges = this.options.hotspotRanges;
     if (!ranges || this.options.timelineIndicators === 'none') return;
 
@@ -173,10 +178,11 @@ export class ProgressBar {
         indicator.dataset.hotspotId = range.id;
         if (this.options.onIndicatorClick) {
           indicator.style.cursor = 'pointer';
-          indicator.addEventListener('click', (e) => {
+          const cleanup = addListener(indicator, 'click', (e) => {
             e.stopPropagation();
             this.options.onIndicatorClick!(range.id);
           });
+          this.indicatorCleanups.push(cleanup);
         }
         this.indicatorsEl.appendChild(indicator);
       } else {
@@ -188,10 +194,11 @@ export class ProgressBar {
         indicator.style.left = `${left}%`;
         indicator.dataset.hotspotId = range.id;
         if (this.options.onIndicatorClick) {
-          indicator.addEventListener('click', (e) => {
+          const cleanup = addListener(indicator, 'click', (e) => {
             e.stopPropagation();
             this.options.onIndicatorClick!(range.id);
           });
+          this.indicatorCleanups.push(cleanup);
         }
         this.indicatorsEl.appendChild(indicator);
       }
@@ -243,6 +250,8 @@ export class ProgressBar {
   }
 
   destroy(): void {
+    this.indicatorCleanups.forEach((fn) => fn());
+    this.indicatorCleanups = [];
     this.cleanups.forEach((fn) => fn());
     this.cleanups = [];
     this.element.remove();

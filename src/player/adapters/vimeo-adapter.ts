@@ -15,6 +15,7 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   private _paused = true;
   private _volume = 1;
   private _muted = false;
+  private _playbackRate = 1;
   private videoId: string;
 
   constructor(private options: AdapterOptions) {
@@ -122,6 +123,18 @@ export class VimeoAdapter extends VideoPlayerAdapter {
     this.vimeoPlayer.on('error', (err: any) => {
       this.emit('error', err);
     });
+
+    // Sync volume changes made via Vimeo's own UI
+    this.vimeoPlayer.on('volumechange', (data: { volume: number }) => {
+      this._volume = data.volume;
+      this.emit('volumechange');
+    });
+
+    // Track playback rate changes
+    this.vimeoPlayer.on('playbackratechange', (data: { playbackRate: number }) => {
+      this._playbackRate = data.playbackRate;
+      this.emit('ratechange');
+    });
   }
 
   // --- Adapter interface ---
@@ -157,13 +170,13 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   isMuted(): boolean { return this._muted; }
 
   setPlaybackRate(rate: number): void {
+    this._playbackRate = rate;
     this.vimeoPlayer?.setPlaybackRate(rate).catch(() => {});
     this.emit('ratechange');
   }
 
   getPlaybackRate(): number {
-    // Vimeo SDK only provides this asynchronously; we return 1 as sync fallback
-    return 1;
+    return this._playbackRate;
   }
 
   isPaused(): boolean { return this._paused; }
