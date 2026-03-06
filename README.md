@@ -61,6 +61,12 @@ npm install js-cloudimage-video-hotspot
 
 ## Quick Start
 
+### Up and running in under a minute
+
+Install from npm or load from CDN — choose the method that fits your workflow.
+
+**Try it live:** [Vanilla](https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-video-hotspot/tree/main/examples/vanilla) | [React](https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-video-hotspot/tree/main/examples/react)
+
 ### JavaScript API
 
 ```js
