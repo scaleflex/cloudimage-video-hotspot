@@ -14,6 +14,8 @@ coverage/
 
 # Large media files
 *.mp4
+!demo/bed.mp4
+!demo/Rest room.mp4
 
 # Experimental packages
 packages/
