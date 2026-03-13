@@ -138,6 +138,8 @@ export class HotspotManager implements HotspotManagerInterface {
         if (popover.isVisible()) {
           popover.hide();
         } else {
+          // Close any other open popovers first — only one card at a time
+          this.closeAll();
           popover.show();
           setMarkerActive(marker, true);
           this.openPopovers.add(hotspot.id);
@@ -262,6 +264,9 @@ export class HotspotManager implements HotspotManagerInterface {
       if (!hotspot) return;
       this.showHotspot(hotspot);
     }
+
+    // Close any other open popovers first — only one card at a time
+    this.closeAll();
 
     const popover = this.popovers.get(id);
     const marker = this.markers.get(id);

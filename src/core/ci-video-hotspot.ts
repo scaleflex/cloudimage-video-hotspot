@@ -130,6 +130,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
       onPause: () => {
         removeClass(this.containerEl, 'ci-video-hotspot-container--playing');
+        removeClass(this.containerEl, 'ci-video-hotspot-container--loading');
         addClass(this.containerEl, 'ci-video-hotspot-container--paused');
         this.config.onPause?.();
         this.renderLoopManager?.stopRenderLoop();
@@ -370,6 +371,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   // === Public API: Video Playback ===
 
   play(): Promise<void> {
+    this.hotspotManager.closeAll();
     return this.player.play();
   }
 
@@ -378,7 +380,11 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   }
 
   togglePlay(): void {
-    this.player.togglePlay();
+    if (this.player.isPaused()) {
+      this.play();
+    } else {
+      this.pause();
+    }
   }
 
   seek(time: number): void {
