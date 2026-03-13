@@ -192,7 +192,10 @@ export class HotspotManager implements HotspotManagerInterface {
       const timer = setTimeout(() => {
         this.activeTimers.delete(timer);
         destroyMarker(marker);
-        this.markers.delete(hotspot.id);
+        // Only remove from map if still the same marker (not replaced by open())
+        if (this.markers.get(hotspot.id) === marker) {
+          this.markers.delete(hotspot.id);
+        }
       }, EXIT_ANIMATION_MS);
       this.activeTimers.add(timer);
     } else if (marker) {
@@ -258,8 +261,15 @@ export class HotspotManager implements HotspotManagerInterface {
   }
 
   open(id: string): void {
-    // Ensure marker and popover exist (they may not if timeUpdate hasn't fired yet)
+    // Ensure marker and popover both exist. They may be out of sync due to
+    // async timeupdate race: hideHotspot destroys popover immediately but
+    // keeps marker during exit animation, so showHotspot's marker guard
+    // would bail out without creating a new popover.
+    // Remove stale map entries (don't destroy marker DOM — exit timer handles it).
     if (!this.markers.has(id) || !this.popovers.has(id)) {
+      this.markers.delete(id);
+      this.popovers.get(id)?.destroy();
+      this.popovers.delete(id);
       const hotspot = this.normalizedHotspots.get(id);
       if (!hotspot) return;
       this.showHotspot(hotspot);
