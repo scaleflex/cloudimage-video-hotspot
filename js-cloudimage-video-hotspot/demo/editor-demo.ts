@@ -604,6 +604,8 @@ function createHotspotAtPosition(x: number, y: number): void {
 }
 
 function deleteHotspot(id: string): void {
+  const h = hotspots.find(hs => hs.id === id);
+  if (!confirm(`Delete "${h?.label || id}"?`)) return;
   pushUndo();
   hotspots = hotspots.filter(h => h.id !== id);
   if (selectedHotspotId === id) {
@@ -794,6 +796,9 @@ function renderSidebar(): void {
         h.label = nameInput.value;
         renderSidebar();
       });
+      const nameLabel = el('label', 'hotspot-name-label');
+      nameLabel.textContent = 'Label';
+      body.appendChild(nameLabel);
       body.appendChild(nameInput);
 
       // Points header
@@ -872,6 +877,42 @@ function renderSidebar(): void {
         updateJsonOutput();
       }));
 
+      // Auto Open checkbox
+      const autoOpenRow = el('div', 'customize-checkbox-row');
+      const autoOpenLabel = el('label', 'customize-checkbox-label');
+      const autoOpenCb = el('input', 'customize-checkbox') as HTMLInputElement;
+      autoOpenCb.type = 'checkbox';
+      autoOpenCb.checked = h.autoOpen === true;
+      autoOpenCb.addEventListener('change', () => {
+        pushUndo();
+        h.autoOpen = autoOpenCb.checked;
+        syncHotspot(h.id);
+        updateJsonOutput();
+      });
+      const autoOpenText = el('span');
+      autoOpenText.textContent = 'Auto Open Card';
+      autoOpenLabel.append(autoOpenCb, autoOpenText);
+      autoOpenRow.appendChild(autoOpenLabel);
+      custGrid.appendChild(autoOpenRow);
+
+      // Pause on Interact checkbox
+      const pauseRow = el('div', 'customize-checkbox-row');
+      const pauseLabel = el('label', 'customize-checkbox-label');
+      const pauseCb = el('input', 'customize-checkbox') as HTMLInputElement;
+      pauseCb.type = 'checkbox';
+      pauseCb.checked = h.pauseOnInteract !== undefined ? h.pauseOnInteract : globalPauseOnInteract;
+      pauseCb.addEventListener('change', () => {
+        pushUndo();
+        h.pauseOnInteract = pauseCb.checked;
+        syncHotspot(h.id);
+        updateJsonOutput();
+      });
+      const pauseText = el('span');
+      pauseText.textContent = 'Pause on Interact';
+      pauseLabel.append(pauseCb, pauseText);
+      pauseRow.appendChild(pauseLabel);
+      custGrid.appendChild(pauseRow);
+
       body.appendChild(custGrid);
 
       // Actions
@@ -942,14 +983,14 @@ function inlineTimeField(label: string, value: number, onChange: (v: number) => 
   lbl.textContent = label;
   const input = el('input', 'point-row-field-input') as HTMLInputElement;
   input.type = 'text';
-  input.value = fmtTime(value);
+  input.value = fmtTime(value, true);
   input.addEventListener('click', (e) => e.stopPropagation());
   input.addEventListener('change', () => {
     const v = parseTime(input.value);
     if (v !== null) {
       onChange(v);
     } else {
-      input.value = fmtTime(value);
+      input.value = fmtTime(value, true);
     }
   });
   wrap.append(lbl, input);
@@ -1319,11 +1360,13 @@ function el(tag: string, className?: string): HTMLElement {
   return e;
 }
 
-function fmtTime(seconds: number): string {
+function fmtTime(seconds: number, showMs = false): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
-  const ms = Math.round((seconds % 1) * 1000);
-  return `${m}:${s.toString().padStart(2, '0')}.${ms.toString().padStart(3, '0')}`;
+  const base = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  if (!showMs) return base;
+  const d = Math.floor((seconds % 1) * 10);
+  return `${base}.${d}`;
 }
 
 function parseCoord(v: string | number): number {
@@ -1389,19 +1432,26 @@ function setupKeyboardShortcuts(): void {
           renderTimeline();
         }
         break;
-
     }
   });
 
-  // Space handler in capture phase — fires before the plugin's keyboard handler
+  // Capture phase handler — fires before the plugin's keyboard handler
   document.addEventListener('keydown', (e) => {
-    if (e.key !== ' ') return;
     const tag = (e.target as HTMLElement).tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-    e.preventDefault();
-    e.stopPropagation();
-    if (viewer) {
-      viewer.togglePlay();
+
+    if (e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (viewer) viewer.togglePlay();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (viewer) viewer.seek(viewer.getCurrentTime() + 0.2);
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (viewer) viewer.seek(Math.max(0, viewer.getCurrentTime() - 0.2));
     }
   }, true);
 }

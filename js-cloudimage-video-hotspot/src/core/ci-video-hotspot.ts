@@ -246,6 +246,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     });
 
     this.containerEl.appendChild(this.controls.element);
+    this.renderLoopManager.setControls(this.controls);
   }
 
   private initHotspotNav(): void {
@@ -319,6 +320,8 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       if (this.destroyed) return;
       if (this.hotspotManager.getOpenPopovers().size === 0) return;
       const target = e.target as HTMLElement;
+      // Don't close popovers when clicking controls (play/pause, volume, etc.)
+      if (target.closest('.ci-video-hotspot-controls')) return;
       // Close if click is outside container, or inside container but not on a marker/popover
       if (!this.containerEl.contains(target)) {
         this.closeAll();

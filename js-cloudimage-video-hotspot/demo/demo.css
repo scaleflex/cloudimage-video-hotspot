@@ -2372,7 +2372,17 @@ kbd {
   display: block;
 }
 
-/* Name input */
+/* Name label + input */
+.hotspot-name-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
 .hotspot-name-input {
   width: 100%;
   padding: 6px 8px;
@@ -2618,6 +2628,25 @@ kbd {
   margin-top: 8px;
 }
 
+.customize-checkbox-row {
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.customize-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.customize-checkbox {
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
 .customize-field {
   display: flex;
   flex-direction: column;
@@ -2705,7 +2734,7 @@ kbd {
   position: absolute;
   top: 0;
   height: 100%;
-  opacity: 0.15;
+  opacity: 0.5;
   border-radius: 2px;
   pointer-events: none;
 }
@@ -2724,6 +2753,7 @@ kbd {
   z-index: 2;
   padding: 0;
   box-sizing: border-box;
+  opacity: 0.5;
 }
 
 .timeline-kf-dot:hover {
@@ -2734,7 +2764,7 @@ kbd {
 .timeline-kf-dot--secondary {
   width: 12px;
   height: 12px;
-  opacity: 0.5;
+  opacity: 0.8;
 }
 
 .timeline-kf-dot--secondary:hover {
@@ -2745,6 +2775,7 @@ kbd {
 .timeline-kf-dot--selected {
   width: 16px;
   height: 16px;
+  opacity: 0.8;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
   z-index: 3;
 }
@@ -2797,11 +2828,24 @@ kbd {
 /* === Editor-only progress handle (line + arrow instead of circle) === */
 .app-main:has(.app-sidebar:not(.app-sidebar--hidden)) .ci-video-hotspot-progress-handle {
   top: -13px;
-  width: 2px;
+  width: 12px;
   height: calc(100% + 17px);
-  background: #fff;
+  background: transparent;
   border-radius: 0;
-  transform: translateX(-50%) scaleX(0);
+  transform: translateX(-50%) scaleX(1);
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.app-main:has(.app-sidebar:not(.app-sidebar--hidden)) .ci-video-hotspot-progress-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 100%;
+  background: #fff;
 }
 
 .app-main:has(.app-sidebar:not(.app-sidebar--hidden)) .ci-video-hotspot-progress-handle::before {
@@ -2815,11 +2859,11 @@ kbd {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 6px solid #fff;
+  z-index: 1;
 }
 
-.app-main:has(.app-sidebar:not(.app-sidebar--hidden)) .ci-video-hotspot-progress:hover .ci-video-hotspot-progress-handle,
 .app-main:has(.app-sidebar:not(.app-sidebar--hidden)) .ci-video-hotspot-progress--dragging .ci-video-hotspot-progress-handle {
-  transform: translateX(-50%) scaleX(1);
+  cursor: grabbing;
 }
 
 /* === Card Editor Modal === */

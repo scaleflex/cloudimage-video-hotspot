@@ -159,6 +159,15 @@ export class HotspotManager implements HotspotManagerInterface {
       this.ctx.player.pause();
     }
 
+    // Auto-open popover if configured
+    if (hotspot.autoOpen && popover && marker) {
+      this.closeAll();
+      popover.show();
+      setMarkerActive(marker, true);
+      this.openPopovers.add(hotspot.id);
+      this.handleHotspotInteract(hotspot.id);
+    }
+
     config.onHotspotShow?.(hotspot as VideoHotspotItem);
     this.ctx.emitAnalytics('hotspot_show', hotspot.id);
     announceToScreenReader(`Hotspot appeared: ${hotspot.label}`);

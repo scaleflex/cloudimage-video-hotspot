@@ -206,6 +206,8 @@ export interface VideoHotspotItem {
   trigger?: TriggerMode;
   /** Override global placement for this specific hotspot's popover */
   placement?: Placement;
+  /** Automatically open the popover when this hotspot becomes visible (default: false) */
+  autoOpen?: boolean;
   /** Pause the video when this hotspot becomes visible (default: false) */
   pauseOnShow?: boolean;
   /** Pause the video when this hotspot is interacted with (default: inherits from global config) */
