@@ -15,6 +15,13 @@
   <a href="https://bundlephobia.com/package/js-cloudimage-video-hotspot"><img src="https://img.shields.io/bundlephobia/minzip/js-cloudimage-video-hotspot?style=flat-square" alt="bundle size"></a>
 </p>
 
+<p align="center">
+  <a href="https://scaleflex.github.io/js-cloudimage-video-hotspot/">Live Demo</a> |
+  <a href="https://scaleflex.github.io/js-cloudimage-video-hotspot/editor.html">Visual Editor</a> |
+  <a href="https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-video-hotspot/tree/master/examples/vanilla">Vanilla Sandbox</a> |
+  <a href="https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-video-hotspot/tree/master/examples/react">React Sandbox</a>
+</p>
+
 ---
 
 ## Why js-cloudimage-video-hotspot?
@@ -55,7 +62,7 @@ npm install js-cloudimage-video-hotspot
 ### CDN
 
 ```html
-<script src="https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/1.0.0/js-cloudimage-video-hotspot.min.js?func=proxy"></script>
+<script src="https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/1.1.0/js-cloudimage-video-hotspot.min.js?func=proxy"></script>
 ```
 
 ### Optional peer dependencies

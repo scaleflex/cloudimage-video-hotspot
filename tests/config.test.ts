@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { mergeConfig, validateConfig } from '../src/core/config';
-import type { CIVideoHotspotConfig } from '../src/core/types';
+import type { CIVideoHotspotConfig, VideoHotspotItem } from '../src/core/types';
 
 const minConfig: CIVideoHotspotConfig = {
   src: 'test.mp4',
@@ -41,31 +41,31 @@ describe('mergeConfig', () => {
 
 describe('validateConfig', () => {
   it('throws if src is missing', () => {
-    expect(() => validateConfig({ hotspots: [] } as any)).toThrow('"src" is required');
+    expect(() => validateConfig({ hotspots: [] } as unknown as CIVideoHotspotConfig)).toThrow('"src" is required');
   });
 
   it('throws if hotspots is missing', () => {
-    expect(() => validateConfig({ src: 'test.mp4' } as any)).toThrow('"hotspots" array is required');
+    expect(() => validateConfig({ src: 'test.mp4' } as unknown as CIVideoHotspotConfig)).toThrow('"hotspots" array is required');
   });
 
   it('throws if hotspot has no id', () => {
     expect(() => validateConfig({
       src: 'test.mp4',
-      hotspots: [{ x: '50%', y: '50%', startTime: 0, endTime: 10, label: 'Test' } as any],
+      hotspots: [{ x: '50%', y: '50%', startTime: 0, endTime: 10, label: 'Test' } as unknown as VideoHotspotItem],
     })).toThrow('must have an "id"');
   });
 
   it('throws if hotspot has no startTime/endTime', () => {
     expect(() => validateConfig({
       src: 'test.mp4',
-      hotspots: [{ id: 'h1', x: '50%', y: '50%', label: 'Test' } as any],
+      hotspots: [{ id: 'h1', x: '50%', y: '50%', label: 'Test' } as unknown as VideoHotspotItem],
     })).toThrow('must have "startTime" and "endTime"');
   });
 
   it('throws if hotspot has no label', () => {
     expect(() => validateConfig({
       src: 'test.mp4',
-      hotspots: [{ id: 'h1', x: '50%', y: '50%', startTime: 0, endTime: 10 } as any],
+      hotspots: [{ id: 'h1', x: '50%', y: '50%', startTime: 0, endTime: 10 } as unknown as VideoHotspotItem],
     })).toThrow('must have a "label"');
   });
 

@@ -10,11 +10,11 @@ export const CIVideoHotspotViewer = forwardRef<CIVideoHotspotInstance | null, CI
 
     const { containerRef, instance } = useCIVideoHotspot(config);
 
-    useImperativeHandle(ref, () => instance.current, [instance]);
+    useImperativeHandle(ref, () => instance.current!, [instance]);
 
     return (
       <div
-        ref={containerRef}
+        ref={containerRef as React.RefObject<HTMLDivElement>}
         className={className}
         style={style}
       />

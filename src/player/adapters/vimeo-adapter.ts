@@ -5,6 +5,8 @@ import { createElement } from '../../utils/dom';
  * Vimeo Player SDK adapter.
  * Dynamic-imports @vimeo/player — it must be installed as a peer dependency.
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Vimeo Player SDK types are not available at compile time
 export class VimeoAdapter extends VideoPlayerAdapter {
   private container!: HTMLDivElement;
   private playerDiv!: HTMLDivElement;
@@ -194,6 +196,8 @@ export class VimeoAdapter extends VideoPlayerAdapter {
     this.removeAll();
   }
 }
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 /** Extract Vimeo video ID from URL */
 export function extractVimeoId(url: string): string | null {

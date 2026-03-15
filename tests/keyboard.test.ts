@@ -1,13 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { VideoKeyboardHandler } from '../src/a11y/keyboard';
 
-function createKeyEvent(key: string, target?: Partial<HTMLElement>): KeyboardEvent {
-  const event = new KeyboardEvent('keydown', { key, bubbles: true });
-  if (target) {
-    Object.defineProperty(event, 'target', { value: target });
-  }
-  return event;
-}
 
 describe('VideoKeyboardHandler', () => {
   let container: HTMLElement;

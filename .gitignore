@@ -17,6 +17,12 @@ coverage/
 !demo/bed.mp4
 !demo/Rest room.mp4
 
+# Generated type declarations in src (emitted by tsc into dist, not src)
+src/**/*.d.ts
+!src/utils/vite-env.d.ts
+!src/player/adapters/*-types.d.ts
+src/**/*.d.ts.map
+
 # Experimental packages
 packages/
 

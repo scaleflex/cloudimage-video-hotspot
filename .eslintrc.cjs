@@ -16,7 +16,7 @@ module.exports = {
     node: true,
   },
   rules: {
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     '@typescript-eslint/no-explicit-any': 'error',
   },
   ignorePatterns: ['dist/', 'dist-demo/', 'node_modules/', 'coverage/'],

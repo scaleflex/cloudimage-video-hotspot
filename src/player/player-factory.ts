@@ -1,15 +1,17 @@
 import { VideoPlayerAdapter, AdapterOptions } from './adapter';
 import { HTML5Adapter } from './adapters/html5-adapter';
+import { HLSAdapter } from './adapters/hls-adapter';
+import { YouTubeAdapter } from './adapters/youtube-adapter';
+import { VimeoAdapter } from './adapters/vimeo-adapter';
 import type { PlayerType, HLSConfig } from '../core/types';
 
 /**
  * Creates the appropriate adapter based on playerType or auto-detection.
  *
- * Non-HTML5 adapter modules are imported via require() which Vite/Webpack
- * inlines into the bundle. True code-splitting is not possible here because
- * the factory is synchronous. The heavy third-party SDKs (hls.js,
- * @vimeo/player, YouTube IFrame API) are loaded asynchronously inside each
- * adapter's mount() method — so they are never bundled.
+ * All adapters are statically imported — they are lightweight wrappers.
+ * The heavy third-party SDKs (hls.js, @vimeo/player, YouTube IFrame API)
+ * are loaded asynchronously inside each adapter's mount() method,
+ * so they are never bundled.
  */
 export class PlayerFactory {
   static create(
@@ -22,18 +24,12 @@ export class PlayerFactory {
       : playerType;
 
     switch (type) {
-      case 'hls': {
-        const { HLSAdapter } = require('./adapters/hls-adapter');
+      case 'hls':
         return new HLSAdapter(options, hlsConfig);
-      }
-      case 'youtube': {
-        const { YouTubeAdapter } = require('./adapters/youtube-adapter');
+      case 'youtube':
         return new YouTubeAdapter(options);
-      }
-      case 'vimeo': {
-        const { VimeoAdapter } = require('./adapters/vimeo-adapter');
+      case 'vimeo':
         return new VimeoAdapter(options);
-      }
       default:
         return new HTML5Adapter(options);
     }

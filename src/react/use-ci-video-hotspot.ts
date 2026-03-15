@@ -21,7 +21,6 @@ export function useCIVideoHotspot(options: UseCIVideoHotspotOptions): UseCIVideo
       instanceRef.current = null;
     };
   // Re-create on src change
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [options.src]);
 
   // Update instance when non-src config changes (hotspots, chapters, trigger, etc.)
@@ -30,9 +29,8 @@ export function useCIVideoHotspot(options: UseCIVideoHotspotOptions): UseCIVideo
     if (!instance) return;
 
     // Skip on initial mount — the constructor already used these values
-    const { src: _src, ...updateableOptions } = optionsRef.current;
+    const { src: _, ...updateableOptions } = optionsRef.current;
     instance.update(updateableOptions);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     options.hotspots,
     options.chapters,

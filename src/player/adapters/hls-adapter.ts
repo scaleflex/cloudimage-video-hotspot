@@ -9,6 +9,7 @@ import { HLS_MAX_RETRIES, HLS_INITIAL_RETRY_MS } from '../../core/constants';
  * hls.js is a peer dependency — not bundled.
  */
 export class HLSAdapter extends HTML5Adapter {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private hls: any = null;
   private hlsConfig: HLSConfig;
   private networkRetryCount = 0;
@@ -50,7 +51,8 @@ export class HLSAdapter extends HTML5Adapter {
       this.hls.attachMedia(this.videoEl);
 
       // Fatal error recovery with exponential backoff
-      this.hls.on(Hls.Events.ERROR, (_: any, data: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      this.hls.on(Hls.Events.ERROR, (_: unknown, data: any) => {
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:

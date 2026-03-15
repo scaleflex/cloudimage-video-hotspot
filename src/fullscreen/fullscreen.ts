@@ -13,6 +13,9 @@ export interface FullscreenControl {
   destroy: () => void;
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// Webkit-prefixed fullscreen APIs are untyped in lib.dom
+
 function isFullscreenEnabled(): boolean {
   return !!(
     document.fullscreenEnabled ||
@@ -45,6 +48,7 @@ function exitFullscreenApi(): Promise<void> {
   }
   return Promise.reject(new Error('Fullscreen API not supported'));
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 /** Create a fullscreen controller for the container */
 export function createFullscreenControl(

@@ -1,10 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": "src/react",
-    "outDir": "dist/react"
+    "rootDir": "src",
+    "outDir": "dist"
   },
-  "include": [
-    "src/react"
-  ]
+  "include": ["src/react", "src/utils/vite-env.d.ts", "src/player/adapters/*-types.d.ts"],
+  "exclude": []
 }

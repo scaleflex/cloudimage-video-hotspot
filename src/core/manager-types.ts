@@ -3,8 +3,6 @@ import type {
   NormalizedVideoHotspot,
   VideoHotspotItem,
   VideoChapter,
-  Placement,
-  TriggerMode,
 } from './types';
 import type { AnalyticsEmit } from './analytics';
 import type { TimelineEngine } from './timeline';

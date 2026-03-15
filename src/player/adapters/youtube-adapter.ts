@@ -5,6 +5,8 @@ import { createElement } from '../../utils/dom';
  * YouTube IFrame API adapter.
  * Loads the YT IFrame API script dynamically — zero bundled dependencies.
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// YouTube IFrame API types are not available at compile time
 export class YouTubeAdapter extends VideoPlayerAdapter {
   private container!: HTMLDivElement;
   private playerDiv!: HTMLDivElement;
@@ -186,6 +188,8 @@ export class YouTubeAdapter extends VideoPlayerAdapter {
     this.removeAll();
   }
 }
+
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 /** Extract YouTube video ID from various URL formats */
 export function extractYouTubeId(url: string): string | null {

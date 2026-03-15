@@ -22,6 +22,7 @@ let globalTrigger: TriggerMode = 'click';
 let globalPauseOnInteract = true;
 let globalMarkerStyle: MarkerStyle = 'dot';
 let editorMarkerObserver: MutationObserver | null = null;
+let pendingLoadHide: (() => void) | null = null;
 
 // ──────────────────── Undo/Redo ────────────────────
 let undoStack: string[] = [];
@@ -138,18 +139,18 @@ function setupToolbar(): void {
     rebuildViewer(true);
     updateJsonOutput();
 
-    // Listen for load success / error on the new video element
-    const videoEl = document.querySelector('.ci-video-hotspot-video') as HTMLVideoElement | null;
     const hideLoading = () => {
       loadingOverlay?.classList.remove('video-loading-overlay--visible');
       if (loadBtn) {
         loadBtn.textContent = 'Load';
         loadBtn.removeAttribute('disabled');
       }
+      pendingLoadHide = null;
     };
 
     // Fallback timeout — hide loading after 15s even if no event fires
     const loadTimeout = setTimeout(() => {
+      pendingLoadHide = null;
       hideLoading();
       urlInput.style.borderColor = '#ef4444';
       urlInput.placeholder = 'Video failed to load — check the URL';
@@ -159,37 +160,11 @@ function setupToolbar(): void {
       }, 3000);
     }, 15000);
 
-    if (videoEl) {
-      const onLoaded = () => {
-        clearTimeout(loadTimeout);
-        cleanup();
-        hideLoading();
-        // Force first frame to render — seek to a tiny offset so the browser decodes a frame
-        videoEl.currentTime = 0.001;
-      };
-      const onError = () => {
-        clearTimeout(loadTimeout);
-        cleanup();
-        hideLoading();
-        urlInput.style.borderColor = '#ef4444';
-        urlInput.placeholder = 'Video failed to load — check the URL';
-        setTimeout(() => {
-          urlInput.style.borderColor = '';
-          urlInput.placeholder = 'Video URL (mp4, webm, m3u8, YouTube, Vimeo...)';
-        }, 3000);
-      };
-      const cleanup = () => {
-        videoEl.removeEventListener('loadedmetadata', onLoaded);
-        videoEl.removeEventListener('error', onError);
-      };
-      videoEl.addEventListener('loadedmetadata', onLoaded, { once: true });
-      videoEl.addEventListener('error', onError, { once: true });
-    } else {
-      // Non-HTML5 adapter (YouTube/Vimeo) — hide loading when onReady fires
-      // onReady is already handled in rebuildViewer, just clear the timeout
+    // Use onReady callback (works for all player types: HTML5, YouTube, Vimeo)
+    pendingLoadHide = () => {
       clearTimeout(loadTimeout);
       hideLoading();
-    }
+    };
   };
   loadBtn?.addEventListener('click', loadVideo);
   urlInput?.addEventListener('keydown', (e) => {
@@ -345,6 +320,9 @@ function rebuildViewer(skipSeekSave = false): void {
       editorMarkerObserver = null;
     },
     onReady: () => {
+      // Hide loading overlay (works for all player types including YouTube/Vimeo)
+      if (pendingLoadHide) pendingLoadHide();
+
       videoDuration = viewer?.getDuration() || 60;
       renderTimeline();
       renderSidebar();

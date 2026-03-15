@@ -583,6 +583,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
     for (const key of callbackKeys) {
       if (key in config) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (this.config as any)[key] = (config as any)[key];
       }
     }
