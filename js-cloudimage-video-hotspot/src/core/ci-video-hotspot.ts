@@ -486,7 +486,21 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
   // === Public API: Lifecycle ===
 
+  /** Keys that can be updated without a full DOM rebuild */
+  private static readonly LIGHT_UPDATE_KEYS = new Set<string>([
+    'hotspots',
+    'onPlay', 'onPause', 'onTimeUpdate', 'onReady',
+    'onHotspotClick', 'onHotspotShow', 'onHotspotHide',
+    'onOpen', 'onClose', 'onAnalytics', 'onFullscreenChange', 'onChapterChange',
+  ]);
+
   update(config: Partial<CIVideoHotspotConfig>): void {
+    // Fast path: only hotspots and/or callbacks changed — reconcile without DOM rebuild
+    if (this.canLightUpdate(config)) {
+      this.lightUpdate(config);
+      return;
+    }
+
     const srcChanged = config.src !== undefined && config.src !== this.config.src;
 
     let currentTime = 0;
@@ -531,6 +545,60 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
         this.renderLoopManager.startRenderLoop();
       }
     }
+  }
+
+  private canLightUpdate(config: Partial<CIVideoHotspotConfig>): boolean {
+    return Object.keys(config).every((k) => CIVideoHotspot.LIGHT_UPDATE_KEYS.has(k));
+  }
+
+  private lightUpdate(config: Partial<CIVideoHotspotConfig>): void {
+    // Reconcile hotspots if changed
+    if (config.hotspots) {
+      const oldIds = new Set(this.config.hotspots.map((h) => h.id));
+      const newIds = new Set(config.hotspots.map((h) => h.id));
+
+      // Remove deleted hotspots
+      for (const id of oldIds) {
+        if (!newIds.has(id)) {
+          this.removeHotspot(id);
+        }
+      }
+
+      // Add new hotspots and update existing ones
+      for (const h of config.hotspots) {
+        if (!oldIds.has(h.id)) {
+          this.addHotspot(h);
+        } else {
+          this.updateHotspot(h.id, h);
+        }
+      }
+    }
+
+    // Update callback references on the config object (managers share this reference)
+    const callbackKeys = [
+      'onPlay', 'onPause', 'onTimeUpdate', 'onReady',
+      'onHotspotClick', 'onHotspotShow', 'onHotspotHide',
+      'onOpen', 'onClose', 'onAnalytics', 'onFullscreenChange', 'onChapterChange',
+    ] as const;
+
+    for (const key of callbackKeys) {
+      if (key in config) {
+        (this.config as any)[key] = (config as any)[key];
+      }
+    }
+
+    // Re-create analytics emitter if onAnalytics changed
+    if ('onAnalytics' in config) {
+      this.emitAnalytics = createAnalyticsEmitter(
+        config.onAnalytics,
+        () => this.player?.getCurrentTime() ?? 0,
+      );
+    }
+
+    // Re-process current time to reflect hotspot changes immediately
+    const currentTime = this.player.getCurrentTime();
+    this.hotspotManager.processTimeUpdate(currentTime);
+    this.controls?.update();
   }
 
   destroy(): void {
