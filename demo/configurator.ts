@@ -1,4 +1,4 @@
-import CIVideoHotspot from '../src/index';
+import CIVideoHotspot from '../src';
 import type { CIVideoHotspotConfig, MarkerStyle, HotspotAnimation } from '../src/core/types';
 
 const SAMPLE_VIDEO = './bed.mp4';

@@ -511,7 +511,7 @@ Animations are disabled automatically when `prefers-reduced-motion: reduce` is s
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](LICENSE)
 
 ---
 

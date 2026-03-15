@@ -1,4 +1,4 @@
-import CIVideoHotspot from '../src/index';
+import CIVideoHotspot from '../src';
 import type { VideoHotspotItem, Keyframe, MarkerStyle, TriggerMode, Placement, HotspotAnimation, InterpolationMode } from '../src/core/types';
 
 let videoSrc = './Rest room.mp4';

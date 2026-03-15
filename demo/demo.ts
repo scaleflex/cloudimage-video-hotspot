@@ -1,4 +1,4 @@
-import CIVideoHotspot from '../src/index';
+import CIVideoHotspot from '../src';
 import { initConfigurator } from './configurator';
 
 // ──────────────────── Viewer (standalone player with hotspots) ────────────────────

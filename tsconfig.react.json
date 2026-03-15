@@ -4,5 +4,7 @@
     "rootDir": "src/react",
     "outDir": "dist/react"
   },
-  "include": ["src/react"]
+  "include": [
+    "src/react"
+  ]
 }

@@ -49,7 +49,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint src/ tests/ --ext .ts,.tsx"
+    "lint": "eslint src tests/ --ext .ts,.tsx"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",

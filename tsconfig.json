@@ -16,6 +16,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "include": ["src", "demo"],
-  "exclude": ["src/react", "demo/react-demo"]
+  "include": [
+    "src", "demo"],
+  "exclude": [
+    "src/react", "demo/react-demo"]
 }

@@ -4,6 +4,10 @@
     "rootDir": "src",
     "outDir": "dist"
   },
-  "include": ["src"],
-  "exclude": ["src/react"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/react"
+  ]
 }
