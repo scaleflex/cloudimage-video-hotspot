@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/js-cloudimage-video-hotspot"><img src="https://img.shields.io/npm/v/js-cloudimage-video-hotspot.svg?style=flat-square" alt="npm version"></a>
   <a href="https://www.npmjs.com/package/js-cloudimage-video-hotspot"><img src="https://img.shields.io/npm/dm/js-cloudimage-video-hotspot.svg?style=flat-square" alt="npm downloads"></a>
-  <a href="https://github.com/scaleflex/js-cloudimage-video-hotspot/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/js-cloudimage-video-hotspot.svg?style=flat-square" alt="license"></a>
+  <a href="https://github.com/scaleflex/js-cloudimage-video-hotspot/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/js-cloudimage-video-hotspot.svg?style=flat-square" alt="license"></a>
   <a href="https://bundlephobia.com/package/js-cloudimage-video-hotspot"><img src="https://img.shields.io/bundlephobia/minzip/js-cloudimage-video-hotspot?style=flat-square" alt="bundle size"></a>
 </p>
 
