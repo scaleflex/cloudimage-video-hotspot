@@ -2,7 +2,7 @@ import CIVideoHotspot from '../src';
 import { initConfigurator } from './configurator';
 
 // ──────────────────── Viewer (standalone player with hotspots) ────────────────────
-const HERO_VIDEO = './Rest room.mp4';
+const HERO_VIDEO = 'https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/Rest%20room.mp4?vh=152b41&func=proxy';
 const HERO_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
 const viewerHotspots = [

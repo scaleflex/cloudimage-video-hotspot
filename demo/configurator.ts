@@ -1,7 +1,7 @@
 import CIVideoHotspot from '../src';
 import type { CIVideoHotspotConfig, MarkerStyle, HotspotAnimation } from '../src/core/types';
 
-const SAMPLE_VIDEO = './bed.mp4';
+const SAMPLE_VIDEO = 'https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/bed.mp4?vh=564790&func=proxy';
 const CONFIGURATOR_VIDEO = '/my-configurator-video.mp4';
 
 let instance: CIVideoHotspot | null = null;

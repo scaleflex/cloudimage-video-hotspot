@@ -1,7 +1,7 @@
 import CIVideoHotspot from '../src';
 import type { VideoHotspotItem, Keyframe, MarkerStyle, TriggerMode, Placement, HotspotAnimation, InterpolationMode } from '../src/core/types';
 
-let videoSrc = './Rest room.mp4';
+let videoSrc = 'https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/Rest%20room.mp4?vh=152b41&func=proxy';
 
 // Color palette for hotspots
 const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#06b6d4', '#f97316', '#a855f7'];
