@@ -685,6 +685,9 @@ function renderSidebar(): void {
 
   // Global settings panel
   const settingsPanel = el('div', 'sidebar-settings');
+  const settingsTitle = el('div', 'sidebar-settings-title');
+  settingsTitle.textContent = 'General Settings';
+  settingsPanel.appendChild(settingsTitle);
 
   // Trigger
   const triggerRow = el('div', 'sidebar-setting__row');
@@ -804,7 +807,7 @@ function renderSidebar(): void {
       // Points header
       const ptsHeader = el('div', 'points-header');
       const ptsTitle = el('span', 'points-title');
-      ptsTitle.textContent = 'Points';
+      ptsTitle.textContent = 'All Points';
       ptsHeader.appendChild(ptsTitle);
       body.appendChild(ptsHeader);
 
@@ -816,7 +819,7 @@ function renderSidebar(): void {
         row.addEventListener('click', () => selectPoint(h.id, kfIdx));
 
         const label = el('span', 'point-row-label');
-        label.textContent = `P${kfIdx + 1}`;
+        label.textContent = `Point ${kfIdx + 1}`;
 
         const delPointBtn = el('button', 'point-row-delete');
         delPointBtn.textContent = '\u00D7';
@@ -827,16 +830,19 @@ function renderSidebar(): void {
         });
 
         if (isPointSelected) {
-          // Time field on the main row
+          // Top line: label + delete button
+          const topLine = el('div', 'point-row-top');
+          topLine.append(label, delPointBtn);
+          row.appendChild(topLine);
+
+          // Bottom line: time + X/Y coordinates
+          const bottomLine = el('div', 'point-row-bottom');
           const timeField = el('div', 'point-row-fields');
           timeField.appendChild(inlineTimeField('Time', kf.time, (v) => updateKeyframe(h.id, kfIdx, 'time', v)));
-          row.append(label, timeField, delPointBtn);
-
-          // X/Y fields on a second line inside the same row
-          const coordRow = el('div', 'point-row-coords');
-          coordRow.appendChild(inlineField('X', parseCoord(kf.x), (v) => updateKeyframe(h.id, kfIdx, 'x', v)));
-          coordRow.appendChild(inlineField('Y', parseCoord(kf.y), (v) => updateKeyframe(h.id, kfIdx, 'y', v)));
-          row.appendChild(coordRow);
+          bottomLine.appendChild(timeField);
+          bottomLine.appendChild(inlineField('X', parseCoord(kf.x), (v) => updateKeyframe(h.id, kfIdx, 'x', v)));
+          bottomLine.appendChild(inlineField('Y', parseCoord(kf.y), (v) => updateKeyframe(h.id, kfIdx, 'y', v)));
+          row.appendChild(bottomLine);
           body.appendChild(row);
         } else {
           const info = el('span', 'point-row-info');

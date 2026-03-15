@@ -209,7 +209,7 @@ body {
   gap: 8px;
   font-size: 13px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.1em;
   color: var(--sf-primary);
   margin-bottom: 16px;
@@ -532,7 +532,7 @@ body {
 .demo-hero-sandboxes-label {
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.08em;
   color: rgba(255, 255, 255, 0.5);
   margin-right: 4px;
@@ -701,7 +701,7 @@ body {
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
+  text-transform: capitalize;
   line-height: 1;
   backdrop-filter: blur(8px);
 }
@@ -1126,7 +1126,7 @@ kbd {
 .demo-configurator-panel > h3 {
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.1em;
   color: var(--sf-text-muted);
   margin-bottom: 14px;
@@ -1194,7 +1194,7 @@ kbd {
 .cfg-group-title {
   font-size: 10px;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.08em;
   color: #94a3b8;
   margin-bottom: 8px;
@@ -1358,7 +1358,7 @@ kbd {
 .demo-footer-col h4 {
   font-size: 12px;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.1em;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 4px;
@@ -2123,6 +2123,13 @@ kbd {
   background: #d97706;
 }
 
+.sidebar-settings-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #94a3b8;
+}
+
 /* Global settings panel */
 .sidebar-settings {
   padding: 8px 16px;
@@ -2142,7 +2149,7 @@ kbd {
 .sidebar-setting__label {
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.5px;
   color: #94a3b8;
 }
@@ -2194,7 +2201,7 @@ kbd {
 .sidebar-trigger__label {
   font-size: 11px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.5px;
   color: #94a3b8;
 }
@@ -2377,7 +2384,7 @@ kbd {
   display: block;
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.5px;
   color: #94a3b8;
   margin-bottom: 4px;
@@ -2408,9 +2415,9 @@ kbd {
 }
 
 .points-title {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.5px;
   color: #94a3b8;
 }
@@ -2435,12 +2442,28 @@ kbd {
 .point-row--selected {
   background: rgba(59, 130, 246, 0.15);
   color: #93c5fd;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.point-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.point-row-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
 }
 
 .point-row-label {
   font-weight: 500;
   min-width: 28px;
+
 }
 
 .point-row-info {
@@ -2489,8 +2512,24 @@ kbd {
 .point-row-coords {
   display: flex;
   gap: 8px;
-  width:90%;
+  width: 50%;
   padding: 4px 0 0 53px;
+}
+
+.point-row-bottom .point-row-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.point-row-bottom .point-row-fields {
+  flex: 1.4;
+  min-width: 0;
+}
+
+.point-row-bottom .point-row-field-input {
+  min-width: 0 !important;
+  padding-left: 6px !important;
+  text-align: center;
 }
 
 .point-row-field {
@@ -2548,7 +2587,7 @@ kbd {
 .point-field label {
   font-size: 10px;
   color: #64748b;
-  text-transform: uppercase;
+  text-transform: capitalize;
 }
 
 .point-field input {
@@ -2617,7 +2656,7 @@ kbd {
   font-size: 11px;
   font-weight: 600;
   color: #94a3b8;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.05em;
 }
 
@@ -2657,7 +2696,7 @@ kbd {
   font-size: 10px;
   font-weight: 600;
   color: #64748b;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.05em;
 }
 
@@ -3004,7 +3043,7 @@ kbd {
 .editor-page-shortcuts h3 {
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.08em;
   color: var(--sf-text-muted);
   margin-bottom: 16px;
@@ -3052,7 +3091,7 @@ kbd {
 .editor-page-json h3 {
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: 0.08em;
   color: var(--sf-text-muted);
   margin-bottom: 16px;
