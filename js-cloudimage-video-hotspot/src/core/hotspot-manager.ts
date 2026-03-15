@@ -24,6 +24,7 @@ export class HotspotManager implements HotspotManagerInterface {
   private wasPlayingBeforePause = false;
   /** Tracks whether the user manually paused during an auto-pause */
   private userPausedDuringInteract = false;
+  private interactEndTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor(private ctx: ManagerContext) {}
 
@@ -82,6 +83,11 @@ export class HotspotManager implements HotspotManagerInterface {
       onClose: (h) => {
         config.onClose?.(h);
         this.ctx.emitAnalytics('popover_close', h.id);
+        // Resume video when popover is closed (e.g. via close button)
+        this.openPopovers.delete(hotspot.id);
+        setMarkerActive(marker, false);
+        this.focusTraps.get(hotspot.id)?.deactivate();
+        this.handleHotspotInteractEnd(hotspot.id);
       },
       emitAnalytics: this.ctx.emitAnalytics,
     });
@@ -94,6 +100,7 @@ export class HotspotManager implements HotspotManagerInterface {
 
     if (triggerMode === 'hover') {
       markerCleanups.push(addListener(marker, 'mouseenter', () => {
+        this.clearInteractEndTimer();
         this.handleHotspotInteract(hotspot.id);
         popover.show();
         setMarkerActive(marker, true);
@@ -101,7 +108,15 @@ export class HotspotManager implements HotspotManagerInterface {
       markerCleanups.push(addListener(marker, 'mouseleave', () => {
         popover.scheduleHide();
         setMarkerActive(marker, false);
-        this.handleHotspotInteractEnd(hotspot.id);
+        this.scheduleInteractEnd(hotspot.id);
+      }));
+      // Keep pause while hovering the popover card
+      markerCleanups.push(addListener(popover.element, 'mouseenter', () => {
+        this.clearInteractEndTimer();
+        this.handleHotspotInteract(hotspot.id);
+      }));
+      markerCleanups.push(addListener(popover.element, 'mouseleave', () => {
+        this.scheduleInteractEnd(hotspot.id);
       }));
       markerCleanups.push(addListener(marker, 'focus', () => {
         popover.show();
@@ -122,13 +137,9 @@ export class HotspotManager implements HotspotManagerInterface {
 
         if (popover.isVisible()) {
           popover.hide();
-          setMarkerActive(marker, false);
-          this.openPopovers.delete(hotspot.id);
-          this.handleHotspotInteractEnd(hotspot.id);
-
-          // Deactivate focus trap
-          this.focusTraps.get(hotspot.id)?.deactivate();
         } else {
+          // Close any other open popovers first — only one card at a time
+          this.closeAll();
           popover.show();
           setMarkerActive(marker, true);
           this.openPopovers.add(hotspot.id);
@@ -146,6 +157,15 @@ export class HotspotManager implements HotspotManagerInterface {
     if (hotspot.pauseOnShow && !this.ctx.player.isPaused()) {
       this.wasPlayingBeforePause = true;
       this.ctx.player.pause();
+    }
+
+    // Auto-open popover if configured
+    if (hotspot.autoOpen && popover && marker) {
+      this.closeAll();
+      popover.show();
+      setMarkerActive(marker, true);
+      this.openPopovers.add(hotspot.id);
+      this.handleHotspotInteract(hotspot.id);
     }
 
     config.onHotspotShow?.(hotspot as VideoHotspotItem);
@@ -175,23 +195,24 @@ export class HotspotManager implements HotspotManagerInterface {
       this.hotspotCleanups.delete(hotspot.id);
     }
 
-    // Exit animation then remove
+    // Remove from maps immediately so showHotspot() won't short-circuit
+    this.markers.delete(hotspot.id);
+    this.popovers.delete(hotspot.id);
+
+    // Exit animation then destroy DOM
     if (marker && animation !== 'none') {
       setMarkerExiting(marker, animation);
       const timer = setTimeout(() => {
         this.activeTimers.delete(timer);
         destroyMarker(marker);
-        this.markers.delete(hotspot.id);
       }, EXIT_ANIMATION_MS);
       this.activeTimers.add(timer);
     } else if (marker) {
       destroyMarker(marker);
-      this.markers.delete(hotspot.id);
     }
 
     // Destroy popover
     popover?.destroy();
-    this.popovers.delete(hotspot.id);
 
     this.ctx.config.onHotspotHide?.(hotspot as VideoHotspotItem);
   }
@@ -216,6 +237,21 @@ export class HotspotManager implements HotspotManagerInterface {
     }
   }
 
+  private scheduleInteractEnd(hotspotId: string, delay = 200): void {
+    this.clearInteractEndTimer();
+    this.interactEndTimer = setTimeout(() => {
+      this.interactEndTimer = undefined;
+      this.handleHotspotInteractEnd(hotspotId);
+    }, delay);
+  }
+
+  private clearInteractEndTimer(): void {
+    if (this.interactEndTimer !== undefined) {
+      clearTimeout(this.interactEndTimer);
+      this.interactEndTimer = undefined;
+    }
+  }
+
   /** Call when user manually pauses (to prevent auto-resume) */
   onUserPause(): void {
     if (this.wasPlayingBeforePause) {
@@ -223,7 +259,25 @@ export class HotspotManager implements HotspotManagerInterface {
     }
   }
 
+  /** Allow navigation manager to set play-state tracking for seek-and-open */
+  setWasPlayingBeforePause(value: boolean): void {
+    this.wasPlayingBeforePause = value;
+    if (value) {
+      this.userPausedDuringInteract = false;
+    }
+  }
+
   open(id: string): void {
+    // Ensure marker and popover both exist — recreate if missing
+    if (!this.markers.has(id) || !this.popovers.has(id)) {
+      const hotspot = this.normalizedHotspots.get(id);
+      if (!hotspot) return;
+      this.showHotspot(hotspot);
+    }
+
+    // Close any other open popovers first — only one card at a time
+    this.closeAll();
+
     const popover = this.popovers.get(id);
     const marker = this.markers.get(id);
     if (popover && marker) {
@@ -354,6 +408,7 @@ export class HotspotManager implements HotspotManagerInterface {
 
   destroy(): void {
     // Clear timers
+    this.clearInteractEndTimer();
     for (const timer of this.activeTimers) {
       clearTimeout(timer);
     }

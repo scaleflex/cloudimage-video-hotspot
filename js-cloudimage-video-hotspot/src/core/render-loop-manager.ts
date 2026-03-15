@@ -1,15 +1,21 @@
 import type { ManagerContext, RenderLoopManagerInterface } from './manager-types';
 import type { HotspotManager } from './hotspot-manager';
 import type { NavigationManager } from './navigation-manager';
+import type { Controls } from '../player/controls';
 
 export class RenderLoopManager implements RenderLoopManagerInterface {
   private animFrameId: number | null = null;
+  private controls: Controls | null = null;
 
   constructor(
     private ctx: ManagerContext,
     private hotspotManager: HotspotManager,
     private navigationManager: NavigationManager,
   ) {}
+
+  setControls(controls: Controls | null): void {
+    this.controls = controls;
+  }
 
   onTimeUpdate(currentTime: number): void {
     if (this.ctx.isDestroyed()) return;
@@ -24,10 +30,13 @@ export class RenderLoopManager implements RenderLoopManagerInterface {
     const loop = () => {
       if (this.ctx.isDestroyed()) return;
       if (!this.ctx.player.isPaused()) {
-        // Only run RAF for keyframe updates (high fps)
+        const currentTime = this.ctx.player.getCurrentTime();
+        // Update hotspot positions at high fps when keyframes are active
         if (this.ctx.timeline.hasActiveKeyframes()) {
-          this.onTimeUpdate(this.ctx.player.getCurrentTime());
+          this.onTimeUpdate(currentTime);
         }
+        // Update progress bar smoothly (not full controls to avoid button re-render)
+        this.controls?.progressBar.update(currentTime);
         this.animFrameId = requestAnimationFrame(loop);
       }
     };

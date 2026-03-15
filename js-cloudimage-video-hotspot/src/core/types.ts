@@ -206,6 +206,8 @@ export interface VideoHotspotItem {
   trigger?: TriggerMode;
   /** Override global placement for this specific hotspot's popover */
   placement?: Placement;
+  /** Automatically open the popover when this hotspot becomes visible (default: false) */
+  autoOpen?: boolean;
   /** Pause the video when this hotspot becomes visible (default: false) */
   pauseOnShow?: boolean;
   /** Pause the video when this hotspot is interacted with (default: inherits from global config) */
@@ -272,6 +274,8 @@ export interface CIVideoHotspotConfig {
   /** Show hotspot indicators on the timeline/progress bar (default: 'dot') */
   timelineIndicators?: TimelineIndicatorStyle;
 
+  /** Toggle play/pause on click anywhere in the video area (default: true) */
+  clickToPlay?: boolean;
   /** Show built-in video player controls (default: true) */
   controls?: boolean;
   /** Show fullscreen button (default: true) */

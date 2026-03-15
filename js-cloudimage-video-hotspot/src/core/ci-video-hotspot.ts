@@ -44,6 +44,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   private emitAnalytics: AnalyticsEmit;
   private cleanups: (() => void)[] = [];
   private destroyed = false;
+  private looping = true;
   private videoAspectRatio = 16 / 9;
   private resizeObserver: ResizeObserver | null = null;
 
@@ -130,6 +131,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
       onPause: () => {
         removeClass(this.containerEl, 'ci-video-hotspot-container--playing');
+        removeClass(this.containerEl, 'ci-video-hotspot-container--loading');
         addClass(this.containerEl, 'ci-video-hotspot-container--paused');
         this.config.onPause?.();
         this.renderLoopManager?.stopRenderLoop();
@@ -169,6 +171,13 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
       onPlaying: () => {
         removeClass(this.containerEl, 'ci-video-hotspot-container--loading');
+      },
+
+      onEnded: () => {
+        this.seek(0);
+        if (this.looping) {
+          this.play();
+        }
       },
     });
 
@@ -214,6 +223,8 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       onMuteToggle: () => this.setMuted(!this.isMuted()),
       onFullscreenToggle: () => this.fullscreenControl?.toggle(),
       onSpeedChange: (r) => this.setPlaybackRate(r),
+      onLoopToggle: () => { this.looping = !this.looping; },
+      isLooping: () => this.looping,
       getDuration: () => this.getDuration(),
       getCurrentTime: () => this.getCurrentTime(),
       getBufferedEnd: () => this.player.getBufferedEnd(),
@@ -235,6 +246,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     });
 
     this.containerEl.appendChild(this.controls.element);
+    this.renderLoopManager.setControls(this.controls);
   }
 
   private initHotspotNav(): void {
@@ -290,7 +302,9 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
           this.controls.startIdleTimer();
         }
       }
-      this.togglePlay();
+      if (this.config.clickToPlay !== false) {
+        this.togglePlay();
+      }
     }));
 
     this.cleanups.push(addListener(this.containerEl, 'mousemove', () => {
@@ -304,8 +318,14 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
     this.cleanups.push(addListener(document, 'click', (e) => {
       if (this.destroyed) return;
+      if (this.hotspotManager.getOpenPopovers().size === 0) return;
       const target = e.target as HTMLElement;
+      // Don't close popovers when clicking controls (play/pause, volume, etc.)
+      if (target.closest('.ci-video-hotspot-controls')) return;
+      // Close if click is outside container, or inside container but not on a marker/popover
       if (!this.containerEl.contains(target)) {
+        this.closeAll();
+      } else if (!target.closest('.ci-video-hotspot-marker, .ci-video-hotspot-popover')) {
         this.closeAll();
       }
     }));
@@ -366,6 +386,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   // === Public API: Video Playback ===
 
   play(): Promise<void> {
+    this.hotspotManager.closeAll();
     return this.player.play();
   }
 
@@ -374,7 +395,11 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   }
 
   togglePlay(): void {
-    this.player.togglePlay();
+    if (this.player.isPaused()) {
+      this.play();
+    } else {
+      this.pause();
+    }
   }
 
   seek(time: number): void {
@@ -461,7 +486,21 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
   // === Public API: Lifecycle ===
 
+  /** Keys that can be updated without a full DOM rebuild */
+  private static readonly LIGHT_UPDATE_KEYS = new Set<string>([
+    'hotspots',
+    'onPlay', 'onPause', 'onTimeUpdate', 'onReady',
+    'onHotspotClick', 'onHotspotShow', 'onHotspotHide',
+    'onOpen', 'onClose', 'onAnalytics', 'onFullscreenChange', 'onChapterChange',
+  ]);
+
   update(config: Partial<CIVideoHotspotConfig>): void {
+    // Fast path: only hotspots and/or callbacks changed — reconcile without DOM rebuild
+    if (this.canLightUpdate(config)) {
+      this.lightUpdate(config);
+      return;
+    }
+
     const srcChanged = config.src !== undefined && config.src !== this.config.src;
 
     let currentTime = 0;
@@ -506,6 +545,60 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
         this.renderLoopManager.startRenderLoop();
       }
     }
+  }
+
+  private canLightUpdate(config: Partial<CIVideoHotspotConfig>): boolean {
+    return Object.keys(config).every((k) => CIVideoHotspot.LIGHT_UPDATE_KEYS.has(k));
+  }
+
+  private lightUpdate(config: Partial<CIVideoHotspotConfig>): void {
+    // Reconcile hotspots if changed
+    if (config.hotspots) {
+      const oldIds = new Set(this.config.hotspots.map((h) => h.id));
+      const newIds = new Set(config.hotspots.map((h) => h.id));
+
+      // Remove deleted hotspots
+      for (const id of oldIds) {
+        if (!newIds.has(id)) {
+          this.removeHotspot(id);
+        }
+      }
+
+      // Add new hotspots and update existing ones
+      for (const h of config.hotspots) {
+        if (!oldIds.has(h.id)) {
+          this.addHotspot(h);
+        } else {
+          this.updateHotspot(h.id, h);
+        }
+      }
+    }
+
+    // Update callback references on the config object (managers share this reference)
+    const callbackKeys = [
+      'onPlay', 'onPause', 'onTimeUpdate', 'onReady',
+      'onHotspotClick', 'onHotspotShow', 'onHotspotHide',
+      'onOpen', 'onClose', 'onAnalytics', 'onFullscreenChange', 'onChapterChange',
+    ] as const;
+
+    for (const key of callbackKeys) {
+      if (key in config) {
+        (this.config as any)[key] = (config as any)[key];
+      }
+    }
+
+    // Re-create analytics emitter if onAnalytics changed
+    if ('onAnalytics' in config) {
+      this.emitAnalytics = createAnalyticsEmitter(
+        config.onAnalytics,
+        () => this.player?.getCurrentTime() ?? 0,
+      );
+    }
+
+    // Re-process current time to reflect hotspot changes immediately
+    const currentTime = this.player.getCurrentTime();
+    this.hotspotManager.processTimeUpdate(currentTime);
+    this.controls?.update();
   }
 
   destroy(): void {

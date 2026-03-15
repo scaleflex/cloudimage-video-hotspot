@@ -4,7 +4,7 @@ import type { VideoHotspotItem, Keyframe, MarkerStyle, TriggerMode, Placement, H
 let videoSrc = './Rest room.mp4';
 
 // Color palette for hotspots
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#06b6d4', '#f97316', '#a855f7'];
 
 // ──────────────────── State ────────────────────
 type AppMode = 'view' | 'editor';
@@ -18,6 +18,10 @@ let placementMode = false;
 let videoDuration = 60;
 let editorHandlersBound = false;
 let seekAfterRebuild: number | null = null;
+let globalTrigger: TriggerMode = 'click';
+let globalPauseOnInteract = true;
+let globalMarkerStyle: MarkerStyle = 'dot';
+let editorMarkerObserver: MutationObserver | null = null;
 
 // ──────────────────── Undo/Redo ────────────────────
 let undoStack: string[] = [];
@@ -316,14 +320,29 @@ function rebuildViewer(skipSeekSave = false): void {
 
   viewer = new CIVideoHotspot(container, {
     src: videoSrc,
-    hotspots: hotspots.map(h => ({ ...h })),
-    trigger: 'click',
-    pauseOnInteract: mode === 'view',
+    hotspots: hotspots.map(h => ({ ...h, markerStyle: globalMarkerStyle })),
+    trigger: globalTrigger,
+    pauseOnInteract: globalPauseOnInteract,
     controls: true,
+    clickToPlay: mode !== 'editor',
     hotspotNavigation: false,
     timelineIndicators: 'none',
     onTimeUpdate: () => {
       updateMarkerVisibility();
+    },
+    onPlay: () => {
+      // Watch for new markers added by RAF render loop — hide non-selected in editor mode
+      if (mode === 'editor' && selectedHotspotId) {
+        const markersEl = document.querySelector('.ci-video-hotspot-markers');
+        if (markersEl && !editorMarkerObserver) {
+          editorMarkerObserver = new MutationObserver(() => updateMarkerVisibility());
+          editorMarkerObserver.observe(markersEl, { childList: true });
+        }
+      }
+    },
+    onPause: () => {
+      editorMarkerObserver?.disconnect();
+      editorMarkerObserver = null;
     },
     onReady: () => {
       videoDuration = viewer?.getDuration() || 60;
@@ -363,9 +382,6 @@ function setupEditorHandlers(): void {
       e.stopPropagation();
     }
   }, true);
-
-  // Double-click to create hotspot
-  videoArea.addEventListener('dblclick', handleVideoDoubleClick);
 
   // Click in placement mode
   videoArea.addEventListener('click', handleVideoClick);
@@ -560,7 +576,7 @@ function syncHotspot(id: string): void {
 function createHotspotAtPosition(x: number, y: number): void {
   pushUndo();
   const currentTime = Math.round((viewer?.getCurrentTime() ?? 0) * 10) / 10;
-  const endTime = Math.round((currentTime + 10) * 10) / 10;
+  const endTime = Math.round(Math.min(currentTime + 10, videoDuration) * 10) / 10;
   const id = `hotspot-${nextId++}`;
   const xStr = `${x}%`;
   const yStr = `${y}%`;
@@ -581,16 +597,15 @@ function createHotspotAtPosition(x: number, y: number): void {
   };
 
   hotspots.push(newHotspot);
-  selectedHotspotId = id;
-  selectedPointIndex = 0;
+  viewer?.pause();
   viewer?.addHotspot({ ...newHotspot });
-  updateMarkerVisibility();
-  renderSidebar();
-  renderTimeline();
+  selectPoint(id, 0);
   updateJsonOutput();
 }
 
 function deleteHotspot(id: string): void {
+  const h = hotspots.find(hs => hs.id === id);
+  if (!confirm(`Delete "${h?.label || id}"?`)) return;
   pushUndo();
   hotspots = hotspots.filter(h => h.id !== id);
   if (selectedHotspotId === id) {
@@ -668,6 +683,78 @@ function renderSidebar(): void {
   header.appendChild(addBtn);
   sidebar.appendChild(header);
 
+  // Global settings panel
+  const settingsPanel = el('div', 'sidebar-settings');
+  const settingsTitle = el('div', 'sidebar-settings-title');
+  settingsTitle.textContent = 'General Settings';
+  settingsPanel.appendChild(settingsTitle);
+
+  // Trigger
+  const triggerRow = el('div', 'sidebar-setting__row');
+  const triggerLabel = el('span', 'sidebar-setting__label');
+  triggerLabel.textContent = 'Trigger';
+  const triggerSelect = document.createElement('select') as HTMLSelectElement;
+  triggerSelect.className = 'sidebar-setting__select';
+  for (const opt of ['click', 'hover'] as const) {
+    const o = document.createElement('option');
+    o.value = opt;
+    o.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+    if (globalTrigger === opt) o.selected = true;
+    triggerSelect.appendChild(o);
+  }
+  triggerSelect.addEventListener('change', () => {
+    globalTrigger = triggerSelect.value as TriggerMode;
+    rebuildViewer();
+    updateJsonOutput();
+  });
+  triggerRow.append(triggerLabel, triggerSelect);
+  settingsPanel.appendChild(triggerRow);
+
+  // Pause on Interact
+  const pauseRow = el('div', 'sidebar-setting__row');
+  const pauseLabel = el('span', 'sidebar-setting__label');
+  pauseLabel.textContent = 'Pause on Interact';
+  const pauseSelect = document.createElement('select') as HTMLSelectElement;
+  pauseSelect.className = 'sidebar-setting__select';
+  for (const opt of [{ value: 'true', label: 'On' }, { value: 'false', label: 'Off' }]) {
+    const o = document.createElement('option');
+    o.value = opt.value;
+    o.textContent = opt.label;
+    if (String(globalPauseOnInteract) === opt.value) o.selected = true;
+    pauseSelect.appendChild(o);
+  }
+  pauseSelect.addEventListener('change', () => {
+    globalPauseOnInteract = pauseSelect.value === 'true';
+    rebuildViewer();
+    updateJsonOutput();
+  });
+  pauseRow.append(pauseLabel, pauseSelect);
+  settingsPanel.appendChild(pauseRow);
+
+  // Marker
+  const markerOptions: MarkerStyle[] = ['dot', 'dot-label', 'numbered'];
+  const markerRow = el('div', 'sidebar-setting__row');
+  const markerLabel = el('span', 'sidebar-setting__label');
+  markerLabel.textContent = 'Marker';
+  const markerSelect = document.createElement('select') as HTMLSelectElement;
+  markerSelect.className = 'sidebar-setting__select';
+  for (const opt of markerOptions) {
+    const o = document.createElement('option');
+    o.value = opt;
+    o.textContent = opt === 'dot-label' ? 'Label' : opt.charAt(0).toUpperCase() + opt.slice(1);
+    if (globalMarkerStyle === opt) o.selected = true;
+    markerSelect.appendChild(o);
+  }
+  markerSelect.addEventListener('change', () => {
+    globalMarkerStyle = markerSelect.value as MarkerStyle;
+    rebuildViewer();
+    updateJsonOutput();
+  });
+  markerRow.append(markerLabel, markerSelect);
+  settingsPanel.appendChild(markerRow);
+
+  sidebar.appendChild(settingsPanel);
+
   // List
   const list = el('div', 'sidebar-list');
   hotspots.forEach((h, hIdx) => {
@@ -695,7 +782,7 @@ function renderSidebar(): void {
     const time = el('span', 'hotspot-item-time');
     time.textContent = `${fmtTime(h.startTime)} – ${fmtTime(h.endTime)}`;
     const chevron = el('span', 'hotspot-item-chevron');
-    chevron.textContent = '\u25B8';
+    chevron.textContent = '\u25BE';
 
     hdr.append(colorDot, name, time, chevron);
     item.appendChild(hdr);
@@ -712,12 +799,15 @@ function renderSidebar(): void {
         h.label = nameInput.value;
         renderSidebar();
       });
+      const nameLabel = el('label', 'hotspot-name-label');
+      nameLabel.textContent = 'Label';
+      body.appendChild(nameLabel);
       body.appendChild(nameInput);
 
       // Points header
       const ptsHeader = el('div', 'points-header');
       const ptsTitle = el('span', 'points-title');
-      ptsTitle.textContent = 'Points';
+      ptsTitle.textContent = 'All Points';
       ptsHeader.appendChild(ptsTitle);
       body.appendChild(ptsHeader);
 
@@ -729,7 +819,7 @@ function renderSidebar(): void {
         row.addEventListener('click', () => selectPoint(h.id, kfIdx));
 
         const label = el('span', 'point-row-label');
-        label.textContent = `P${kfIdx + 1}`;
+        label.textContent = `Point ${kfIdx + 1}`;
 
         const delPointBtn = el('button', 'point-row-delete');
         delPointBtn.textContent = '\u00D7';
@@ -740,20 +830,28 @@ function renderSidebar(): void {
         });
 
         if (isPointSelected) {
-          // Inline editable fields between label and delete button
-          const fields = el('div', 'point-row-fields');
-          fields.appendChild(inlineField('T', kf.time, (v) => updateKeyframe(h.id, kfIdx, 'time', v)));
-          fields.appendChild(inlineField('X', parseCoord(kf.x), (v) => updateKeyframe(h.id, kfIdx, 'x', v)));
-          fields.appendChild(inlineField('Y', parseCoord(kf.y), (v) => updateKeyframe(h.id, kfIdx, 'y', v)));
-          row.append(label, fields, delPointBtn);
+          // Top line: label + delete button
+          const topLine = el('div', 'point-row-top');
+          topLine.append(label, delPointBtn);
+          row.appendChild(topLine);
+
+          // Bottom line: time + X/Y coordinates
+          const bottomLine = el('div', 'point-row-bottom');
+          const timeField = el('div', 'point-row-fields');
+          timeField.appendChild(inlineTimeField('Time', kf.time, (v) => updateKeyframe(h.id, kfIdx, 'time', v)));
+          bottomLine.appendChild(timeField);
+          bottomLine.appendChild(inlineField('X', parseCoord(kf.x), (v) => updateKeyframe(h.id, kfIdx, 'x', v)));
+          bottomLine.appendChild(inlineField('Y', parseCoord(kf.y), (v) => updateKeyframe(h.id, kfIdx, 'y', v)));
+          row.appendChild(bottomLine);
+          body.appendChild(row);
         } else {
           const info = el('span', 'point-row-info');
-          info.textContent = `${fmtTime(kf.time)}  (${parseCoord(kf.x)}%, ${parseCoord(kf.y)}%)`;
+          info.textContent = fmtTime(kf.time);
           row.append(label, info, delPointBtn);
+          body.appendChild(row);
         }
-
-        body.appendChild(row);
       });
+
 
       // Customize section
       const custHeader = el('div', 'customize-header');
@@ -763,20 +861,6 @@ function renderSidebar(): void {
       body.appendChild(custHeader);
 
       const custGrid = el('div', 'customize-grid');
-
-      custGrid.appendChild(sidebarSelect('Marker', ['dot', 'dot-label', 'numbered'], h.markerStyle, 'dot', (v) => {
-        pushUndo();
-        h.markerStyle = v as MarkerStyle;
-        syncHotspot(h.id);
-        updateJsonOutput();
-      }));
-
-      custGrid.appendChild(sidebarSelect('Trigger', ['hover', 'click'], h.trigger, 'click', (v) => {
-        pushUndo();
-        h.trigger = v as TriggerMode;
-        syncHotspot(h.id);
-        updateJsonOutput();
-      }));
 
       custGrid.appendChild(sidebarSelect('Placement', ['top', 'bottom', 'left', 'right', 'auto'], h.placement, 'top', (v) => {
         pushUndo();
@@ -798,6 +882,42 @@ function renderSidebar(): void {
         syncHotspot(h.id);
         updateJsonOutput();
       }));
+
+      // Auto Open checkbox
+      const autoOpenRow = el('div', 'customize-checkbox-row');
+      const autoOpenLabel = el('label', 'customize-checkbox-label');
+      const autoOpenCb = el('input', 'customize-checkbox') as HTMLInputElement;
+      autoOpenCb.type = 'checkbox';
+      autoOpenCb.checked = h.autoOpen === true;
+      autoOpenCb.addEventListener('change', () => {
+        pushUndo();
+        h.autoOpen = autoOpenCb.checked;
+        syncHotspot(h.id);
+        updateJsonOutput();
+      });
+      const autoOpenText = el('span');
+      autoOpenText.textContent = 'Auto Open Card';
+      autoOpenLabel.append(autoOpenCb, autoOpenText);
+      autoOpenRow.appendChild(autoOpenLabel);
+      custGrid.appendChild(autoOpenRow);
+
+      // Pause on Interact checkbox
+      const pauseRow = el('div', 'customize-checkbox-row');
+      const pauseLabel = el('label', 'customize-checkbox-label');
+      const pauseCb = el('input', 'customize-checkbox') as HTMLInputElement;
+      pauseCb.type = 'checkbox';
+      pauseCb.checked = h.pauseOnInteract !== undefined ? h.pauseOnInteract : globalPauseOnInteract;
+      pauseCb.addEventListener('change', () => {
+        pushUndo();
+        h.pauseOnInteract = pauseCb.checked;
+        syncHotspot(h.id);
+        updateJsonOutput();
+      });
+      const pauseText = el('span');
+      pauseText.textContent = 'Pause on Interact';
+      pauseLabel.append(pauseCb, pauseText);
+      pauseRow.appendChild(pauseLabel);
+      custGrid.appendChild(pauseRow);
 
       body.appendChild(custGrid);
 
@@ -848,6 +968,36 @@ function inlineField(label: string, value: number, onChange: (v: number) => void
   input.addEventListener('change', () => {
     const v = parseFloat(input.value);
     if (!isNaN(v)) onChange(v);
+  });
+  wrap.append(lbl, input);
+  return wrap;
+}
+
+function parseTime(str: string): number | null {
+  const match = str.match(/^(\d+):(\d{1,2})(?:\.(\d{1,3}))?$/);
+  if (!match) return null;
+  const m = parseInt(match[1], 10);
+  const s = parseInt(match[2], 10);
+  const ms = match[3] ? parseInt(match[3].padEnd(3, '0'), 10) : 0;
+  if (s >= 60) return null;
+  return m * 60 + s + ms / 1000;
+}
+
+function inlineTimeField(label: string, value: number, onChange: (v: number) => void): HTMLElement {
+  const wrap = el('div', 'point-row-field');
+  const lbl = el('span', 'point-row-field-label');
+  lbl.textContent = label;
+  const input = el('input', 'point-row-field-input') as HTMLInputElement;
+  input.type = 'text';
+  input.value = fmtTime(value, true);
+  input.addEventListener('click', (e) => e.stopPropagation());
+  input.addEventListener('change', () => {
+    const v = parseTime(input.value);
+    if (v !== null) {
+      onChange(v);
+    } else {
+      input.value = fmtTime(value, true);
+    }
   });
   wrap.append(lbl, input);
   return wrap;
@@ -1216,10 +1366,13 @@ function el(tag: string, className?: string): HTMLElement {
   return e;
 }
 
-function fmtTime(seconds: number): string {
+function fmtTime(seconds: number, showMs = false): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, '0')}`;
+  const base = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  if (!showMs) return base;
+  const d = Math.floor((seconds % 1) * 10);
+  return `${base}.${d}`;
 }
 
 function parseCoord(v: string | number): number {
@@ -1285,20 +1438,28 @@ function setupKeyboardShortcuts(): void {
           renderTimeline();
         }
         break;
-
-      case ' ':
-        e.preventDefault();
-        if (viewer) {
-          const video = document.querySelector('.ci-video-hotspot-video') as HTMLVideoElement;
-          if (video && !video.paused) {
-            viewer.pause();
-          } else {
-            viewer.play();
-          }
-        }
-        break;
     }
   });
+
+  // Capture phase handler — fires before the plugin's keyboard handler
+  document.addEventListener('keydown', (e) => {
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+
+    if (e.key === ' ') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (viewer) viewer.togglePlay();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (viewer) viewer.seek(viewer.getCurrentTime() + 0.2);
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      e.stopPropagation();
+      if (viewer) viewer.seek(Math.max(0, viewer.getCurrentTime() - 0.2));
+    }
+  }, true);
 }
 
 // ──────────────────── Start ────────────────────

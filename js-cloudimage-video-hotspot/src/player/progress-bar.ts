@@ -72,27 +72,32 @@ export class ProgressBar {
       this.seekFromEvent(e);
     }));
 
+    // Allow dragging from handle element
+    this.cleanups.push(addListener(this.handleEl, 'mousedown', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.isDragging = true;
+      addClass(this.element, 'ci-video-hotspot-progress--dragging');
+    }));
+
     this.cleanups.push(addListener(document, 'mousemove', (e) => {
       if (!this.isDragging) return;
       this.seekFromEvent(e);
+      this.updateTooltip(e);
     }));
 
     this.cleanups.push(addListener(document, 'mouseup', () => {
       if (this.isDragging) {
         this.isDragging = false;
         removeClass(this.element, 'ci-video-hotspot-progress--dragging');
+        removeClass(this.tooltipEl, 'ci-video-hotspot-progress-tooltip--visible');
       }
     }));
 
     // Tooltip on hover
     this.cleanups.push(addListener(this.barEl, 'mousemove', (e) => {
       if (this.isDragging) return;
-      const percent = this.getPercentFromEvent(e);
-      const duration = this.options.getDuration();
-      const time = (percent / 100) * duration;
-      this.tooltipEl.textContent = formatTime(time);
-      this.tooltipEl.style.left = `${percent}%`;
-      addClass(this.tooltipEl, 'ci-video-hotspot-progress-tooltip--visible');
+      this.updateTooltip(e);
     }));
 
     this.cleanups.push(addListener(this.barEl, 'mouseleave', () => {
@@ -145,6 +150,34 @@ export class ProgressBar {
     const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
     const duration = this.options.getDuration();
     this.options.onSeek((percent / 100) * duration);
+  }
+
+  private updateTooltip(e: MouseEvent): void {
+    const percent = this.getPercentFromEvent(e);
+    const duration = this.options.getDuration();
+    const time = (percent / 100) * duration;
+    this.tooltipEl.textContent = formatTime(time);
+    this.tooltipEl.style.left = `${percent}%`;
+
+    // Clamp tooltip so it doesn't overflow the bar edges
+    const barWidth = this.barEl.offsetWidth;
+    const tooltipWidth = this.tooltipEl.offsetWidth;
+    const halfTooltip = tooltipWidth / 2;
+    const positionPx = (percent / 100) * barWidth;
+
+    if (positionPx < halfTooltip) {
+      this.tooltipEl.style.transform = 'translateX(0)';
+      this.tooltipEl.style.left = '0';
+    } else if (positionPx > barWidth - halfTooltip) {
+      this.tooltipEl.style.transform = 'translateX(0)';
+      this.tooltipEl.style.left = 'auto';
+      this.tooltipEl.style.right = '0';
+    } else {
+      this.tooltipEl.style.transform = 'translateX(-50%)';
+      this.tooltipEl.style.right = '';
+    }
+
+    addClass(this.tooltipEl, 'ci-video-hotspot-progress-tooltip--visible');
   }
 
   private getPercentFromEvent(e: MouseEvent): number {

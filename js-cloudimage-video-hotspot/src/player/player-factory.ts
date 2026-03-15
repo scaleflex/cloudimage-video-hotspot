@@ -4,7 +4,12 @@ import type { PlayerType, HLSConfig } from '../core/types';
 
 /**
  * Creates the appropriate adapter based on playerType or auto-detection.
- * Non-HTML5 adapters are lazily imported to avoid bundling unused code.
+ *
+ * Non-HTML5 adapter modules are imported via require() which Vite/Webpack
+ * inlines into the bundle. True code-splitting is not possible here because
+ * the factory is synchronous. The heavy third-party SDKs (hls.js,
+ * @vimeo/player, YouTube IFrame API) are loaded asynchronously inside each
+ * adapter's mount() method — so they are never bundled.
  */
 export class PlayerFactory {
   static create(
@@ -18,7 +23,6 @@ export class PlayerFactory {
 
     switch (type) {
       case 'hls': {
-        // Dynamic require — Vite/Webpack will code-split this
         const { HLSAdapter } = require('./adapters/hls-adapter');
         return new HLSAdapter(options, hlsConfig);
       }
