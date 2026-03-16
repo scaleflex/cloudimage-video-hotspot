@@ -150,6 +150,9 @@
   line-height: 1;
   user-select: none;
   -webkit-user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* === Video Wrapper (aspect-ratio box) === */
