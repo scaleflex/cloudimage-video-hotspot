@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2026-03-16
+
+### Fixed
+
+- Vertically center video wrapper inside player container
+
+## [1.1.1] - 2026-03-15
+
+### Fixed
+
+- Update CodeSandbox links to master branch and allow sandbox hosts
+- Update blob/main links to blob/master for consistency
+
+### Changed
+
+- Use CDN links for demo videos, remove local mp4 files
+- Remove control buttons from React example
+
 ## [1.1.0] - 2026-03-15
 
 ### Added
