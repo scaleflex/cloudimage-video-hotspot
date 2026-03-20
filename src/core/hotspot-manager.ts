@@ -53,7 +53,7 @@ export class HotspotManager implements HotspotManagerInterface {
     return { ...h, x, y, keyframes: normalizedKF };
   }
 
-  showHotspot(hotspot: NormalizedVideoHotspot): void {
+  showHotspot(hotspot: NormalizedVideoHotspot, isRerender = false): void {
     if (this.markers.has(hotspot.id)) return;
 
     const config = this.ctx.config;
@@ -69,7 +69,7 @@ export class HotspotManager implements HotspotManagerInterface {
     }
 
     // Create popover
-    const triggerMode = (hotspot.trigger || config.trigger || 'click') as TriggerMode;
+    const triggerMode = (hotspot.trigger || config.trigger || 'hover') as TriggerMode;
     const placement = (hotspot.placement || config.placement || 'top') as Placement;
 
     const popover = new Popover(hotspot as VideoHotspotItem, {
@@ -153,14 +153,14 @@ export class HotspotManager implements HotspotManagerInterface {
       }));
     }
 
-    // Pause on show if configured
-    if (hotspot.pauseOnShow && !this.ctx.player.isPaused()) {
+    // Pause on show if configured (skip during re-render to avoid unwanted pauses)
+    if (!isRerender && hotspot.pauseOnShow && !this.ctx.player.isPaused()) {
       this.wasPlayingBeforePause = true;
       this.ctx.player.pause();
     }
 
-    // Auto-open popover if configured
-    if (hotspot.autoOpen && popover && marker) {
+    // Auto-open popover if configured (skip during re-render — card was already dismissed)
+    if (!isRerender && hotspot.autoOpen && popover && marker) {
       this.closeAll();
       popover.show();
       setMarkerActive(marker, true);
@@ -359,13 +359,22 @@ export class HotspotManager implements HotspotManagerInterface {
     if (needsRerender) {
       const oldNh = { ...nh, animation: 'none' as const };
       this.hideHotspot(oldNh);
-      this.showHotspot(nh);
+      this.showHotspot(nh, true);
+    }
 
-      // Restore interpolated position (marker was recreated at base x,y)
-      if (nh.keyframes && nh.keyframes.length > 0) {
-        const pos = this.ctx.timeline.getPosition(id, this.ctx.player.getCurrentTime());
-        const marker = this.markers.get(id);
-        if (pos && marker) updateMarkerPosition(marker, pos.x, pos.y);
+    // Always re-evaluate visibility and position so that timing/position
+    // changes (x, y, startTime, endTime, keyframes) take effect immediately.
+    this.processTimeUpdate(this.ctx.player.getCurrentTime());
+  }
+
+  /** Rebuild all currently visible markers (e.g. after global trigger/placement change). */
+  rebuildVisibleMarkers(): void {
+    const visibleIds = [...this.markers.keys()];
+    for (const id of visibleIds) {
+      const nh = this.normalizedHotspots.get(id);
+      if (nh) {
+        this.hideHotspot({ ...nh, animation: 'none' as const });
+        this.showHotspot(nh, true);
       }
     }
   }

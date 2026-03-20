@@ -5,6 +5,8 @@ import type { TimelineIndicatorStyle, VideoChapter } from '../core/types';
 
 export interface ProgressBarOptions {
   onSeek: (time: number) => void;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
   getDuration: () => number;
   getCurrentTime: () => number;
   getBufferedEnd: () => number;
@@ -26,6 +28,7 @@ export class ProgressBar {
   private cleanups: (() => void)[] = [];
   private indicatorCleanups: (() => void)[] = [];
   private isDragging = false;
+  private dragTime: number | null = null;
   private options: ProgressBarOptions;
 
   constructor(options: ProgressBarOptions) {
@@ -67,28 +70,26 @@ export class ProgressBar {
     // Click to seek
     this.cleanups.push(addListener(this.barEl, 'mousedown', (e) => {
       e.preventDefault();
-      this.isDragging = true;
-      addClass(this.element, 'ci-video-hotspot-progress--dragging');
-      this.seekFromEvent(e);
+      this.startDrag();
+      this.previewFromEvent(e);
     }));
 
     // Allow dragging from handle element
     this.cleanups.push(addListener(this.handleEl, 'mousedown', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      this.isDragging = true;
-      addClass(this.element, 'ci-video-hotspot-progress--dragging');
+      this.startDrag();
     }));
 
     this.cleanups.push(addListener(document, 'mousemove', (e) => {
       if (!this.isDragging) return;
-      this.seekFromEvent(e);
+      this.previewFromEvent(e);
       this.updateTooltip(e);
     }));
 
     this.cleanups.push(addListener(document, 'mouseup', () => {
       if (this.isDragging) {
-        this.isDragging = false;
+        this.commitDrag();
         removeClass(this.element, 'ci-video-hotspot-progress--dragging');
         removeClass(this.tooltipEl, 'ci-video-hotspot-progress-tooltip--visible');
       }
@@ -109,17 +110,19 @@ export class ProgressBar {
     // Touch support
     this.cleanups.push(addListener(this.barEl, 'touchstart', (e) => {
       e.preventDefault();
-      this.isDragging = true;
-      this.seekFromTouch(e);
+      this.startDrag();
+      this.previewFromTouch(e);
     }));
 
     this.cleanups.push(addListener(document, 'touchmove', (e) => {
       if (!this.isDragging) return;
-      this.seekFromTouch(e);
+      this.previewFromTouch(e);
     }));
 
     this.cleanups.push(addListener(document, 'touchend', () => {
-      this.isDragging = false;
+      if (this.isDragging) {
+        this.commitDrag();
+      }
     }));
 
     // Keyboard seek on progress bar
@@ -137,19 +140,38 @@ export class ProgressBar {
     }));
   }
 
-  private seekFromEvent(e: MouseEvent): void {
-    const percent = this.getPercentFromEvent(e);
-    const duration = this.options.getDuration();
-    this.options.onSeek((percent / 100) * duration);
+  private startDrag(): void {
+    this.isDragging = true;
+    addClass(this.element, 'ci-video-hotspot-progress--dragging');
+    this.options.onDragStart?.();
   }
 
-  private seekFromTouch(e: TouchEvent): void {
+  /** Update only the visual position of the progress bar during drag (no seek). */
+  private previewFromEvent(e: MouseEvent): void {
+    const percent = this.getPercentFromEvent(e);
+    const duration = this.options.getDuration();
+    this.dragTime = (percent / 100) * duration;
+    this.update(this.dragTime);
+  }
+
+  private previewFromTouch(e: TouchEvent): void {
     if (e.touches.length === 0) return;
     const rect = this.barEl.getBoundingClientRect();
     const x = e.touches[0].clientX - rect.left;
     const percent = Math.max(0, Math.min(100, (x / rect.width) * 100));
     const duration = this.options.getDuration();
-    this.options.onSeek((percent / 100) * duration);
+    this.dragTime = (percent / 100) * duration;
+    this.update(this.dragTime);
+  }
+
+  /** Send the actual seek when drag ends. */
+  private commitDrag(): void {
+    this.isDragging = false;
+    if (this.dragTime !== null) {
+      this.options.onSeek(this.dragTime);
+      this.dragTime = null;
+    }
+    this.options.onDragEnd?.();
   }
 
   private updateTooltip(e: MouseEvent): void {
@@ -259,6 +281,12 @@ export class ProgressBar {
 
   /** Update the progress bar fill and handle position */
   update(currentTime: number): void {
+    // While the user is dragging, don't let external updates overwrite the
+    // visual position — the bar should stay where the user's pointer is.
+    if (this.isDragging && this.dragTime !== null) {
+      currentTime = this.dragTime;
+    }
+
     const duration = this.options.getDuration();
     if (!duration) return;
 

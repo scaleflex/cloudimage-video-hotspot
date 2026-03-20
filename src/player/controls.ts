@@ -18,6 +18,8 @@ export interface ControlsOptions {
   onPlay: () => void;
   onPause: () => void;
   onSeek: (time: number) => void;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
   onVolumeChange: (volume: number) => void;
   onMuteToggle: () => void;
   onFullscreenToggle: () => void;
@@ -36,7 +38,7 @@ export interface ControlsOptions {
   chapters?: VideoChapter[];
   showChapterNav: boolean;
   onChapterSelect?: (chapterId: string) => void;
-  progressBarOptions: Omit<ProgressBarOptions, 'onSeek' | 'getDuration' | 'getCurrentTime' | 'getBufferedEnd'>;
+  progressBarOptions: Omit<ProgressBarOptions, 'onSeek' | 'onDragStart' | 'onDragEnd' | 'getDuration' | 'getCurrentTime' | 'getBufferedEnd'>;
 }
 
 export class Controls {
@@ -67,6 +69,8 @@ export class Controls {
     this.progressBar = new ProgressBar({
       ...options.progressBarOptions,
       onSeek: options.onSeek,
+      onDragStart: options.onDragStart,
+      onDragEnd: options.onDragEnd,
       getDuration: options.getDuration,
       getCurrentTime: options.getCurrentTime,
       getBufferedEnd: options.getBufferedEnd,

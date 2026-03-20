@@ -18,7 +18,7 @@ let placementMode = false;
 let videoDuration = 60;
 let editorHandlersBound = false;
 let seekAfterRebuild: number | null = null;
-let globalTrigger: TriggerMode = 'click';
+let globalTrigger: TriggerMode = 'hover';
 let globalPauseOnInteract = true;
 let globalMarkerStyle: MarkerStyle = 'dot';
 let editorMarkerObserver: MutationObserver | null = null;
@@ -41,7 +41,7 @@ function undo(): void {
   hotspots = JSON.parse(prev);
   selectedHotspotId = null;
   selectedPointIndex = null;
-  rebuildViewer();
+  updateViewer(true);
   updateJsonOutput();
 }
 
@@ -52,7 +52,7 @@ function redo(): void {
   hotspots = JSON.parse(next);
   selectedHotspotId = null;
   selectedPointIndex = null;
-  rebuildViewer();
+  updateViewer(true);
   updateJsonOutput();
 }
 
@@ -186,7 +186,7 @@ function setupToolbar(): void {
           nextId = hotspots.length + 1;
           selectedHotspotId = null;
           selectedPointIndex = null;
-          rebuildViewer();
+          updateViewer(true);
           updateJsonOutput();
         }
       } catch { /* ignore bad JSON */ }
@@ -259,7 +259,7 @@ function setMode(newMode: AppMode): void {
   document.getElementById('mode-toggle-overlay')?.classList.toggle('app-mode-toggle--hidden', mode === 'editor');
   document.getElementById('app-top-bar')?.classList.toggle('app-top-bar--hidden', mode === 'view');
 
-  rebuildViewer();
+  updateViewer();
 }
 
 function updateAddBtnState(): void {
@@ -296,7 +296,7 @@ function rebuildViewer(skipSeekSave = false): void {
   viewer = new CIVideoHotspot(container, {
     src: videoSrc,
     hotspots: hotspots.map(h => ({ ...h, markerStyle: globalMarkerStyle })),
-    trigger: globalTrigger,
+    trigger: mode === 'editor' ? 'click' : globalTrigger,
     pauseOnInteract: globalPauseOnInteract,
     controls: true,
     clickToPlay: mode !== 'editor',
@@ -345,6 +345,70 @@ function rebuildViewer(skipSeekSave = false): void {
   });
 }
 
+// ──────────────────── Viewer Config & Light Update ────────────────────
+function getViewerConfig() {
+  return {
+    hotspots: hotspots.map(h => ({ ...h, markerStyle: globalMarkerStyle })),
+    trigger: mode === 'editor' ? 'click' : globalTrigger,
+    pauseOnInteract: globalPauseOnInteract,
+    clickToPlay: mode !== 'editor',
+    hotspotNavigation: false,
+    timelineIndicators: 'none' as const,
+    onTimeUpdate: () => { updateMarkerVisibility(); },
+    onPlay: () => {
+      if (mode === 'editor' && selectedHotspotId) {
+        const markersEl = document.querySelector('.ci-video-hotspot-markers');
+        if (markersEl && !editorMarkerObserver) {
+          editorMarkerObserver = new MutationObserver(() => updateMarkerVisibility());
+          editorMarkerObserver.observe(markersEl, { childList: true });
+        }
+      }
+    },
+    onPause: () => {
+      editorMarkerObserver?.disconnect();
+      editorMarkerObserver = null;
+    },
+    onReady: () => {
+      if (pendingLoadHide) pendingLoadHide();
+      videoDuration = viewer?.getDuration() || 60;
+      renderTimeline();
+      renderSidebar();
+      if (mode === 'editor') {
+        setupEditorHandlers();
+        if (seekAfterRebuild !== null) {
+          viewer?.seek(seekAfterRebuild);
+          viewer?.pause();
+          seekAfterRebuild = null;
+        }
+      }
+      const progressBar = document.querySelector('.ci-video-hotspot-progress-bar');
+      progressBar?.addEventListener('mousedown', (e) => {
+        if ((e.target as HTMLElement).closest('.timeline-kf-dot, .timeline-start-dot')) return;
+        selectedPointIndex = null;
+        renderSidebar();
+      });
+    },
+  };
+}
+
+/** Update viewer without destroying the player (preserves YouTube/Vimeo iframe) */
+function updateViewer(hotspotsOnly = false): void {
+  if (!viewer) return;
+
+  if (hotspotsOnly) {
+    viewer.update({
+      hotspots: hotspots.map(h => ({ ...h, markerStyle: globalMarkerStyle })),
+    });
+  } else {
+    viewer.update(getViewerConfig());
+  }
+
+  renderTimeline();
+  renderSidebar();
+  setupEditorHandlers();
+  updateMarkerVisibility();
+}
+
 // ──────────────────── Editor Handlers ────────────────────
 function setupEditorHandlers(): void {
   if (editorHandlersBound) return;
@@ -352,12 +416,14 @@ function setupEditorHandlers(): void {
 
   const videoArea = document.getElementById('video-area')!;
 
-  // Prevent CIVideoHotspot popover cards from opening on marker clicks in editor mode
+  // Prevent CIVideoHotspot popover cards from opening on marker clicks in editor mode,
+  // but pause the video so the user can edit the hotspot.
   videoArea.addEventListener('click', (e) => {
     if (mode !== 'editor') return;
     const marker = (e.target as HTMLElement).closest('.ci-video-hotspot-marker');
     if (marker) {
       e.stopPropagation();
+      viewer?.pause();
     }
   }, true);
 
@@ -445,6 +511,13 @@ function setupMarkerDrag(): void {
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
     if (!isDragging && Math.abs(dx) + Math.abs(dy) < 3) return;
+    if (!isDragging) {
+      // Hide popover card and suppress hover events on the marker while
+      // dragging so the card doesn't reappear under the cursor.
+      viewer?.closeAll();
+      const m = document.querySelector(`[data-hotspot-id="${dragId}"]`) as HTMLElement;
+      if (m) m.style.pointerEvents = 'none';
+    }
     isDragging = true;
 
     const rect = getVideoRect();
@@ -460,6 +533,11 @@ function setupMarkerDrag(): void {
   });
 
   videoArea.addEventListener('pointerup', (e) => {
+    // Restore pointer events on the marker after drag
+    if (dragId) {
+      const m = document.querySelector(`[data-hotspot-id="${dragId}"]`) as HTMLElement;
+      if (m) m.style.pointerEvents = '';
+    }
     if (!dragId || !isDragging) {
       dragId = null;
       return;
@@ -471,11 +549,16 @@ function setupMarkerDrag(): void {
     const y = Math.max(0, Math.min(100, ((e.clientY - rect.top) / rect.height) * 100));
 
     const hotspot = hotspots.find(h => h.id === dragId);
+    const finishedId = dragId;
+    dragId = null;
+    isDragging = false;
+    pushUndo();
+
     if (hotspot?.keyframes) {
       const roundedX = `${Math.round(x * 100) / 100}%`;
       const roundedY = `${Math.round(y * 100) / 100}%`;
 
-      if (selectedHotspotId === dragId && selectedPointIndex !== null && hotspot.keyframes[selectedPointIndex]) {
+      if (selectedHotspotId === finishedId && selectedPointIndex !== null && hotspot.keyframes[selectedPointIndex]) {
         // A specific keyframe is selected — update its coordinates
         hotspot.keyframes[selectedPointIndex].x = roundedX;
         hotspot.keyframes[selectedPointIndex].y = roundedY;
@@ -496,10 +579,6 @@ function setupMarkerDrag(): void {
       hotspot.y = hotspot.keyframes[0].y;
     }
 
-    const finishedId = dragId;
-    dragId = null;
-    isDragging = false;
-    pushUndo();
     syncHotspot(finishedId);
     updateJsonOutput();
   });
@@ -624,6 +703,7 @@ function updateKeyframe(hotspotId: string, kfIndex: number, field: string, value
     hotspot.keyframes.sort((a, b) => a.time - b.time);
     hotspot.startTime = hotspot.keyframes[0].time;
     hotspot.endTime = hotspot.keyframes[hotspot.keyframes.length - 1].time;
+    selectedPointIndex = hotspot.keyframes.indexOf(kf);
   } else if (field === 'x') {
     kf.x = `${value}%`;
   } else if (field === 'y') {
@@ -664,7 +744,7 @@ function renderSidebar(): void {
   // Global settings panel
   const settingsPanel = el('div', 'sidebar-settings');
   const settingsTitle = el('div', 'sidebar-settings-title');
-  settingsTitle.textContent = 'General Settings';
+  settingsTitle.textContent = 'General settings';
   settingsPanel.appendChild(settingsTitle);
 
   // Trigger
@@ -682,16 +762,16 @@ function renderSidebar(): void {
   }
   triggerSelect.addEventListener('change', () => {
     globalTrigger = triggerSelect.value as TriggerMode;
-    rebuildViewer();
+    updateViewer();
     updateJsonOutput();
   });
   triggerRow.append(triggerLabel, triggerSelect);
   settingsPanel.appendChild(triggerRow);
 
-  // Pause on Interact
+  // Pause on interact
   const pauseRow = el('div', 'sidebar-setting__row');
   const pauseLabel = el('span', 'sidebar-setting__label');
-  pauseLabel.textContent = 'Pause on Interact';
+  pauseLabel.textContent = 'Pause on interact';
   const pauseSelect = document.createElement('select') as HTMLSelectElement;
   pauseSelect.className = 'sidebar-setting__select';
   for (const opt of [{ value: 'true', label: 'On' }, { value: 'false', label: 'Off' }]) {
@@ -703,7 +783,7 @@ function renderSidebar(): void {
   }
   pauseSelect.addEventListener('change', () => {
     globalPauseOnInteract = pauseSelect.value === 'true';
-    rebuildViewer();
+    updateViewer();
     updateJsonOutput();
   });
   pauseRow.append(pauseLabel, pauseSelect);
@@ -725,7 +805,7 @@ function renderSidebar(): void {
   }
   markerSelect.addEventListener('change', () => {
     globalMarkerStyle = markerSelect.value as MarkerStyle;
-    rebuildViewer();
+    updateViewer(true);
     updateJsonOutput();
   });
   markerRow.append(markerLabel, markerSelect);
@@ -879,7 +959,7 @@ function renderSidebar(): void {
       autoOpenRow.appendChild(autoOpenLabel);
       custGrid.appendChild(autoOpenRow);
 
-      // Pause on Interact checkbox
+      // Pause on interact checkbox
       const pauseRow = el('div', 'customize-checkbox-row');
       const pauseLabel = el('label', 'customize-checkbox-label');
       const pauseCb = el('input', 'customize-checkbox') as HTMLInputElement;
@@ -892,7 +972,7 @@ function renderSidebar(): void {
         updateJsonOutput();
       });
       const pauseText = el('span');
-      pauseText.textContent = 'Pause on Interact';
+      pauseText.textContent = 'Pause on interact';
       pauseLabel.append(pauseCb, pauseText);
       pauseRow.appendChild(pauseLabel);
       custGrid.appendChild(pauseRow);
@@ -1149,6 +1229,7 @@ function makeTimelineDotDraggable(dot: HTMLElement, hotspot: VideoHotspotItem, k
 
     const kf = hotspot.keyframes?.[kfIdx];
     if (kf) {
+      pushUndo();
       kf.time = newTime;
       hotspot.keyframes!.sort((a, b) => a.time - b.time);
       hotspot.startTime = hotspot.keyframes![0].time;
@@ -1158,8 +1239,6 @@ function makeTimelineDotDraggable(dot: HTMLElement, hotspot: VideoHotspotItem, k
       // Update selectedPointIndex — index may have changed after sort
       selectedPointIndex = hotspot.keyframes!.indexOf(kf);
     }
-
-    pushUndo();
     syncHotspot(hotspot.id);
     updateJsonOutput();
   });
@@ -1222,7 +1301,10 @@ function openCardEditor(hotspotId: string): void {
   const saveBtn = el('button', 'card-editor-btn card-editor-btn--save');
   saveBtn.textContent = 'Save';
   saveBtn.addEventListener('click', () => {
+    pushUndo();
     hotspot.data = { ...data };
+    syncHotspot(hotspotId);
+    updateJsonOutput();
     closeCardEditor();
   });
   actions.append(cancelBtn, saveBtn);

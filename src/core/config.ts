@@ -2,7 +2,7 @@ import type { CIVideoHotspotConfig, ResolvedConfig, VideoChapter } from './types
 
 /** Default configuration values */
 const DEFAULTS: Partial<CIVideoHotspotConfig> = {
-  trigger: 'click',
+  trigger: 'hover',
   placement: 'top',
   pauseOnInteract: true,
   autoplay: false,

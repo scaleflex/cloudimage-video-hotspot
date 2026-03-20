@@ -45,6 +45,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   private cleanups: (() => void)[] = [];
   private destroyed = false;
   private looping = true;
+  private playingBeforeScrub = false;
   private videoAspectRatio = 16 / 9;
   private resizeObserver: ResizeObserver | null = null;
 
@@ -79,7 +80,15 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
   // === DOM Setup ===
 
-  private buildDOM(): void {
+  private buildDOM(preservePlayerElement?: HTMLElement): void {
+    // If an iframe-based player element must survive the rebuild, detach it
+    // from the DOM tree BEFORE clearing, then re-host it inside the new
+    // wrapper. Moving an iframe via innerHTML='' destroys its browsing context.
+    if (preservePlayerElement?.parentNode) {
+      // Temporarily re-parent to <body> so innerHTML='' doesn't destroy it
+      preservePlayerElement.style.display = 'none';
+      document.body.appendChild(preservePlayerElement);
+    }
     this.rootEl.innerHTML = '';
     this.containerEl = createElement('div', 'ci-video-hotspot-container');
 
@@ -125,6 +134,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
         this.config.onPlay?.();
         this.renderLoopManager?.startRenderLoop();
         if (this.controls) {
+          this.controls.update();
           this.controls.startIdleTimer();
         }
       },
@@ -136,6 +146,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
         this.config.onPause?.();
         this.renderLoopManager?.stopRenderLoop();
         if (this.controls) {
+          this.controls.update();
           this.controls.clearIdleTimer();
           this.controls.show();
         }
@@ -165,12 +176,20 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
         this.config.onReady?.();
       },
 
+      onError: (err: unknown) => {
+        this.config.onError?.(err);
+      },
+
       onWaiting: () => {
         addClass(this.containerEl, 'ci-video-hotspot-container--loading');
       },
 
       onPlaying: () => {
         removeClass(this.containerEl, 'ci-video-hotspot-container--loading');
+        // Persistent flag: once a real frame has been rendered, keep the
+        // iframe visible during future loading states (seek) so the user
+        // sees the last frame instead of a blank screen.
+        addClass(this.containerEl, 'ci-video-hotspot-container--has-played');
       },
 
       onEnded: () => {
@@ -219,6 +238,20 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       onPlay: () => this.play(),
       onPause: () => this.pause(),
       onSeek: (time) => this.seek(time),
+      onDragStart: () => {
+        // Pause the video while the user is scrubbing — critical for
+        // iframe-based players (Vimeo) where setCurrentTime is async.
+        this.playingBeforeScrub = !this.player.isPaused();
+        if (this.playingBeforeScrub) {
+          this.player.pause();
+        }
+      },
+      onDragEnd: () => {
+        if (this.playingBeforeScrub) {
+          this.player.play();
+          this.playingBeforeScrub = false;
+        }
+      },
       onVolumeChange: (v) => this.setVolume(v),
       onMuteToggle: () => this.setMuted(!this.isMuted()),
       onFullscreenToggle: () => this.fullscreenControl?.toggle(),
@@ -337,6 +370,11 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     const videoEl = this.player.getVideoElement();
     if (videoEl && videoEl.videoWidth && videoEl.videoHeight) {
       this.videoAspectRatio = videoEl.videoWidth / videoEl.videoHeight;
+    } else {
+      const adapterRatio = this.player.getAspectRatio();
+      if (adapterRatio) {
+        this.videoAspectRatio = adapterRatio;
+      }
     }
     this.fitWrapper();
   }
@@ -489,6 +527,10 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   /** Keys that can be updated without a full DOM rebuild */
   private static readonly LIGHT_UPDATE_KEYS = new Set<string>([
     'hotspots',
+    // Behavioural flags — stored on this.config, no DOM changes needed
+    'clickToPlay', 'trigger', 'pauseOnInteract',
+    'hotspotNavigation', 'timelineIndicators', 'chapterNavigation',
+    // Callbacks
     'onPlay', 'onPause', 'onTimeUpdate', 'onReady',
     'onHotspotClick', 'onHotspotShow', 'onHotspotHide',
     'onOpen', 'onClose', 'onAnalytics', 'onFullscreenChange', 'onChapterChange',
@@ -518,12 +560,15 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     this.emitAnalytics = createAnalyticsEmitter(newConfig.onAnalytics, () => this.player?.getCurrentTime() ?? 0);
 
     acquireLiveRegion();
-    this.buildDOM();
+    // Pass the player element so buildDOM() can keep the iframe alive
+    this.buildDOM(srcChanged ? undefined : this.player.element);
 
     if (srcChanged) {
       this.initPlayer();
     } else {
-      this.videoWrapperEl.insertBefore(this.player.element, this.markersEl);
+      const el = this.player.element;
+      el.style.display = '';
+      this.videoWrapperEl.insertBefore(el, this.markersEl);
       if (this.config.chapters) {
         this.navigationManager?.setResolvedChapters(
           resolveChapterEndTimes(this.config.chapters, this.player.getDuration()),
@@ -539,10 +584,14 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
     this.initContainerEvents();
 
     if (!srcChanged) {
+      // Re-sync the player to the saved position — iframe-based players
+      // (Vimeo, YouTube) may lose their position when their element is
+      // detached and re-attached during DOM rebuild.
+      this.player.seek(currentTime);
       this.renderLoopManager.onTimeUpdate(currentTime);
       this.controls?.update();
       if (!wasPaused) {
-        this.renderLoopManager.startRenderLoop();
+        this.play();
       }
     }
   }
@@ -552,6 +601,20 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   }
 
   private lightUpdate(config: Partial<CIVideoHotspotConfig>): void {
+    // Check if global visual settings changed — these require all markers
+    // to be rebuilt because trigger mode / placement affects event listeners.
+    const needsMarkerRebuild =
+      ('trigger' in config && config.trigger !== this.config.trigger) ||
+      ('placement' in config && config.placement !== this.config.placement);
+
+    // Merge all provided config keys into this.config FIRST so that
+    // hotspot reconciliation below already sees the new global values.
+    for (const key of Object.keys(config)) {
+      if (key === 'hotspots') continue; // handled below
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (this.config as any)[key] = (config as any)[key];
+    }
+
     // Reconcile hotspots if changed
     if (config.hotspots) {
       const oldIds = new Set(this.config.hotspots.map((h) => h.id));
@@ -574,18 +637,10 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       }
     }
 
-    // Update callback references on the config object (managers share this reference)
-    const callbackKeys = [
-      'onPlay', 'onPause', 'onTimeUpdate', 'onReady',
-      'onHotspotClick', 'onHotspotShow', 'onHotspotHide',
-      'onOpen', 'onClose', 'onAnalytics', 'onFullscreenChange', 'onChapterChange',
-    ] as const;
-
-    for (const key of callbackKeys) {
-      if (key in config) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (this.config as any)[key] = (config as any)[key];
-      }
+    // If trigger or placement changed globally, rebuild all visible markers
+    // so they get new event listeners (hover vs click) and popover placement.
+    if (needsMarkerRebuild) {
+      this.hotspotManager.rebuildVisibleMarkers();
     }
 
     // Re-create analytics emitter if onAnalytics changed

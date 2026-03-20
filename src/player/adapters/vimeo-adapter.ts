@@ -18,6 +18,8 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   private _volume = 1;
   private _muted = false;
   private _playbackRate = 1;
+  private _aspectRatio: number | null = null;
+  private pendingSeek: Promise<void> | null = null;
   private videoId: string;
 
   constructor(private options: AdapterOptions) {
@@ -32,9 +34,13 @@ export class VimeoAdapter extends VideoPlayerAdapter {
     this.container.style.height = '100%';
 
     this.playerDiv = createElement('div');
+    this.playerDiv.style.width = '100%';
+    this.playerDiv.style.height = '100%';
     this.container.appendChild(this.playerDiv);
     container.appendChild(this.container);
 
+    // Show loading state immediately — Vimeo needs to load SDK + iframe + buffer
+    this.emit('waiting');
     this.loadVimeoSDK();
   }
 
@@ -86,10 +92,17 @@ export class VimeoAdapter extends VideoPlayerAdapter {
 
     this.vimeoPlayer.ready().then(() => {
       this._ready = true;
-      this.vimeoPlayer.getDuration().then((d: number) => {
+      Promise.all([
+        this.vimeoPlayer.getDuration(),
+        this.vimeoPlayer.getVideoWidth(),
+        this.vimeoPlayer.getVideoHeight(),
+      ]).then(([d, w, h]: [number, number, number]) => {
         this._duration = d;
+        if (w && h) this._aspectRatio = w / h;
         this.emit('loadedmetadata');
         this.emit('durationchange', d);
+        // Clear the initial loading spinner — video is ready to play
+        this.emit('playing');
       });
     });
 
@@ -143,12 +156,55 @@ export class VimeoAdapter extends VideoPlayerAdapter {
 
   get ready(): boolean { return this._ready; }
 
-  play(): Promise<void> { return this.vimeoPlayer?.play().catch(() => {}) ?? Promise.resolve(); }
-  pause(): void { this.vimeoPlayer?.pause().catch(() => {}); }
+  play(): Promise<void> {
+    // Update state optimistically so isPaused() reflects intent immediately,
+    // preventing togglePlay() from calling play() again while waiting for
+    // Vimeo's async confirmation event.
+    this._paused = false;
+
+    const doPlay = (): Promise<void> =>
+      this.vimeoPlayer?.play().catch((err: unknown) => {
+        console.warn('CIVideoHotspot: Vimeo play() failed', err);
+        this._paused = true;
+      }) ?? Promise.resolve();
+
+    // If a seek is in progress, wait for it to finish before playing.
+    // Calling play() while setCurrentTime() is pending confuses the player.
+    if (this.pendingSeek) {
+      return this.pendingSeek.then(doPlay);
+    }
+    return doPlay();
+  }
+
+  pause(): void {
+    this._paused = true;
+    this.vimeoPlayer?.pause().catch((err: unknown) => {
+      console.warn('CIVideoHotspot: Vimeo pause() failed', err);
+      this._paused = false;
+    });
+  }
 
   seek(time: number): void {
     const clamped = Math.max(0, Math.min(time, this._duration));
-    this.vimeoPlayer?.setCurrentTime(clamped).catch(() => {});
+    // Update cached time immediately so the progress bar doesn't snap back
+    // to the old position while waiting for Vimeo's async setCurrentTime.
+    this._currentTime = clamped;
+    // Show loading state while Vimeo buffers the target position
+    this.emit('waiting');
+    this.pendingSeek = (
+      this.vimeoPlayer?.setCurrentTime(clamped)
+        .then(() => {
+          this.pendingSeek = null;
+          // Clear loading state — if paused, no 'playing' event will fire
+          // so we must emit it manually to remove the spinner.
+          this.emit('playing');
+        })
+        .catch((err: unknown) => {
+          this.pendingSeek = null;
+          this.emit('playing');
+          console.warn('CIVideoHotspot: Vimeo setCurrentTime() failed', err);
+        })
+    ) ?? null;
   }
 
   getCurrentTime(): number { return this._currentTime; }
@@ -189,6 +245,8 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   }
 
   getElement(): HTMLElement { return this.container; }
+
+  getAspectRatio(): number | null { return this._aspectRatio; }
 
   destroy(): void {
     this.vimeoPlayer?.destroy().catch(() => {});

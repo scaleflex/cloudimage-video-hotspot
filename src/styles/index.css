@@ -169,6 +169,27 @@
   height: 100%;
 }
 
+/* Prevent iframe-based players (YouTube, Vimeo) from capturing pointer events.
+   Playback is controlled via JS API; native iframe controls are disabled
+   (YouTube: controls:0, Vimeo: controls:false). */
+/* Force iframe-based players to fill their container and prevent them from
+   capturing pointer events. Playback is controlled via JS API; native iframe
+   controls are disabled (YouTube: controls:0, Vimeo: controls:false). */
+.ci-video-hotspot-video iframe {
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none;
+}
+
+/* Vimeo/YouTube SDKs wrap the iframe in intermediate divs.
+   Force all nested containers to fill so the iframe stretches properly. */
+.ci-video-hotspot-video div {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important;
+}
+
+
 /* === Overlay (markers layer) === */
 .ci-video-hotspot-overlay {
   position: absolute;
@@ -992,7 +1013,42 @@ height: 30px;
 }
 
 .ci-video-hotspot-container--loading .ci-video-hotspot-video {
-  opacity: 0.5;
+  opacity: 0.7;
+}
+
+/* Hide iframe during loading until video has actually played once.
+   Before first play there is no frame to show, and hiding the iframe
+   prevents the native Vimeo spinner from overlapping ours.
+   After first play, keep iframe visible during seek so the user
+   sees the last frame instead of a black screen. */
+.ci-video-hotspot-container--loading:not(.ci-video-hotspot-container--has-played) .ci-video-hotspot-video iframe {
+  visibility: hidden;
+}
+
+/* Soften the black container background during initial load */
+.ci-video-hotspot-container--loading {
+  background: #1a1a1a;
+}
+
+/* Loading spinner overlay */
+.ci-video-hotspot-container--loading .ci-video-hotspot-video-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ci-video-hotspot-spin 0.8s linear infinite;
+  z-index: 5;
+  pointer-events: none;
+}
+
+@keyframes ci-video-hotspot-spin {
+  to { transform: rotate(360deg); }
 }
 
 /* === Fullscreen === */

@@ -247,7 +247,7 @@ export interface CIVideoHotspotConfig {
   /** Optional chapter definitions for timeline segmentation */
   chapters?: VideoChapter[];
 
-  /** Popover trigger mode (default: 'click') */
+  /** Popover trigger mode (default: 'hover') */
   trigger?: TriggerMode;
   /** Popover placement preference (default: 'top') */
   placement?: Placement;
@@ -312,6 +312,8 @@ export interface CIVideoHotspotConfig {
   onFullscreenChange?: (isFullscreen: boolean) => void;
   /** Called when the video is ready to play */
   onReady?: () => void;
+  /** Called when the player encounters an error (e.g., video not found, API load failure) */
+  onError?: (error: unknown) => void;
   /** Unified analytics callback for all interaction events */
   onAnalytics?: (event: AnalyticsEvent) => void;
 
