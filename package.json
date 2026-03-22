@@ -1,26 +1,26 @@
 {
-  "name": "js-cloudimage-video-hotspot",
+  "name": "@cloudimage/video-hotspot",
   "version": "1.1.2",
   "description": "Interactive video hotspots with time-based markers, popovers, and accessibility",
   "license": "MIT",
   "author": "Scaleflex",
-  "homepage": "https://github.com/scaleflex/js-cloudimage-video-hotspot#readme",
+  "homepage": "https://github.com/scaleflex/cloudimage-video-hotspot#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/scaleflex/js-cloudimage-video-hotspot.git"
+    "url": "git+https://github.com/scaleflex/cloudimage-video-hotspot.git"
   },
   "bugs": {
-    "url": "https://github.com/scaleflex/js-cloudimage-video-hotspot/issues"
+    "url": "https://github.com/scaleflex/cloudimage-video-hotspot/issues"
   },
-  "main": "dist/js-cloudimage-video-hotspot.cjs.js",
-  "module": "dist/js-cloudimage-video-hotspot.esm.js",
-  "unpkg": "dist/js-cloudimage-video-hotspot.min.js",
+  "main": "dist/video-hotspot.cjs.js",
+  "module": "dist/video-hotspot.esm.js",
+  "unpkg": "dist/video-hotspot.min.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/js-cloudimage-video-hotspot.esm.js",
-      "require": "./dist/js-cloudimage-video-hotspot.cjs.js"
+      "import": "./dist/video-hotspot.esm.js",
+      "require": "./dist/video-hotspot.cjs.js"
     },
     "./react": {
       "types": "./dist/react/index.d.ts",

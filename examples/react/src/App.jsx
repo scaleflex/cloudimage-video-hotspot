@@ -1,4 +1,4 @@
-import { CIVideoHotspotViewer } from 'js-cloudimage-video-hotspot/react';
+import { CIVideoHotspotViewer } from '@cloudimage/video-hotspot/react';
 
 export default function App() {
   return (

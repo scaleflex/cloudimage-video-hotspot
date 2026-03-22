@@ -2,29 +2,29 @@
   <img src="https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-360-view/logo_scaleflex_on_white_bg.jpg?vh=91b12d&w=700" alt="Scaleflex" width="350">
 </p>
 
-<h1 align="center">js-cloudimage-video-hotspot</h1>
+<h1 align="center">@cloudimage/video-hotspot</h1>
 
 <p align="center">
   Interactive video hotspots with time-based markers, keyframe motion, chapters, and accessibility. Zero dependencies.
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/js-cloudimage-video-hotspot"><img src="https://img.shields.io/npm/v/js-cloudimage-video-hotspot.svg?style=flat-square" alt="npm version"></a>
-  <a href="https://www.npmjs.com/package/js-cloudimage-video-hotspot"><img src="https://img.shields.io/npm/dm/js-cloudimage-video-hotspot.svg?style=flat-square" alt="npm downloads"></a>
-  <a href="https://github.com/scaleflex/js-cloudimage-video-hotspot/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/js-cloudimage-video-hotspot.svg?style=flat-square" alt="license"></a>
-  <a href="https://bundlephobia.com/package/js-cloudimage-video-hotspot"><img src="https://img.shields.io/bundlephobia/minzip/js-cloudimage-video-hotspot?style=flat-square" alt="bundle size"></a>
+  <a href="https://www.npmjs.com/package/@cloudimage/video-hotspot"><img src="https://img.shields.io/npm/v/@cloudimage/video-hotspot.svg?style=flat-square" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@cloudimage/video-hotspot"><img src="https://img.shields.io/npm/dm/@cloudimage/video-hotspot.svg?style=flat-square" alt="npm downloads"></a>
+  <a href="https://github.com/scaleflex/cloudimage-video-hotspot/blob/master/LICENSE"><img src="https://img.shields.io/npm/l/@cloudimage/video-hotspot.svg?style=flat-square" alt="license"></a>
+  <a href="https://bundlephobia.com/package/@cloudimage/video-hotspot"><img src="https://img.shields.io/bundlephobia/minzip/@cloudimage/video-hotspot?style=flat-square" alt="bundle size"></a>
 </p>
 
 <p align="center">
-  <a href="https://scaleflex.github.io/js-cloudimage-video-hotspot/">Live Demo</a> |
-  <a href="https://scaleflex.github.io/js-cloudimage-video-hotspot/editor.html">Visual Editor</a> |
-  <a href="https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-video-hotspot/tree/master/examples/vanilla">Vanilla Sandbox</a> |
-  <a href="https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-video-hotspot/tree/master/examples/react">React Sandbox</a>
+  <a href="https://scaleflex.github.io/cloudimage-video-hotspot/">Live Demo</a> |
+  <a href="https://scaleflex.github.io/cloudimage-video-hotspot/editor.html">Visual Editor</a> |
+  <a href="https://codesandbox.io/p/devbox/github/scaleflex/cloudimage-video-hotspot/tree/master/examples/vanilla">Vanilla Sandbox</a> |
+  <a href="https://codesandbox.io/p/devbox/github/scaleflex/cloudimage-video-hotspot/tree/master/examples/react">React Sandbox</a>
 </p>
 
 ---
 
-## Why js-cloudimage-video-hotspot?
+## Why @cloudimage/video-hotspot?
 
 Turn any video into a shoppable, interactive experience. Hotspots appear, move, and disappear in sync with the video timeline — perfect for product showcases, virtual tours, and interactive storytelling.
 
@@ -56,13 +56,13 @@ Turn any video into a shoppable, interactive experience. Hotspots appear, move, 
 ## Installation
 
 ```bash
-npm install js-cloudimage-video-hotspot
+npm install @cloudimage/video-hotspot
 ```
 
 ### CDN
 
 ```html
-<script src="https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/1.1.2/js-cloudimage-video-hotspot.min.js?vh=59d28e&func=proxy"></script>
+<script src="https://scaleflex.cloudimg.io/v7/plugins/cloudimage/video-hotspot/1.1.2/video-hotspot.min.js?vh=59d28e&func=proxy"></script>
 ```
 
 ### Optional peer dependencies
@@ -80,7 +80,7 @@ YouTube adapter loads the IFrame API from CDN automatically — no install neede
 ### JavaScript API
 
 ```js
-import CIVideoHotspot from 'js-cloudimage-video-hotspot';
+import CIVideoHotspot from '@cloudimage/video-hotspot';
 
 const player = new CIVideoHotspot('#shoppable-video', {
   src: 'https://example.com/fashion-show.mp4',
@@ -319,7 +319,7 @@ CIVideoHotspot.autoInit(root?: HTMLElement): CIVideoHotspotInstance[]
 ## React
 
 ```tsx
-import { CIVideoHotspotViewer, useCIVideoHotspot } from 'js-cloudimage-video-hotspot/react';
+import { CIVideoHotspotViewer, useCIVideoHotspot } from '@cloudimage/video-hotspot/react';
 ```
 
 ### Component

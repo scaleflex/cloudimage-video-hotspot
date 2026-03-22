@@ -8,9 +8,9 @@ export default defineConfig({
       name: 'CIVideoHotspot',
       formats: ['es', 'cjs', 'umd'],
       fileName: (format) => {
-        if (format === 'es') return 'js-cloudimage-video-hotspot.esm.js';
-        if (format === 'cjs') return 'js-cloudimage-video-hotspot.cjs.js';
-        return 'js-cloudimage-video-hotspot.min.js';
+        if (format === 'es') return 'video-hotspot.esm.js';
+        if (format === 'cjs') return 'video-hotspot.cjs.js';
+        return 'video-hotspot.min.js';
       },
     },
     outDir: resolve(__dirname, '../dist'),

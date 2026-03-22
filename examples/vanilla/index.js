@@ -1,4 +1,4 @@
-import CIVideoHotspot from 'js-cloudimage-video-hotspot';
+import CIVideoHotspot from '@cloudimage/video-hotspot';
 
 const player = new CIVideoHotspot('#player', {
   src: 'https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/Rest%20room.mp4?vh=152b41&func=proxy',
