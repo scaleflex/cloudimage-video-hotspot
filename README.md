@@ -28,7 +28,7 @@
 
 Turn any video into a shoppable, interactive experience. Hotspots appear, move, and disappear in sync with the video timeline — perfect for product showcases, virtual tours, and interactive storytelling.
 
-- **Lightweight** — under 20 KB gzipped with zero runtime dependencies
+- **Lightweight** — under 30 KB gzipped with zero runtime dependencies
 - **Time-based hotspots** — appear and disappear at precise moments in the video
 - **Object-tracking keyframes** — hotspots follow moving objects at 60 fps
 - **Accessible by default** — WCAG 2.1 AA compliant out of the box
