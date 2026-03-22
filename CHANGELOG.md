@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0] - 2026-03-22
+
+### Changed
+
+- Renamed package from `js-cloudimage-video-hotspot` to `@cloudimage/video-hotspot`
+- Shortened build output filenames (e.g. `video-hotspot.min.js`)
+- Updated all CDN paths, GitHub URLs, and documentation
+
+### Migration
+
+- Update imports: `import CIVideoHotspot from '@cloudimage/video-hotspot'`
+- Update package.json dependency name to `@cloudimage/video-hotspot`
+
+---
+
+*Previous changelog entries refer to the `js-cloudimage-video-hotspot` package.*
+
 ## [1.1.2] - 2026-03-16
 
 ### Fixed
