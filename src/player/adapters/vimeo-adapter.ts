@@ -20,11 +20,14 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   private _playbackRate = 1;
   private _aspectRatio: number | null = null;
   private pendingSeek: Promise<void> | null = null;
+  private seekGeneration = 0;
   private videoId: string;
+  private videoUrl: string;
 
   constructor(private options: AdapterOptions) {
     super();
     this.videoId = extractVimeoId(options.src) || '';
+    this.videoUrl = options.src;
     this._muted = options.muted ?? false;
   }
 
@@ -81,6 +84,7 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   }
 
   private createPlayer(Player: any): void {
+    // Use numeric id — fastest path, no oEmbed round-trip.
     this.vimeoPlayer = new Player(this.playerDiv, {
       id: Number(this.videoId),
       width: this.container.clientWidth || 640,
@@ -90,22 +94,77 @@ export class VimeoAdapter extends VideoPlayerAdapter {
       loop: this.options.loop ?? false,
     });
 
-    this.vimeoPlayer.ready().then(() => {
-      this._ready = true;
-      Promise.all([
-        this.vimeoPlayer.getDuration(),
-        this.vimeoPlayer.getVideoWidth(),
-        this.vimeoPlayer.getVideoHeight(),
-      ]).then(([d, w, h]: [number, number, number]) => {
-        this._duration = d;
-        if (w && h) this._aspectRatio = w / h;
-        this.emit('loadedmetadata');
-        this.emit('durationchange', d);
-        // Clear the initial loading spinner — video is ready to play
-        this.emit('playing');
+    this.bindPlayerEvents();
+
+    this.vimeoPlayer.ready()
+      .then(() => this.onPlayerReady())
+      .catch((err: unknown) => {
+        // Some Vimeo videos fail oEmbed lookup (404) but work as direct
+        // iframe embeds.  Fall back to creating an iframe manually and
+        // wrapping it with the SDK.
+        console.warn('CIVideoHotspot: Vimeo SDK id-based init failed, trying iframe fallback', err);
+        this.createPlayerViaIframe(Player);
       });
+  }
+
+  /**
+   * Fallback: build an iframe ourselves and let the SDK wrap it.
+   * This bypasses the oEmbed lookup that some videos don't support.
+   */
+  private createPlayerViaIframe(Player: any): void {
+    // Clean up the failed player (events bound to it are discarded with it)
+    try { this.vimeoPlayer?.destroy(); } catch { /* ignore */ }
+    this.playerDiv.innerHTML = '';
+
+    const params = new URLSearchParams({
+      controls: '0',
+      autoplay: this.options.autoplay ? '1' : '0',
+      muted: this.options.muted ? '1' : '0',
+      loop: this.options.loop ? '1' : '0',
+      playsinline: '1',
     });
 
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://player.vimeo.com/video/${this.videoId}?${params}`;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+    this.playerDiv.appendChild(iframe);
+
+    // Wrap the existing iframe with the Vimeo SDK
+    this.vimeoPlayer = new Player(iframe);
+
+    // Re-bind events to the new player instance
+    this.bindPlayerEvents();
+
+    this.vimeoPlayer.ready()
+      .then(() => this.onPlayerReady())
+      .catch((err2: unknown) => {
+        console.error('CIVideoHotspot: Vimeo iframe fallback also failed', err2);
+        this.emit('error', err2);
+      });
+  }
+
+  private onPlayerReady(): Promise<void> {
+    this._ready = true;
+    return Promise.all([
+      this.vimeoPlayer.getDuration(),
+      this.vimeoPlayer.getVideoWidth(),
+      this.vimeoPlayer.getVideoHeight(),
+    ]).then(([d, w, h]: [number, number, number]) => {
+      this._duration = d;
+      if (w && h) this._aspectRatio = w / h;
+      this.emit('loadedmetadata');
+      this.emit('durationchange', d);
+      // Clear the initial loading spinner — video metadata is ready.
+      // Use 'seeked' instead of 'playing' so --has-played is not set
+      // prematurely (prevents double spinner on first play).
+      this.emit('seeked');
+    });
+  }
+
+  private bindPlayerEvents(): void {
     this.vimeoPlayer.on('play', () => {
       this._paused = false;
       this.emit('play');
@@ -186,22 +245,24 @@ export class VimeoAdapter extends VideoPlayerAdapter {
 
   seek(time: number): void {
     const clamped = Math.max(0, Math.min(time, this._duration));
-    // Update cached time immediately so the progress bar doesn't snap back
-    // to the old position while waiting for Vimeo's async setCurrentTime.
     this._currentTime = clamped;
-    // Show loading state while Vimeo buffers the target position
     this.emit('waiting');
+    // Generation counter prevents stale seeks from clearing pendingSeek
+    // when a newer seek has already started.
+    const gen = ++this.seekGeneration;
     this.pendingSeek = (
       this.vimeoPlayer?.setCurrentTime(clamped)
         .then(() => {
-          this.pendingSeek = null;
-          // Clear loading state — if paused, no 'playing' event will fire
-          // so we must emit it manually to remove the spinner.
-          this.emit('playing');
+          if (gen === this.seekGeneration) {
+            this.pendingSeek = null;
+            this.emit('seeked');
+          }
         })
         .catch((err: unknown) => {
-          this.pendingSeek = null;
-          this.emit('playing');
+          if (gen === this.seekGeneration) {
+            this.pendingSeek = null;
+            this.emit('seeked');
+          }
           console.warn('CIVideoHotspot: Vimeo setCurrentTime() failed', err);
         })
     ) ?? null;

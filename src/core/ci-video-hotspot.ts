@@ -46,6 +46,8 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   private destroyed = false;
   private looping = true;
   private playingBeforeScrub = false;
+  private isScrubbing = false;
+  private scrubPausedByUs = false;
   private videoAspectRatio = 16 / 9;
   private resizeObserver: ResizeObserver | null = null;
 
@@ -141,8 +143,15 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
       onPause: () => {
         removeClass(this.containerEl, 'ci-video-hotspot-container--playing');
-        removeClass(this.containerEl, 'ci-video-hotspot-container--loading');
+        // Don't remove --loading here: pause ≠ done buffering.
+        // Loading is cleared by onPlaying or onSeeked.
         addClass(this.containerEl, 'ci-video-hotspot-container--paused');
+        // If user manually pauses during scrub (not our own pause from
+        // onDragStart), don't resume on drag end.
+        if (this.isScrubbing && !this.scrubPausedByUs) {
+          this.playingBeforeScrub = false;
+        }
+        this.scrubPausedByUs = false;
         this.config.onPause?.();
         this.renderLoopManager?.stopRenderLoop();
         if (this.controls) {
@@ -186,10 +195,15 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
       onPlaying: () => {
         removeClass(this.containerEl, 'ci-video-hotspot-container--loading');
-        // Persistent flag: once a real frame has been rendered, keep the
-        // iframe visible during future loading states (seek) so the user
-        // sees the last frame instead of a blank screen.
+        // After first real playback, disable the dark backdrop overlay
+        // so subsequent loading states (seek) show the last frame + spinner only.
         addClass(this.containerEl, 'ci-video-hotspot-container--has-played');
+      },
+
+      onSeeked: () => {
+        // Seek or initial load completed — clear spinner without
+        // implying playback started (unlike onPlaying).
+        removeClass(this.containerEl, 'ci-video-hotspot-container--loading');
       },
 
       onEnded: () => {
@@ -238,15 +252,20 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       onPlay: () => this.play(),
       onPause: () => this.pause(),
       onSeek: (time) => this.seek(time),
+      onScrub: (time) => this.seek(time),
       onDragStart: () => {
         // Pause the video while the user is scrubbing — critical for
         // iframe-based players (Vimeo) where setCurrentTime is async.
+        this.isScrubbing = true;
         this.playingBeforeScrub = !this.player.isPaused();
         if (this.playingBeforeScrub) {
+          this.scrubPausedByUs = true;
           this.player.pause();
         }
       },
       onDragEnd: () => {
+        this.isScrubbing = false;
+        this.scrubPausedByUs = false;
         if (this.playingBeforeScrub) {
           this.player.play();
           this.playingBeforeScrub = false;
@@ -528,7 +547,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   private static readonly LIGHT_UPDATE_KEYS = new Set<string>([
     'hotspots',
     // Behavioural flags — stored on this.config, no DOM changes needed
-    'clickToPlay', 'trigger', 'pauseOnInteract',
+    'clickToPlay', 'trigger', 'placement', 'pauseOnInteract',
     'hotspotNavigation', 'timelineIndicators', 'chapterNavigation',
     // Callbacks
     'onPlay', 'onPause', 'onTimeUpdate', 'onReady',
@@ -561,14 +580,16 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
     acquireLiveRegion();
     // Pass the player element so buildDOM() can keep the iframe alive
-    this.buildDOM(srcChanged ? undefined : this.player.element);
+    const preservedEl = srcChanged ? undefined : this.player.element;
+    this.buildDOM(preservedEl);
+    // Restore display immediately — even if later code throws, the iframe
+    // must not stay hidden (display was set to 'none' inside buildDOM).
+    if (preservedEl) preservedEl.style.display = '';
 
     if (srcChanged) {
       this.initPlayer();
     } else {
-      const el = this.player.element;
-      el.style.display = '';
-      this.videoWrapperEl.insertBefore(el, this.markersEl);
+      this.videoWrapperEl.insertBefore(this.player.element, this.markersEl);
       if (this.config.chapters) {
         this.navigationManager?.setResolvedChapters(
           resolveChapterEndTimes(this.config.chapters, this.player.getDuration()),

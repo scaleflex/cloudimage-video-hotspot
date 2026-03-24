@@ -7,6 +7,8 @@ export interface ProgressBarOptions {
   onSeek: (time: number) => void;
   onDragStart?: () => void;
   onDragEnd?: () => void;
+  /** Called continuously while dragging so the video can seek in real-time. */
+  onScrub?: (time: number) => void;
   getDuration: () => number;
   getCurrentTime: () => number;
   getBufferedEnd: () => number;
@@ -29,6 +31,7 @@ export class ProgressBar {
   private indicatorCleanups: (() => void)[] = [];
   private isDragging = false;
   private dragTime: number | null = null;
+  private lastScrubCall = 0;
   private options: ProgressBarOptions;
 
   constructor(options: ProgressBarOptions) {
@@ -152,6 +155,7 @@ export class ProgressBar {
     const duration = this.options.getDuration();
     this.dragTime = (percent / 100) * duration;
     this.update(this.dragTime);
+    this.throttledScrub(this.dragTime);
   }
 
   private previewFromTouch(e: TouchEvent): void {
@@ -162,6 +166,16 @@ export class ProgressBar {
     const duration = this.options.getDuration();
     this.dragTime = (percent / 100) * duration;
     this.update(this.dragTime);
+    this.throttledScrub(this.dragTime);
+  }
+
+  /** Throttle scrub calls to avoid flooding iframe-based players (YouTube). */
+  private throttledScrub(time: number): void {
+    const now = Date.now();
+    if (now - this.lastScrubCall >= 100) {
+      this.lastScrubCall = now;
+      this.options.onScrub?.(time);
+    }
   }
 
   /** Send the actual seek when drag ends. */
