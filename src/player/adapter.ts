@@ -4,7 +4,7 @@ import { EventEmitter } from '../utils/events';
 export type AdapterEvent =
   | 'play' | 'pause' | 'timeupdate' | 'durationchange'
   | 'ended' | 'loadedmetadata' | 'waiting' | 'playing'
-  | 'progress' | 'error' | 'volumechange' | 'ratechange';
+  | 'progress' | 'error' | 'seeked' | 'volumechange' | 'ratechange';
 
 /** Options passed to every adapter constructor */
 export interface AdapterOptions {
@@ -44,6 +44,10 @@ export abstract class VideoPlayerAdapter extends EventEmitter {
   /** Return the underlying HTMLVideoElement, if available.
    *  Returns null for iframe-based adapters (YouTube, Vimeo). */
   getVideoElement(): HTMLVideoElement | null { return null; }
+
+  /** Return the native aspect ratio, if known by the adapter.
+   *  Returns null when not available (e.g. before metadata loads). */
+  getAspectRatio(): number | null { return null; }
 
   abstract destroy(): void;
 

@@ -22,7 +22,9 @@ export interface VideoPlayerOptions {
   onLoadedMetadata?: () => void;
   onWaiting?: () => void;
   onPlaying?: () => void;
+  onSeeked?: () => void;
   onProgress?: () => void;
+  onError?: (err: unknown) => void;
 }
 
 /**
@@ -56,7 +58,9 @@ export class VideoPlayer {
     if (options.onLoadedMetadata) this.adapter.on('loadedmetadata', options.onLoadedMetadata);
     if (options.onWaiting) this.adapter.on('waiting', options.onWaiting);
     if (options.onPlaying) this.adapter.on('playing', options.onPlaying);
+    if (options.onSeeked) this.adapter.on('seeked', options.onSeeked);
     if (options.onProgress) this.adapter.on('progress', options.onProgress);
+    if (options.onError) this.adapter.on('error', options.onError);
   }
 
   /** The root DOM element (video tag or wrapper div) */
@@ -134,6 +138,10 @@ export class VideoPlayer {
 
   getVideoElement(): HTMLVideoElement | null {
     return this.adapter.getVideoElement();
+  }
+
+  getAspectRatio(): number | null {
+    return this.adapter.getAspectRatio();
   }
 
   destroy(): void {

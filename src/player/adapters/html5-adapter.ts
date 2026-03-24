@@ -80,6 +80,10 @@ export class HTML5Adapter extends VideoPlayerAdapter {
       this.emit('playing');
     }));
 
+    this.cleanups.push(addListener(this.videoEl, 'seeked', () => {
+      this.emit('seeked');
+    }));
+
     this.cleanups.push(addListener(this.videoEl, 'progress', () => {
       this.emit('progress');
     }));
@@ -90,6 +94,12 @@ export class HTML5Adapter extends VideoPlayerAdapter {
 
     this.cleanups.push(addListener(this.videoEl, 'ratechange', () => {
       this.emit('ratechange');
+    }));
+
+    // Catch source loading errors (unsupported format, 404, network failure)
+    this.cleanups.push(addListener(this.videoEl, 'error', () => {
+      const err = this.videoEl.error;
+      this.emit('error', err);
     }));
   }
 

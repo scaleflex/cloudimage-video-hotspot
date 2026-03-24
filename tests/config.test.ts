@@ -12,7 +12,7 @@ const minConfig: CIVideoHotspotConfig = {
 describe('mergeConfig', () => {
   it('applies default values', () => {
     const config = mergeConfig(minConfig);
-    expect(config.trigger).toBe('click');
+    expect(config.trigger).toBe('hover');
     expect(config.placement).toBe('top');
     expect(config.pauseOnInteract).toBe(true);
     expect(config.theme).toBe('light');

@@ -19,6 +19,7 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   private _muted = false;
   private _playbackRate = 1;
   private _aspectRatio: number | null = null;
+  private _bufferedEnd = 0;
   private pendingSeek: Promise<void> | null = null;
   private seekGeneration = 0;
   private videoId: string;
@@ -190,7 +191,8 @@ export class VimeoAdapter extends VideoPlayerAdapter {
       this.emit('waiting');
     });
 
-    this.vimeoPlayer.on('progress', () => {
+    this.vimeoPlayer.on('progress', (data: { percent: number }) => {
+      this._bufferedEnd = data.percent * this._duration;
       this.emit('progress');
     });
 
@@ -301,8 +303,7 @@ export class VimeoAdapter extends VideoPlayerAdapter {
   isPaused(): boolean { return this._paused; }
 
   getBufferedEnd(): number {
-    // Vimeo SDK doesn't expose buffered range synchronously
-    return 0;
+    return this._bufferedEnd;
   }
 
   getElement(): HTMLElement { return this.container; }

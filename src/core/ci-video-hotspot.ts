@@ -19,7 +19,7 @@ import { VideoKeyboardHandler } from '../a11y/keyboard';
 import { acquireLiveRegion, releaseLiveRegion } from '../a11y/aria';
 import { getElement, createElement, addClass, removeClass, injectStyles } from '../utils/dom';
 import { addListener } from '../utils/events';
-import { KEYBOARD_SEEK_STEP_S, KEYBOARD_VOLUME_STEP } from './constants';
+import { KEYBOARD_SEEK_STEP_S, KEYBOARD_VOLUME_STEP, DEFAULT_FALLBACK_VIDEO, SUPPORTED_VIDEO_EXTENSIONS } from './constants';
 import css from '../styles/index.css?inline';
 
 export class CIVideoHotspot implements CIVideoHotspotInstance {
@@ -50,6 +50,8 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
   private scrubPausedByUs = false;
   private videoAspectRatio = 16 / 9;
   private resizeObserver: ResizeObserver | null = null;
+  private usedFallback = false;
+  private errorOverlayEl: HTMLElement | null = null;
 
   constructor(element: HTMLElement | string, config: CIVideoHotspotConfig) {
     validateConfig(config);
@@ -187,6 +189,7 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
       onError: (err: unknown) => {
         this.config.onError?.(err);
+        this.handleVideoError(err);
       },
 
       onWaiting: () => {
@@ -396,6 +399,91 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
       }
     }
     this.fitWrapper();
+  }
+
+  private handleVideoError(_err: unknown): void {
+    // Don't fallback twice
+    if (this.usedFallback) return;
+    this.usedFallback = true;
+
+    const src = this.config.src;
+    const message = this.getUnsupportedFormatMessage(src);
+
+    // Remove broken player element immediately
+    const oldEl = this.player.element;
+    oldEl.remove();
+
+    // Create the fallback player before destroying the old one — faster swap
+    this.player = new VideoPlayer({
+      src: DEFAULT_FALLBACK_VIDEO,
+      poster: this.config.poster,
+      loop: this.config.loop,
+      muted: this.config.muted,
+      playerType: 'html5',
+
+      onPlay: () => {
+        addClass(this.containerEl, 'ci-video-hotspot-container--playing');
+        removeClass(this.containerEl, 'ci-video-hotspot-container--paused');
+      },
+      onPause: () => {
+        removeClass(this.containerEl, 'ci-video-hotspot-container--playing');
+        addClass(this.containerEl, 'ci-video-hotspot-container--paused');
+      },
+      onLoadedMetadata: () => {
+        this.updateWrapperAspectRatio();
+      },
+      onPlaying: () => {
+        removeClass(this.containerEl, 'ci-video-hotspot-container--loading');
+        addClass(this.containerEl, 'ci-video-hotspot-container--has-played');
+      },
+    });
+    this.player.mount(this.videoWrapperEl);
+    this.videoWrapperEl.insertBefore(this.player.element, this.markersEl);
+
+    // Show error after the new video is already in the DOM
+    this.showErrorOverlay(message);
+  }
+
+  private getUnsupportedFormatMessage(src: string): string {
+    // Extract extension from URL (strip query string)
+    const pathname = src.split('?')[0];
+    const dotIndex = pathname.lastIndexOf('.');
+    const ext = dotIndex >= 0 ? pathname.slice(dotIndex).toLowerCase() : '';
+
+    if (ext && !SUPPORTED_VIDEO_EXTENSIONS.includes(ext)) {
+      return `Unsupported video format "${ext}". Supported formats: MP4, WebM, OGG.`;
+    }
+    return 'This video could not be loaded. Playing the default video instead.';
+  }
+
+  private showErrorOverlay(message: string): void {
+    if (this.errorOverlayEl) {
+      this.errorOverlayEl.remove();
+    }
+
+    this.errorOverlayEl = createElement('div', 'ci-video-hotspot-error-overlay');
+    this.errorOverlayEl.setAttribute('role', 'alert');
+
+    const iconEl = createElement('div', 'ci-video-hotspot-error-icon');
+    iconEl.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+    const msgEl = createElement('div', 'ci-video-hotspot-error-message');
+    msgEl.textContent = message;
+
+    this.errorOverlayEl.appendChild(iconEl);
+    this.errorOverlayEl.appendChild(msgEl);
+    this.containerEl.appendChild(this.errorOverlayEl);
+
+    // Auto-dismiss after 6 seconds
+    setTimeout(() => {
+      if (this.errorOverlayEl) {
+        addClass(this.errorOverlayEl, 'ci-video-hotspot-error-overlay--hiding');
+        setTimeout(() => {
+          this.errorOverlayEl?.remove();
+          this.errorOverlayEl = null;
+        }, 400);
+      }
+    }, 6000);
   }
 
   private fitWrapper(): void {

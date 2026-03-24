@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { interpolatePosition } from '../src/markers/motion';
+import { interpolatePosition } from '../src/core/interpolation';
 
 describe('interpolatePosition', () => {
   const keyframes = [

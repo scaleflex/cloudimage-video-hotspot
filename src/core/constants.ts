@@ -27,3 +27,11 @@ export const HLS_MAX_RETRIES = 5;
 
 /** Initial HLS retry delay in milliseconds */
 export const HLS_INITIAL_RETRY_MS = 1000;
+
+/** Default fallback video shown when the user's source cannot be played */
+export const DEFAULT_FALLBACK_VIDEO = 'https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/Rest%20room.mp4?vh=152b41&func=proxy';
+
+/** Supported HTML5 video extensions */
+export const SUPPORTED_VIDEO_EXTENSIONS = [
+  '.mp4', '.webm', '.ogg', '.ogv', '.mov', '.m4v',
+];

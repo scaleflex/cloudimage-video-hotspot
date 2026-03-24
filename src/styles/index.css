@@ -1016,22 +1016,15 @@ height: 30px;
   opacity: 0.7;
 }
 
-/* Hide iframe during loading until video has actually played once.
-   Before first play there is no frame to show, and hiding the iframe
-   prevents the native Vimeo spinner from overlapping ours.
-   After first play, keep iframe visible during seek so the user
-   sees the last frame instead of a black screen. */
-.ci-video-hotspot-container--loading:not(.ci-video-hotspot-container--has-played) .ci-video-hotspot-video iframe {
-  visibility: hidden;
-}
-
 /* Soften the black container background during initial load */
 .ci-video-hotspot-container--loading {
   background: #1a1a1a;
 }
 
-/* Loading spinner overlay */
-.ci-video-hotspot-container--loading .ci-video-hotspot-video-wrapper::after {
+/* Loading spinner overlay — only show AFTER first play (seek/buffer).
+   Before first play, let the native player handle its own loading UI
+   (e.g. Vimeo's branded spinner) to avoid duplicate spinners. */
+.ci-video-hotspot-container--loading.ci-video-hotspot-container--has-played .ci-video-hotspot-video-wrapper::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -1448,6 +1441,52 @@ button.ci-video-hotspot-popover-cta:disabled {
   /* Dark: Secondary CTA */
   --ci-video-hotspot-secondary-cta-color: #6db3f2;
   --ci-video-hotspot-secondary-cta-border: 1px solid #6db3f2;
+}
+
+/* === Error Overlay === */
+.ci-video-hotspot-error-overlay {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: #ffffff;
+  color: #d32f2f;
+  font-family: var(--ci-video-hotspot-popover-font-family);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  z-index: 50;
+  pointer-events: none;
+  white-space: nowrap;
+  animation: ci-video-hotspot-error-fade-in 0.3s ease-out;
+}
+
+.ci-video-hotspot-error-overlay--hiding {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.ci-video-hotspot-error-icon {
+  flex-shrink: 0;
+  color: #d32f2f;
+  display: flex;
+  align-items: center;
+}
+
+.ci-video-hotspot-error-message {
+  flex: 1;
+  min-width: 0;
+}
+
+@keyframes ci-video-hotspot-error-fade-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 /* === Reduced Motion === */
