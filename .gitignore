@@ -21,8 +21,5 @@ src/**/*.d.ts
 !src/player/adapters/*-types.d.ts
 src/**/*.d.ts.map
 
-# Experimental packages
-packages/
-
 .idea
 package-lock.json
