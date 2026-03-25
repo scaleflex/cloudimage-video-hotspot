@@ -32,7 +32,8 @@
     },
     "./editor": {
       "types": "./dist/editor/index.d.ts",
-      "import": "./dist/editor/index.js"
+      "import": "./dist/editor/video-hotspot-editor.esm.js",
+      "require": "./dist/editor/video-hotspot-editor.cjs.js"
     }
   },
   "files": [
@@ -41,7 +42,8 @@
   "sideEffects": false,
   "scripts": {
     "dev": "vite --config config/vite.demo.config.ts",
-    "build": "npm run build:bundle && npm run build:react && npm run typecheck:emit",
+    "build": "npm run build:bundle && npm run build:react && npm run build:editor && npm run typecheck:emit",
+    "build:editor": "vite build --config config/vite.editor.config.ts",
     "build:bundle": "vite build --config config/vite.config.ts",
     "build:react": "vite build --config config/vite.react.config.ts",
     "build:demo": "vite build --config config/vite.demo.config.ts",
