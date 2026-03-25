@@ -8,7 +8,7 @@ export type Placement = 'top' | 'bottom' | 'left' | 'right' | 'auto';
 export type Theme = 'light' | 'dark';
 
 /** Marker visual style */
-export type MarkerStyle = 'dot' | 'dot-label' | 'icon' | 'numbered';
+export type MarkerStyle = 'dot' | 'dot-label' | 'numbered';
 
 /** Hotspot entrance/exit animation */
 export type HotspotAnimation = 'fade' | 'scale' | 'none';
@@ -150,8 +150,6 @@ export interface VideoChapter {
   startTime: number;
   /** End time in seconds (defaults to next chapter's startTime or video duration) */
   endTime?: number;
-  /** Optional thumbnail URL for chapter preview */
-  thumbnail?: string;
 }
 
 /** Cloudimage CDN integration configuration */

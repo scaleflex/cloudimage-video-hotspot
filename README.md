@@ -159,7 +159,7 @@ new CIVideoHotspot(element: HTMLElement | string, config: CIVideoHotspotConfig)
 | `alt` | `string` | — | Accessible description of the video |
 | `playerType` | `'auto' \| 'html5' \| 'hls' \| 'youtube' \| 'vimeo'` | `'auto'` | Player engine (auto-detected from URL) |
 | `hls` | `HLSConfig` | — | HLS-specific options (`enableWorker`, `startLevel`, `capLevelToPlayerSize`) |
-| `trigger` | `'hover' \| 'click'` | `'click'` | Popover trigger mode |
+| `trigger` | `'hover' \| 'click'` | `'hover'` | Popover trigger mode |
 | `placement` | `'top' \| 'bottom' \| 'left' \| 'right' \| 'auto'` | `'top'` | Default popover placement |
 | `pauseOnInteract` | `boolean` | `true` | Pause video on hotspot interaction |
 | `theme` | `'light' \| 'dark'` | `'light'` | Color theme |
@@ -194,6 +194,7 @@ new CIVideoHotspot(element: HTMLElement | string, config: CIVideoHotspotConfig)
 | `onClose` | `(hotspot) => void` | Popover closed |
 | `onChapterChange` | `(chapter) => void` | Active chapter changed |
 | `onFullscreenChange` | `(isFullscreen: boolean) => void` | Fullscreen state changed |
+| `onError` | `(error: unknown) => void` | Error handler (player errors, load failures) |
 | `onAnalytics` | `(event: AnalyticsEvent) => void` | Unified analytics for all interactions |
 
 ### VideoHotspotItem
