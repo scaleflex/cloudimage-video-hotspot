@@ -1,6 +1,5 @@
 node_modules/
 dist/
-src/editor/
 !/dist/video-hotspot.min.js
 !/dist/video-hotspot.min.js.map
 dist-demo/
