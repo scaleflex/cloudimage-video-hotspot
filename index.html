@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@cloudimage/video-hotspot — Interactive Video Hotspots</title>
+  <link rel="icon" href="https://cdn.prod.website-files.com/623086c828f7c9787009cf20/6267d5ef7488f536294d267b_favicon-256x526.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <script type="module" crossorigin src="/cloudimage-video-hotspot/assets/main-CPb66i8Q.js"></script>
+  <link rel="modulepreload" crossorigin href="/cloudimage-video-hotspot/assets/sample-hotspots-D6R1qJfW.js">
+  <link rel="stylesheet" crossorigin href="/cloudimage-video-hotspot/assets/sample-hotspots-CArJmPeP.css">
+</head>
+<body>
+  <!-- Nav -->
+  <nav class="demo-nav" id="demo-nav">
+    <div class="demo-nav-inner">
+      <a href="https://www.scaleflex.com" class="demo-logo" target="_blank" rel="noopener">
+        <img src="https://assets.scaleflex.com/Marketing/Logos/Scaleflex%20Logos/Logo%20Horizontal/scaleflex%20logo%20without%20tagline%20white%20text%20%28horizontal%29%20.png?vh=85bc00" alt="Scaleflex" class="demo-logo-img">
+      </a>
+      <div class="demo-nav-links">
+        <a href="#hero" class="active">Demo</a>
+        <a href="#motion-types">Motion</a>
+        <a href="#players">Players</a>
+        <a href="#getting-started">Install</a>
+        <a href="#configurator">Configurator</a>
+        <a href="./editor.html">Visual Editor</a>
+      </div>
+      <a href="https://github.com/scaleflex/cloudimage-video-hotspot" class="demo-nav-github" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.26 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <button class="demo-nav-burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- Hero Section -->
+    <section id="hero" class="demo-section demo-hero">
+      <div class="demo-section-inner">
+        <div class="demo-hero-badge">@cloudimage/video-hotspot</div>
+        <h1>Video <span class="demo-gradient-text">Hotspots</span></h1>
+        <p class="demo-subtitle">Add interactive hotspots to any video with time-based markers, keyframe motion, and full accessibility. Zero dependencies, under 30 KB gzipped.</p>
+        <div class="demo-hero-actions">
+          <a href="#getting-started" class="demo-btn demo-btn--glow">
+            Get Started
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="./editor.html" class="demo-btn demo-btn--glass">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Visual Editor
+          </a>
+          <a href="https://github.com/scaleflex/cloudimage-video-hotspot" class="demo-btn demo-btn--glass" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.26 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub
+          </a>
+        </div>
+        <div class="demo-hero-showcase">
+          <div id="hero-viewer" class="demo-viewer demo-viewer--hero"></div>
+        </div>
+        <div class="demo-hero-meta">
+          <span>&lt;30 KB gzipped</span>
+          <span>Zero dependencies</span>
+          <span>TypeScript</span>
+          <span>WCAG 2.1 AA</span>
+          <span>React ready</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Motion Types -->
+    <section id="motion-types" class="demo-section">
+      <div class="demo-section-inner">
+        <div class="demo-section-header">
+          <div class="demo-section-label">Motion Types</div>
+          <h2>Hotspot <span class="demo-gradient-text">Motion</span></h2>
+          <p>Four interpolation modes let hotspots stay still, glide in a line, or follow any curved path you define.</p>
+        </div>
+
+        <!-- Row 1: Static -->
+        <div class="demo-feature-row demo-reveal">
+          <div class="demo-feature-video demo-card">
+            <div id="motion-static" class="demo-viewer"></div>
+          </div>
+          <div class="demo-feature-content">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8" opacity="0.4"/></svg>
+              </div>
+              <div class="demo-feature-title">Static</div>
+            </div>
+            <p class="demo-feature-desc">The hotspot stays at a fixed position for its entire lifetime. No keyframes needed — just set <code>x</code> and <code>y</code> and let the pulsing dot draw attention.</p>
+          </div>
+        </div>
+
+        <!-- Row 2: Linear (reversed) -->
+        <div class="demo-feature-row demo-feature-row--reverse demo-reveal">
+          <div class="demo-feature-video demo-card">
+            <div id="motion-linear" class="demo-viewer"></div>
+            <svg class="demo-feature-trajectory" id="trajectory-linear"></svg>
+          </div>
+          <div class="demo-feature-content">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+              <div class="demo-feature-title">Linear</div>
+            </div>
+            <p class="demo-feature-desc">Two keyframes connected by straight-line interpolation. The hotspot moves smoothly from left to right at constant speed.</p>
+          </div>
+        </div>
+
+        <!-- Row 3: Curved Path -->
+        <div class="demo-feature-row demo-reveal">
+          <div class="demo-feature-video demo-card">
+            <div id="motion-curved" class="demo-viewer"></div>
+            <svg class="demo-feature-trajectory" id="trajectory-curved"></svg>
+          </div>
+          <div class="demo-feature-content">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c3.333-6 6.667-10 10-10s6.667 4 10 10"/></svg>
+              </div>
+              <div class="demo-feature-title">Curved Path</div>
+            </div>
+            <p class="demo-feature-desc">Three keyframes with Catmull-Rom spline interpolation create a smooth V-shaped arc. The hotspot follows a natural curved trajectory.</p>
+          </div>
+        </div>
+
+        <!-- Row 4: Complex Path (reversed) -->
+        <div class="demo-feature-row demo-feature-row--reverse demo-reveal">
+          <div class="demo-feature-video demo-card">
+            <div id="motion-complex" class="demo-viewer"></div>
+            <svg class="demo-feature-trajectory" id="trajectory-complex"></svg>
+          </div>
+          <div class="demo-feature-content">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20c4-8 8 4 12-4s4-12 8-4"/></svg>
+              </div>
+              <div class="demo-feature-title">Complex Path</div>
+            </div>
+            <p class="demo-feature-desc">Four or more keyframes trace an S-curve through the scene. Catmull-Rom interpolation ensures the motion feels fluid and organic.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Players / Video Sources -->
+    <section id="players" class="demo-section demo-section--alt">
+      <div class="demo-section-inner">
+        <div class="demo-section-header">
+          <div class="demo-section-label">Video Sources</div>
+          <h2>Works with any <span class="demo-gradient-text">player</span></h2>
+          <p>One API, every video format. Native HTML5, adaptive streaming, and embedded players &mdash; all with full hotspot support.</p>
+        </div>
+        <div class="demo-grid demo-grid--4 demo-reveal">
+          <!-- HTML5 -->
+          <div class="demo-card demo-player-card">
+            <div class="demo-player-logo">
+              <svg viewBox="0 0 120 120" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="100" height="100" rx="20" fill="#E44D26" opacity="0.12"/>
+                <path d="M35 30l5 55 20 8 20-8 5-55H35z" fill="#E44D26"/>
+                <path d="M60 35v53l16-6 4-47H60z" fill="#F16529"/>
+                <path d="M46 45h28l-1 12H53l1 10h18l-1 14-11 4-11-4-1-8h6l1 4 5 2 5-2 1-6H47l-2-22h30l1-8H44l-1 0z" fill="#fff"/>
+              </svg>
+            </div>
+            <h3 class="demo-player-name">HTML5 Video</h3>
+            <p class="demo-player-desc">MP4, WebM — native browser playback with zero overhead.</p>
+          </div>
+          <!-- YouTube -->
+          <div class="demo-card demo-player-card">
+            <div class="demo-player-logo">
+              <svg viewBox="0 0 120 120" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="100" height="100" rx="20" fill="#FF0000" opacity="0.12"/>
+                <rect x="25" y="38" width="70" height="44" rx="12" fill="#FF0000"/>
+                <polygon points="52,48 52,72 72,60" fill="#fff"/>
+              </svg>
+            </div>
+            <h3 class="demo-player-name">YouTube</h3>
+            <p class="demo-player-desc">Embed any YouTube video and layer interactive hotspots on top.</p>
+          </div>
+          <!-- Vimeo -->
+          <div class="demo-card demo-player-card">
+            <div class="demo-player-logo">
+              <svg viewBox="0 0 120 120" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="100" height="100" rx="20" fill="#1AB7EA" opacity="0.12"/>
+                <path d="M85 48c-.3 6.5-4.8 15.4-13.6 26.6C62 86.2 54.3 92 48 92c-3.9 0-7.2-3.6-9.9-10.8l-5.4-19.8C30.6 54.2 28.3 50.6 25.8 50.6c-.5 0-2.1 1-5 3l-3-3.8c3.1-2.8 6.2-5.5 9.3-8.3 4.2-3.6 7.3-5.5 9.4-5.7 4.9-.5 8 2.9 9.2 10.2 1.3 7.9 2.2 12.8 2.7 14.7 1.5 6.8 3.1 10.2 4.9 10.2 1.4 0 3.5-2.2 6.2-6.5 2.8-4.4 4.3-7.7 4.5-9.9.4-3.7-1.1-5.5-4.4-5.5-1.6 0-3.2.4-4.9 1.1 3.3-10.7 9.5-15.9 18.6-15.6 6.8.2 10 4.6 9.6 13.3z" fill="#1AB7EA"/>
+              </svg>
+            </div>
+            <h3 class="demo-player-name">Vimeo</h3>
+            <p class="demo-player-desc">Professional Vimeo embeds with full hotspot integration.</p>
+          </div>
+          <!-- HLS -->
+          <div class="demo-card demo-player-card">
+            <div class="demo-player-logo">
+              <svg viewBox="0 0 120 120" width="80" height="80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="100" height="100" rx="20" fill="url(#hls-grad)" opacity="0.12"/>
+                <g transform="translate(30,35)">
+                  <rect x="0" y="8" width="12" height="34" rx="3" fill="url(#hls-grad)" opacity="0.6"/>
+                  <rect x="16" y="0" width="12" height="50" rx="3" fill="url(#hls-grad)" opacity="0.8"/>
+                  <rect x="32" y="12" width="12" height="26" rx="3" fill="url(#hls-grad)" opacity="0.5"/>
+                  <rect x="48" y="4" width="12" height="42" rx="3" fill="url(#hls-grad)" opacity="0.9"/>
+                </g>
+                <defs><linearGradient id="hls-grad" x1="0" y1="0" x2="120" y2="120"><stop stop-color="#2c99ff"/><stop offset="1" stop-color="#00d4aa"/></linearGradient></defs>
+              </svg>
+            </div>
+            <h3 class="demo-player-name">HLS Streaming</h3>
+            <p class="demo-player-desc">Adaptive bitrate via hls.js — ideal for live and long-form content.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Getting Started -->
+    <section id="getting-started" class="demo-section">
+      <div class="demo-section-inner">
+        <div class="demo-section-header">
+          <div class="demo-section-label">Quick Start</div>
+          <h2>Up and running in under a minute</h2>
+          <p>Install from npm or load from CDN &mdash; choose the method that fits your workflow.</p>
+          <div class="demo-hero-sandboxes">
+            <span class="demo-hero-sandboxes-label">Try it live</span>
+            <a href="https://codesandbox.io/p/devbox/github/scaleflex/cloudimage-video-hotspot/tree/master/examples/vanilla" class="demo-btn demo-btn--chip" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Vanilla
+            </a>
+            <a href="https://codesandbox.io/p/devbox/github/scaleflex/cloudimage-video-hotspot/tree/master/examples/react" class="demo-btn demo-btn--chip" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14.23 12.004a2.236 2.236 0 0 1-2.235 2.236 2.236 2.236 0 0 1-2.236-2.236 2.236 2.236 0 0 1 2.235-2.236 2.236 2.236 0 0 1 2.236 2.236zm2.648-10.69c-1.346 0-3.107.96-4.888 2.622-1.78-1.653-3.542-2.602-4.887-2.602-.31 0-.592.068-.846.206C4.747 2.387 4.24 4.462 4.61 7.27c-2.554.834-4.11 2.19-4.11 3.734 0 1.55 1.57 2.92 4.137 3.752-.38 2.79.12 4.855 1.632 5.712.258.147.554.22.857.22 1.35 0 3.118-.966 4.904-2.635 1.794 1.68 3.569 2.655 4.925 2.655.3 0 .59-.073.846-.22 1.507-.854 2.01-2.93 1.64-5.746 2.531-.834 4.06-2.19 4.06-3.738 0-1.543-1.54-2.91-4.094-3.74.38-2.816-.12-4.9-1.637-5.756a1.667 1.667 0 0 0-.848-.213zm-.354 1.198c.364 0 .698.128.965.287.924.524 1.328 1.983 1.06 3.983a17.09 17.09 0 0 0-2.576-.476 17.4 17.4 0 0 0-1.676-2.013c1.435-1.348 2.78-1.781 4.027-1.781zm-8.25.182c1.225 0 2.607.463 4.072 1.812a17.4 17.4 0 0 0-1.65 1.988 16.89 16.89 0 0 0-2.583.49c-.256-1.984.143-3.433 1.064-3.951a.94.94 0 0 1 .497-.14zM12 6.545c.478.544.934 1.14 1.358 1.784a18.8 18.8 0 0 0-2.716 0A18.3 18.3 0 0 1 12 6.545zm-4.872 3.027c.21-.058.423-.11.638-.157a18.9 18.9 0 0 0-.907 2.588c-.51-.886-.926-1.727-1.247-2.475.487-.12 1-.22 1.516-.294zm9.744 0c.516.074 1.03.174 1.516.294-.321.748-.738 1.589-1.247 2.475-.177-.906-.495-1.767-.907-2.588.215.047.428.1.638.157zM12 8.1c.694 0 1.383.037 2.06.11a16.9 16.9 0 0 1 1.2 2.256c.45.93.83 1.87 1.136 2.804a16.1 16.1 0 0 1-1.137 2.795 16.9 16.9 0 0 1-1.2 2.253c-.676.073-1.365.11-2.06.11-.694 0-1.383-.037-2.06-.11a16.9 16.9 0 0 1-1.2-2.253 16.1 16.1 0 0 1-1.136-2.795 16.1 16.1 0 0 1 1.137-2.804 16.9 16.9 0 0 1 1.2-2.256A19 19 0 0 1 12 8.1zm-4.534 1.51c-.28.825-.482 1.67-.605 2.51a16.7 16.7 0 0 1-.596-2.484c.39-.085.792-.161 1.2-.226zm9.068 0c.41.065.81.14 1.2.226a16.7 16.7 0 0 1-.596 2.484 18.1 18.1 0 0 0-.604-2.51zM4.136 10.2c.48-.208.995-.39 1.534-.545.213.86.509 1.744.884 2.64-.375.895-.67 1.78-.884 2.638a10 10 0 0 1-1.534-.545C2.9 13.74 1.9 12.783 1.9 12c0-.784 1-1.741 2.236-2.392zM19.864 10.2c1.236.65 2.236 1.608 2.236 2.392 0 .784-1 1.741-2.236 2.392a10 10 0 0 1-1.534.545c-.213-.86-.509-1.743-.884-2.639.375-.895.67-1.78.884-2.64.539.156 1.054.338 1.534.546zM6.933 14.59c.177.906.495 1.767.907 2.588-.215-.047-.428-.1-.638-.157a10.2 10.2 0 0 1-1.516-.294c.321-.748.738-1.589 1.247-2.475zm10.134 0c.51.886.926 1.727 1.247 2.475-.487.12-1 .22-1.516.294-.21.058-.423.11-.638.157a18.9 18.9 0 0 0 .907-2.588zM12 15.127c-.478-.544-.934-1.14-1.358-1.784a18.8 18.8 0 0 0 2.716 0A18.3 18.3 0 0 1 12 15.127zm0 2.228a17.4 17.4 0 0 0 1.676 2.013c-1.435 1.348-2.78 1.781-4.027 1.781-.364 0-.698-.128-.965-.287-.924-.524-1.328-1.983-1.06-3.983a17.09 17.09 0 0 0 2.576.476c.556.728 1.13 1.391 1.676 2.013zm0 0a17.4 17.4 0 0 1-1.65-1.988 16.89 16.89 0 0 1 3.3 0A17.4 17.4 0 0 1 12 17.355zm3.8 2.594c-1.225 0-2.607-.463-4.072-1.812a17.4 17.4 0 0 0 1.65-1.988 16.89 16.89 0 0 0 2.583-.49c.256 1.984-.143 3.433-1.064 3.951a.94.94 0 0 1-.497.14z"/></svg>
+              React
+            </a>
+          </div>
+        </div>
+        <div class="demo-columns demo-reveal">
+          <div class="demo-column demo-card">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16V7a2 2 0 00-2-2H6a2 2 0 00-2 2v9m16 0H4m16 0l1.28 2.55a1 1 0 01-.9 1.45H3.62a1 1 0 01-.9-1.45L4 16"/></svg>
+              </div>
+              <div class="demo-feature-title">Install via npm</div>
+            </div>
+            <div class="demo-code-wrap">
+              <pre><code class="language-bash">npm install @cloudimage/video-hotspot</code></pre>
+              <button class="demo-copy-btn" aria-label="Copy to clipboard">
+                <svg class="demo-copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                <svg class="demo-check-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
+            <div class="demo-code-wrap">
+              <pre><code class="language-javascript">import CIVideoHotspot from '@cloudimage/video-hotspot';
+
+const player = new CIVideoHotspot('#my-video', {
+  src: 'https://example.com/room.mp4',
+  hotspots: [
+    {
+      id: 'sofa',
+      x: '40%', y: '60%',
+      startTime: 2, endTime: 10,
+      label: 'Modern Sofa',
+      data: { title: 'Sofa', price: '$899' }
+    }
+  ]
+});</code></pre>
+              <button class="demo-copy-btn" aria-label="Copy to clipboard">
+                <svg class="demo-copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                <svg class="demo-check-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="demo-column demo-card">
+            <div class="demo-feature-header">
+              <div class="demo-feature-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
+              </div>
+              <div class="demo-feature-title">Use via CDN</div>
+            </div>
+            <div class="demo-code-wrap demo-code-wrap--fill">
+              <pre><code class="language-html">&lt;script src="https://scaleflex.cloudimg.io/v7/plugins/cloudimage/video-hotspot/1.0.0/video-hotspot.min.js?vh=626ad0&amp;func=proxy"&gt;&lt;/script&gt;
+
+&lt;div
+  data-ci-video-hotspot-src="/room.mp4"
+  data-ci-video-hotspot-items='[{"id":"sofa","x":"40%","y":"60%","startTime":2,"endTime":10,"label":"Sofa"}]'
+&gt;&lt;/div&gt;
+
+&lt;script&gt;CIVideoHotspot.autoInit();&lt;/script&gt;</code></pre>
+              <button class="demo-copy-btn" aria-label="Copy to clipboard">
+                <svg class="demo-copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                <svg class="demo-check-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Configurator -->
+    <section id="configurator" class="demo-section demo-section--alt">
+      <div class="demo-section-inner">
+        <div class="demo-section-header">
+          <div class="demo-section-label">Playground</div>
+          <h2>Interactive Configurator</h2>
+          <p>Toggle options and see the generated code update in real time.</p>
+        </div>
+        <div class="demo-configurator demo-reveal">
+          <div class="demo-configurator-preview demo-configurator-panel">
+            <h3>Preview</h3>
+            <div id="cfg-viewer" class="demo-viewer"></div>
+          </div>
+          <div class="demo-configurator-sidebar">
+            <div class="demo-configurator-panel">
+              <h3>Options</h3>
+              <div class="demo-configurator-controls">
+                <div class="cfg-group">
+                  <div class="cfg-group-title">Hotspot</div>
+                  <div class="cfg-group-items">
+                    <div class="cfg-group-selects">
+                      <label class="demo-select-label">
+                        Marker Style
+                        <select id="cfg-marker-style">
+                          <option value="dot">dot</option>
+                          <option value="dot-label">dot-label</option>
+                          <option value="numbered">numbered</option>
+                        </select>
+                      </label>
+                      <label class="demo-select-label">
+                        Animation
+                        <select id="cfg-animation">
+                          <option value="fade">fade</option>
+                          <option value="scale">scale</option>
+                          <option value="none">none</option>
+                        </select>
+                      </label>
+                    </div>
+                    <div class="cfg-group-toggles">
+                      <label class="demo-toggle">
+                        <input type="checkbox" id="cfg-pulse" checked>
+                        <span class="demo-toggle-label">Pulse</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="cfg-group">
+                  <div class="cfg-group-title">Popover</div>
+                  <div class="cfg-group-items">
+                    <div class="cfg-group-selects">
+                      <label class="demo-select-label">
+                        Trigger
+                        <select id="cfg-trigger">
+                          <option value="click">click</option>
+                          <option value="hover">hover</option>
+                        </select>
+                      </label>
+                      <label class="demo-select-label">
+                        Placement
+                        <select id="cfg-placement">
+                          <option value="top">top</option>
+                          <option value="bottom">bottom</option>
+                          <option value="left">left</option>
+                          <option value="right">right</option>
+                          <option value="auto">auto</option>
+                        </select>
+                      </label>
+                      <label class="demo-select-label">
+                        Theme
+                        <select id="cfg-theme">
+                          <option value="light">light</option>
+                          <option value="dark">dark</option>
+                        </select>
+                      </label>
+                    </div>
+                    <div class="cfg-group-toggles">
+                      <label class="demo-toggle">
+                        <input type="checkbox" id="cfg-pause-interact" checked>
+                        <span class="demo-toggle-label">Pause on Interact</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="demo-configurator-panel demo-configurator-code">
+              <h3>Generated Code</h3>
+              <div class="demo-code-wrap">
+                <pre id="cfg-code"><code></code></pre>
+                <button id="cfg-copy" class="demo-copy-btn" aria-label="Copy to clipboard">
+                  <svg class="demo-copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                  <svg class="demo-check-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HTML Data-Attributes (hidden) -->
+  </main>
+
+  <!-- Also by Scaleflex -->
+  <section class="demo-also" id="also-slider">
+    <div class="demo-also-slides">
+      <div class="demo-also-slide demo-also-slide--active" data-slide="0">
+        <div class="demo-also-inner">
+          <div class="demo-also-content">
+            <div class="demo-section-label">Also by Scaleflex</div>
+            <h3 class="demo-also-title">cloudimage-<span class="demo-gradient-text">hotspot</span></h3>
+            <p class="demo-also-desc">Interactive image hotspots with zoom, popovers, and full accessibility. The image counterpart to this video library.</p>
+            <div class="demo-also-actions">
+              <a href="https://scaleflex.github.io/cloudimage-hotspot/" class="demo-btn demo-btn--primary demo-btn--small" target="_blank" rel="noopener">
+                Live Demo
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+              <a href="https://github.com/scaleflex/cloudimage-hotspot" class="demo-btn demo-btn--outline demo-btn--small" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.26 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+          <div class="demo-also-visual">
+            <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" class="demo-also-icon">
+              <rect x="4" y="4" width="172" height="172" rx="8" stroke="url(#also-grad-0)" stroke-width="2" opacity="0.3"/>
+              <rect x="10" y="10" width="160" height="160" rx="4" stroke="url(#also-grad-0)" stroke-width="1" opacity="0.12"/>
+              <path d="M10 140 L40 110 L65 125 L100 85 L135 110 L170 90 L170 170 L10 170 Z" fill="url(#also-grad-0)" opacity="0.06"/>
+              <circle cx="45" cy="60" r="14" stroke="url(#also-grad-0)" stroke-width="1" opacity="0.15"><animate attributeName="r" values="14;18;14" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.15;0.05;0.15" dur="3s" repeatCount="indefinite"/></circle>
+              <circle cx="45" cy="60" r="8" fill="url(#also-grad-0)" opacity="0.6"/><circle cx="45" cy="60" r="3" fill="#fff" opacity="0.9"/>
+              <circle cx="110" cy="50" r="14" stroke="url(#also-grad-0)" stroke-width="1" opacity="0.15"><animate attributeName="r" values="14;18;14" dur="3s" begin="0.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.15;0.05;0.15" dur="3s" begin="0.5s" repeatCount="indefinite"/></circle>
+              <circle cx="110" cy="50" r="8" fill="url(#also-grad-0)" opacity="0.6"/><circle cx="110" cy="50" r="3" fill="#fff" opacity="0.9"/>
+              <circle cx="140" cy="90" r="14" stroke="url(#also-grad-0)" stroke-width="1" opacity="0.15"><animate attributeName="r" values="14;18;14" dur="3s" begin="1s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.15;0.05;0.15" dur="3s" begin="1s" repeatCount="indefinite"/></circle>
+              <circle cx="140" cy="90" r="8" fill="url(#also-grad-0)" opacity="0.6"/><circle cx="140" cy="90" r="3" fill="#fff" opacity="0.9"/>
+              <rect x="120" y="14" width="50" height="20" rx="4" fill="url(#also-grad-0)" opacity="0.1" stroke="url(#also-grad-0)" stroke-width="1" stroke-opacity="0.25"/>
+              <line x1="128" y1="22" x2="158" y2="22" stroke="url(#also-grad-0)" stroke-width="2" opacity="0.25" stroke-linecap="round"/>
+              <line x1="128" y1="28" x2="148" y2="28" stroke="url(#also-grad-0)" stroke-width="1.5" opacity="0.15" stroke-linecap="round"/>
+              <defs><linearGradient id="also-grad-0" x1="0" y1="0" x2="180" y2="180"><stop stop-color="#2c99ff"/><stop offset="1" stop-color="#00d4aa"/></linearGradient></defs>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="demo-also-slide" data-slide="1">
+        <div class="demo-also-inner">
+          <div class="demo-also-content">
+            <div class="demo-section-label">Also by Scaleflex</div>
+            <h3 class="demo-also-title">cloudimage-<span class="demo-gradient-text">360-view</span></h3>
+            <p class="demo-also-desc">Interactive 360° product views with drag, zoom, autoplay and hotspots. Perfect companion for e-commerce showcases.</p>
+            <div class="demo-also-actions">
+              <a href="https://scaleflex.github.io/cloudimage-360-view/" class="demo-btn demo-btn--primary demo-btn--small" target="_blank" rel="noopener">
+                Live Demo
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+              <a href="https://github.com/scaleflex/cloudimage-360-view" class="demo-btn demo-btn--outline demo-btn--small" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.26 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+          <div class="demo-also-visual">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="demo-also-icon demo-also-icon--spin">
+              <circle cx="60" cy="60" r="56" stroke="url(#also-grad-1)" stroke-width="2" opacity="0.3"/>
+              <circle cx="60" cy="60" r="40" stroke="url(#also-grad-1)" stroke-width="1.5" opacity="0.2"/>
+              <ellipse cx="60" cy="60" rx="56" ry="20" stroke="url(#also-grad-1)" stroke-width="2" opacity="0.5"/>
+              <path d="M60 4 L60 116" stroke="url(#also-grad-1)" stroke-width="1" opacity="0.15"/>
+              <circle cx="60" cy="60" r="4" fill="url(#also-grad-1)"/>
+              <path d="M75 55 L85 60 L75 65" stroke="url(#also-grad-1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+              <path d="M45 55 L35 60 L45 65" stroke="url(#also-grad-1)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+              <defs><linearGradient id="also-grad-1" x1="0" y1="0" x2="120" y2="120"><stop stop-color="#2c99ff"/><stop offset="1" stop-color="#00d4aa"/></linearGradient></defs>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="demo-also-slide" data-slide="2">
+        <div class="demo-also-inner">
+          <div class="demo-also-content">
+            <div class="demo-section-label">Also by Scaleflex</div>
+            <h3 class="demo-also-title">cloudimage-<span class="demo-gradient-text">before-after</span></h3>
+            <p class="demo-also-desc">Beautiful before/after image comparison slider with touch support, smooth animations, and responsive design.</p>
+            <div class="demo-also-actions">
+              <a href="https://scaleflex.github.io/cloudimage-before-after/" class="demo-btn demo-btn--primary demo-btn--small" target="_blank" rel="noopener">
+                Live Demo
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              </a>
+              <a href="https://github.com/scaleflex/cloudimage-before-after" class="demo-btn demo-btn--outline demo-btn--small" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.26 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                GitHub
+              </a>
+            </div>
+          </div>
+          <div class="demo-also-visual">
+            <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" class="demo-also-icon">
+              <rect x="4" y="4" width="172" height="172" rx="8" stroke="url(#also-grad-2)" stroke-width="2" opacity="0.3"/>
+              <rect x="10" y="30" width="160" height="120" rx="4" stroke="url(#also-grad-2)" stroke-width="1" opacity="0.12"/>
+              <rect x="10" y="30" width="80" height="120" fill="url(#also-grad-2)" opacity="0.06"/>
+              <line x1="90" y1="30" x2="90" y2="150" stroke="url(#also-grad-2)" stroke-width="2" opacity="0.5"/>
+              <circle cx="90" cy="90" r="12" fill="url(#also-grad-2)" opacity="0.3" stroke="url(#also-grad-2)" stroke-width="2" stroke-opacity="0.6"/>
+              <path d="M84 87 L80 90 L84 93" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+              <path d="M96 87 L100 90 L96 93" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.8"/>
+              <text x="50" y="24" fill="url(#also-grad-2)" font-size="11" font-weight="600" text-anchor="middle" opacity="0.4">Before</text>
+              <text x="130" y="24" fill="url(#also-grad-2)" font-size="11" font-weight="600" text-anchor="middle" opacity="0.4">After</text>
+              <defs><linearGradient id="also-grad-2" x1="0" y1="0" x2="180" y2="180"><stop stop-color="#2c99ff"/><stop offset="1" stop-color="#00d4aa"/></linearGradient></defs>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="demo-also-dots" id="also-dots"></div>
+  </section>
+
+  <footer class="demo-footer" id="demo-footer">
+    <div class="demo-footer-main">
+      <div class="demo-footer-brand">
+        <a href="https://www.scaleflex.com" target="_blank" rel="noopener">
+          <img src="https://assets.scaleflex.com/Marketing/Logos/Scaleflex%20Logos/Logo%20Horizontal/scaleflex%20logo%20without%20tagline%20white%20text%20%28horizontal%29%20.png?vh=85bc00" alt="Scaleflex" class="demo-footer-logo">
+        </a>
+        <p>Interactive video hotspots for the modern web. Zero dependencies, fully accessible, endlessly customizable.</p>
+      </div>
+      <div class="demo-footer-col">
+        <h4>Resources</h4>
+        <a href="https://github.com/scaleflex/cloudimage-video-hotspot">GitHub</a>
+        <a href="https://www.npmjs.com/package/@cloudimage/video-hotspot">npm</a>
+        <a href="https://github.com/scaleflex/cloudimage-video-hotspot/blob/master/README.md">Documentation</a>
+      </div>
+      <div class="demo-footer-col">
+        <h4>Examples</h4>
+        <a href="https://codesandbox.io/p/devbox/github/scaleflex/cloudimage-video-hotspot/tree/master/examples/vanilla" target="_blank" rel="noopener">Vanilla Sandbox</a>
+        <a href="https://codesandbox.io/p/devbox/github/scaleflex/cloudimage-video-hotspot/tree/master/examples/react" target="_blank" rel="noopener">React Sandbox</a>
+        <a href="./editor.html">Visual Editor</a>
+      </div>
+      <div class="demo-footer-col">
+        <h4>Support</h4>
+        <a href="https://buymeacoffee.com/dzmitry.stramavus" class="demo-footer-coffee" target="_blank" rel="noopener">
+          <span class="demo-coffee-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 110 8h-1"/><path d="M3 8h14v9a4 4 0 01-4 4H7a4 4 0 01-4-4V8z"/></svg>
+            <span class="demo-steam demo-steam--1"></span>
+            <span class="demo-steam demo-steam--2"></span>
+            <span class="demo-steam demo-steam--3"></span>
+          </span>
+          Buy Me a Coffee
+        </a>
+        <a href="https://github.com/scaleflex/cloudimage-video-hotspot/issues" target="_blank" rel="noopener">Report an Issue</a>
+        <a href="mailto:hello@cloudimage.io">Contact Us</a>
+      </div>
+    </div>
+    <div class="demo-footer-bottom">
+      <p>MIT License &mdash; Made with care by the <a href="https://www.scaleflex.com" target="_blank" rel="noopener">Scaleflex</a> team &mdash; Powered by <a href="https://www.cloudimage.io" target="_blank" rel="noopener">Cloudimage.io</a></p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+  <script>
+    // Scroll reveal animation
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.demo-reveal').forEach(el => revealObserver.observe(el));
+
+    // Copy-to-clipboard buttons
+    document.querySelectorAll('.demo-copy-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.closest('.demo-code-wrap').querySelector('code');
+        if (!code) return;
+        navigator.clipboard.writeText(code.textContent || '').then(() => {
+          btn.classList.add('copied');
+          setTimeout(() => btn.classList.remove('copied'), 2000);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloudimage Video Hotspot — Visual Editor</title>
+  <link rel="icon" href="https://cdn.prod.website-files.com/623086c828f7c9787009cf20/6267d5ef7488f536294d267b_favicon-256x526.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/cloudimage-video-hotspot/assets/editor-CsyDqm8A.js"></script>
+  <link rel="modulepreload" crossorigin href="/cloudimage-video-hotspot/assets/sample-hotspots-D6R1qJfW.js">
+  <link rel="stylesheet" crossorigin href="/cloudimage-video-hotspot/assets/sample-hotspots-CArJmPeP.css">
+</head>
+<body style="background: var(--sf-light-bg);">
+  <!-- Nav -->
+  <nav class="demo-nav" id="demo-nav">
+    <div class="demo-nav-inner">
+      <a href="https://www.scaleflex.com" class="demo-logo" target="_blank" rel="noopener">
+        <img src="https://assets.scaleflex.com/Marketing/Logos/Scaleflex%20Logos/Logo%20Horizontal/scaleflex%20logo%20without%20tagline%20white%20text%20%28horizontal%29%20.png?vh=85bc00" alt="Scaleflex" class="demo-logo-img">
+      </a>
+      <div class="demo-nav-links">
+        <a href="./index.html">Demo</a>
+        <a href="./index.html#motion-types">Motion</a>
+        <a href="./index.html#players">Players</a>
+        <a href="./index.html#getting-started">Install</a>
+        <a href="./index.html#configurator">Configurator</a>
+        <a href="./editor.html" class="active">Visual Editor</a>
+      </div>
+      <a href="https://github.com/scaleflex/cloudimage-video-hotspot" class="demo-nav-github" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.26 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </a>
+      <button class="demo-nav-burger" id="nav-burger" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <div class="editor-page-container">
+    <!-- Editor card -->
+    <div id="editor-root">
+      <div class="app" id="app">
+        <div class="app-top-bar" id="app-top-bar">
+          <div class="app-mode-toggle" id="mode-toggle-bar">
+            <button class="mode-btn" data-mode="view">View</button>
+            <button class="mode-btn mode-btn--active" data-mode="editor">Editor</button>
+          </div>
+          <div class="app-video-url" id="video-url-bar">
+            <input type="text" id="video-url-input" placeholder="Video URL (mp4, webm, m3u8, YouTube, Vimeo...)" spellcheck="false">
+            <button class="app-video-url-btn" id="video-url-load">Load</button>
+          </div>
+          <div class="app-editor-toolbar" id="editor-toolbar">
+            <label class="toolbar-load-btn">
+              <input type="file" id="toolbar-import-file" accept=".json" hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Import
+            </label>
+            <button class="toolbar-btn" id="toolbar-export">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export
+            </button>
+            <button class="toolbar-btn" id="toolbar-copy">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy JSON
+            </button>
+          </div>
+        </div>
+        <div class="app-main">
+          <div class="app-video-area" id="video-area">
+            <div class="app-mode-toggle app-mode-toggle--overlay app-mode-toggle--hidden" id="mode-toggle-overlay">
+              <button class="mode-btn" data-mode="view">View</button>
+              <button class="mode-btn mode-btn--active" data-mode="editor">Editor</button>
+            </div>
+            <div id="video-viewer"></div>
+          </div>
+          <aside class="app-sidebar" id="sidebar"></aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyboard Shortcuts -->
+    <section class="editor-page-shortcuts">
+      <h3>Keyboard Shortcuts</h3>
+      <div class="editor-page-shortcuts-grid">
+        <div class="editor-page-shortcut"><kbd>A</kbd><span>Add hotspot mode (click to place)</span></div>
+        <div class="editor-page-shortcut"><kbd>V</kbd><span>Select mode</span></div>
+        <div class="editor-page-shortcut"><kbd>Del</kbd><span>Delete selected hotspot</span></div>
+        <div class="editor-page-shortcut"><kbd>Esc</kbd><span>Deselect / cancel placement</span></div>
+        <div class="editor-page-shortcut"><kbd>Space</kbd><span>Play / Pause</span></div>
+        <div class="editor-page-shortcut"><kbd>←</kbd><span>Seek back 0.2s</span></div>
+        <div class="editor-page-shortcut"><kbd>→</kbd><span>Seek forward 0.2s</span></div>
+      </div>
+    </section>
+
+    <!-- Live JSON Output -->
+    <section class="editor-page-json">
+      <h3>Live JSON Output</h3>
+      <pre id="json-output"><code>[]</code></pre>
+    </section>
+  </div>
+
+  <!-- Card editor modal (fixed position, outside container) -->
+  <div class="card-editor-overlay" id="card-editor-overlay">
+    <div class="card-editor-modal" id="card-editor-modal"></div>
+  </div>
+
+  <footer class="editor-page-footer">
+    MIT License &mdash; Made with care by the <a href="https://www.scaleflex.com" target="_blank" rel="noopener">Scaleflex</a> team
+  </footer>
+
+  <script>
+    // Mobile burger menu
+    const nav = document.getElementById('demo-nav');
+    const burger = document.getElementById('nav-burger');
+    if (nav && burger) {
+      burger.addEventListener('click', () => {
+        const open = nav.classList.toggle('open');
+        burger.setAttribute('aria-expanded', String(open));
+      });
+      const links = nav.querySelectorAll('.demo-nav-links a');
+      for (const link of links) {
+        link.addEventListener('click', () => {
+          nav.classList.remove('open');
+          burger.setAttribute('aria-expanded', 'false');
+        });
+      }
+    }
+  </script>
+</body>
+</html>
