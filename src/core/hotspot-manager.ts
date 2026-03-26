@@ -311,8 +311,16 @@ export class HotspotManager implements HotspotManagerInterface {
   }
 
   closeAll(): void {
+    // Close tracked popovers
     for (const id of [...this.openPopovers]) {
       this.close(id);
+    }
+    // Also hide any popovers that are still visible but not tracked
+    // (e.g. during the scheduleHide delay window after mouseleave)
+    for (const [id, popover] of this.popovers) {
+      if (popover.isVisible()) {
+        this.close(id);
+      }
     }
   }
 
