@@ -1,6 +1,6 @@
 {
   "name": "@cloudimage/video-hotspot",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "publishConfig": {
     "access": "public"
   },
@@ -29,20 +29,16 @@
       "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.js",
       "require": "./dist/react/index.cjs"
-    },
-    "./editor": {
-      "types": "./dist/editor/index.d.ts",
-      "import": "./dist/editor/video-hotspot-editor.esm.js",
-      "require": "./dist/editor/video-hotspot-editor.cjs.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "!dist/editor"
   ],
   "sideEffects": false,
   "scripts": {
     "dev": "vite --config config/vite.demo.config.ts",
-    "build": "npm run build:bundle && npm run build:react && npm run build:editor && npm run typecheck:emit",
+    "build": "npm run build:bundle && npm run build:react && npm run typecheck:emit",
     "build:editor": "vite build --config config/vite.editor.config.ts",
     "build:bundle": "vite build --config config/vite.config.ts",
     "build:react": "vite build --config config/vite.react.config.ts",
@@ -52,7 +48,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint src tests/ --ext .ts,.tsx"
+    "lint": "eslint src tests/ --ext .ts,.tsx",
+    "deploy:demo": "npm run build:demo && git subtree push --prefix dist-demo origin gh-pages"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",

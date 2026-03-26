@@ -184,6 +184,11 @@ export class CIVideoHotspot implements CIVideoHotspotInstance {
 
       onLoadedMetadata: () => {
         this.updateWrapperAspectRatio();
+        // Re-render indicators in case durationchange fired before controls existed
+        if (this.controls) {
+          this.controls.progressBar.renderIndicators();
+          this.controls.progressBar.renderChapters();
+        }
         this.config.onReady?.();
       },
 

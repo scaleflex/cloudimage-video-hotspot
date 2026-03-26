@@ -844,7 +844,7 @@ height: 30px;
   pointer-events: none;
 }
 
-.ci-video-hotspot-progress-indicator {
+.ci-video-hotspot-controls button.ci-video-hotspot-progress-indicator {
   position: absolute;
   top: 50%;
   width: var(--ci-video-hotspot-progress-indicator-size);
@@ -860,7 +860,7 @@ height: 30px;
   transition: transform 150ms ease;
 }
 
-.ci-video-hotspot-progress-indicator:hover {
+.ci-video-hotspot-controls button.ci-video-hotspot-progress-indicator:hover {
   transform: translate(-50%, -50%) scale(1.5);
 }
 

@@ -101,30 +101,38 @@ export class HotspotManager implements HotspotManagerInterface {
     if (triggerMode === 'hover') {
       markerCleanups.push(addListener(marker, 'mouseenter', () => {
         this.clearInteractEndTimer();
+        this.closeAll();
         this.handleHotspotInteract(hotspot.id);
         popover.show();
         setMarkerActive(marker, true);
+        this.openPopovers.add(hotspot.id);
       }));
       markerCleanups.push(addListener(marker, 'mouseleave', () => {
         popover.scheduleHide();
         setMarkerActive(marker, false);
+        this.openPopovers.delete(hotspot.id);
         this.scheduleInteractEnd(hotspot.id);
       }));
       // Keep pause while hovering the popover card
       markerCleanups.push(addListener(popover.element, 'mouseenter', () => {
         this.clearInteractEndTimer();
         this.handleHotspotInteract(hotspot.id);
+        this.openPopovers.add(hotspot.id);
       }));
       markerCleanups.push(addListener(popover.element, 'mouseleave', () => {
+        this.openPopovers.delete(hotspot.id);
         this.scheduleInteractEnd(hotspot.id);
       }));
       markerCleanups.push(addListener(marker, 'focus', () => {
+        this.closeAll();
         popover.show();
         setMarkerActive(marker, true);
+        this.openPopovers.add(hotspot.id);
       }));
       markerCleanups.push(addListener(marker, 'blur', () => {
         popover.scheduleHide();
         setMarkerActive(marker, false);
+        this.openPopovers.delete(hotspot.id);
       }));
     } else {
       // Click mode

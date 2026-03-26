@@ -6,10 +6,12 @@ export class EditorToolbar {
   private topBarEl: HTMLElement;
   private urlInput!: HTMLInputElement;
   private loadBtn!: HTMLElement;
+  private demoMode: boolean;
 
-  constructor(topBarEl: HTMLElement, editor: CIVideoHotspotEditor) {
+  constructor(topBarEl: HTMLElement, editor: CIVideoHotspotEditor, demoMode = false) {
     this.editor = editor;
     this.topBarEl = topBarEl;
+    this.demoMode = demoMode;
     this.setup();
   }
 
@@ -17,8 +19,17 @@ export class EditorToolbar {
     this.urlInput = this.topBarEl.querySelector('#video-url-input') as HTMLInputElement;
     this.loadBtn = this.topBarEl.querySelector('#video-url-load') as HTMLElement;
 
+    // Demo mode: hide video URL bar and import button
+    if (this.demoMode) {
+      const urlBar = this.topBarEl.querySelector('#video-url-bar') as HTMLElement;
+      if (urlBar) urlBar.style.display = 'none';
+      const importLabel = this.topBarEl.querySelector('.toolbar-load-btn') as HTMLElement;
+      if (importLabel) importLabel.style.display = 'none';
+    }
+
     // Load video URL
     const loadVideo = () => {
+      if (this.demoMode) return;
       const url = this.urlInput.value.trim();
       if (!url) return;
       this.editor.loadVideo(url);

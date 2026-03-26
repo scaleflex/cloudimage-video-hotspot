@@ -6,7 +6,7 @@
     "dev": "vite"
   },
   "dependencies": {
-    "@cloudimage/video-hotspot": "^1.0.0"
+    "@cloudimage/video-hotspot": "^1.2.0"
   },
   "devDependencies": {
     "vite": "^5.4.11"

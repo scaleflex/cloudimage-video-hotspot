@@ -16,6 +16,8 @@ export interface EditorConfig {
   defaultMarkerStyle?: MarkerStyle;
   /** Pause video on hotspot interact (default: true) */
   pauseOnInteract?: boolean;
+  /** Demo mode — hides video URL input and JSON import (default: false) */
+  demoMode?: boolean;
   /** Maximum undo history size (default: 50) */
   maxHistory?: number;
   /** Called whenever hotspots change */

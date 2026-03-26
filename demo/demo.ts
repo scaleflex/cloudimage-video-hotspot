@@ -3,8 +3,6 @@ import { initConfigurator } from './configurator';
 
 // ──────────────────── Viewer (standalone player with hotspots) ────────────────────
 const HERO_VIDEO = 'https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/Rest%20room.mp4?vh=152b41&func=proxy';
-const HERO_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
-
 const viewerHotspots = [
   {
     id: 'hotspot-4',
@@ -35,7 +33,7 @@ const viewerHotspots = [
       originalPrice: '$1,199',
       badge: '-25%',
       description: 'Ultra HD smart TV with immersive sound and streaming built-in.',
-      image: 'https://picsum.photos/320/180?random=10',
+      image: 'https://fbmjmuoeb.filerobot.com/1fitLvCgnzqCtypFLmwh8q67C_sNDgzM2Y3YzMwYTgyOTYw/modern%20smart%20TV.png',
       ctaText: 'Shop Now',
     },
   },
@@ -62,7 +60,7 @@ const viewerHotspots = [
       title: 'Knitted Pouf',
       price: '$79',
       description: 'Handcrafted knitted pouf — perfect as extra seating or a footrest.',
-      image: 'https://picsum.photos/320/180?random=11',
+      image: 'https://fbmjmuoeb.filerobot.com/1fitqmAvAn6Lt8nbLptq45noC_sMGY3NzM3YmUwZWQ3YmM2/leather%20pouf.png',
       ctaText: 'Add to Cart',
     },
   },
@@ -89,7 +87,7 @@ const viewerHotspots = [
       originalPrice: '$499',
       badge: '-30%',
       description: 'Modern electric fireplace with realistic flame effect and remote control.',
-      image: 'https://picsum.photos/320/180?random=12',
+      image: 'https://fbmjmuoeb.filerobot.com/1fid5j3do5vhzpp2vmo3Ah4gX_sMzM1ZTg4MzNjMDlkZmE1/freestanding%20fireplace.png',
       ctaText: 'Shop Now',
     },
   },
@@ -97,32 +95,15 @@ const viewerHotspots = [
 
 const heroEl = document.getElementById('hero-viewer');
 if (heroEl) {
-  const heroViewer = new CIVideoHotspot(heroEl, {
+  new CIVideoHotspot(heroEl, {
     src: HERO_VIDEO,
     autoplay: true,
     loop: true,
     trigger: 'hover',
     pauseOnInteract: true,
     hotspotNavigation: false,
-    timelineIndicators: 'none',
+    timelineIndicators: 'dot',
     hotspots: viewerHotspots,
-    onReady: () => {
-      const bar = heroEl.querySelector('.ci-video-hotspot-progress-bar') as HTMLElement | null;
-      if (!bar) return;
-      const duration = heroViewer.getDuration() || 60;
-      viewerHotspots.forEach((h, i) => {
-        const dot = document.createElement('div');
-        dot.className = 'timeline-start-dot';
-        dot.style.left = `${(h.startTime / duration) * 100}%`;
-        dot.style.backgroundColor = HERO_COLORS[i % HERO_COLORS.length];
-        dot.title = h.label;
-        dot.addEventListener('click', (e) => {
-          e.stopPropagation();
-          heroViewer.goToHotspot(h.id);
-        });
-        bar.appendChild(dot);
-      });
-    },
   });
 }
 

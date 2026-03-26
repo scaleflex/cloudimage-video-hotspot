@@ -125,7 +125,7 @@ export class CIVideoHotspotEditor {
     this.dragManager = new DragManager(this);
     this.timelineManager = new TimelineManager(this);
     this.propertyPanel = new PropertyPanel(this.sidebarEl, this);
-    this.toolbar = new EditorToolbar(this.topBarEl, this);
+    this.toolbar = new EditorToolbar(this.topBarEl, this, !!this.config.demoMode);
 
     // Card editor
     const overlayEl = document.getElementById('card-editor-overlay')!;
@@ -492,6 +492,7 @@ export class CIVideoHotspotEditor {
   // === Load / Import ===
 
   loadVideo(url: string): void {
+    if (this.config.demoMode) return;
     this.config.src = url;
     this.seekAfterRebuild = null;
     this.hotspots = [];

@@ -2,8 +2,6 @@ import CIVideoHotspot from '../src';
 import type { CIVideoHotspotConfig, MarkerStyle, HotspotAnimation } from '../src/core/types';
 
 const SAMPLE_VIDEO = 'https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/bed.mp4?vh=564790&func=proxy';
-const CONFIGURATOR_VIDEO = '/my-configurator-video.mp4';
-
 let instance: CIVideoHotspot | null = null;
 
 function makeHotspots(style: MarkerStyle, animation: HotspotAnimation) {
@@ -14,7 +12,7 @@ function makeHotspots(style: MarkerStyle, animation: HotspotAnimation) {
       y: '50.48%',
       startTime: 0.7,
       endTime: 19.8,
-      label: 'Bed Frame',
+      label: 'Vase',
       interpolation: 'catmull-rom' as const,
       keyframes: [
         { time: 0.7, x: '39.4%', y: '50.48%' },
@@ -23,12 +21,12 @@ function makeHotspots(style: MarkerStyle, animation: HotspotAnimation) {
       markerStyle: style !== 'dot' ? style : undefined,
       animation: animation !== 'fade' ? animation : undefined,
       data: {
-        title: 'Nordic Oak Bed Frame',
-        price: '$1,299',
-        originalPrice: '$1,599',
-        badge: '-19%',
-        description: 'Solid oak bed frame with Scandinavian design. King size with slatted base included.',
-        image: 'https://picsum.photos/320/180?random=20',
+        title: 'Ceramic Wide-Mouth Vase',
+        price: '$79',
+        originalPrice: '$99',
+        badge: '-20%',
+        description: 'Handcrafted ceramic vase with wide mouth opening. Perfect for fresh or dried flower arrangements.',
+        image: 'https://fbmjmuoeb.filerobot.com/1fidm4pp3rrC24or2kuE26jAE_sZjEyN2Y5MWI3MTE5ZDc5/wide-mouth%20vase.png',
         ctaText: 'Shop Now',
       },
     },
@@ -38,7 +36,7 @@ function makeHotspots(style: MarkerStyle, animation: HotspotAnimation) {
       y: '66.98%',
       startTime: 6,
       endTime: 19.8,
-      label: 'Nightstand',
+      label: 'Coffee Table',
       interpolation: 'catmull-rom' as const,
       keyframes: [
         { time: 6, x: '81.94%', y: '66.98%' },
@@ -47,10 +45,10 @@ function makeHotspots(style: MarkerStyle, animation: HotspotAnimation) {
       markerStyle: style !== 'dot' ? style : undefined,
       animation: animation !== 'fade' ? animation : undefined,
       data: {
-        title: 'Walnut Nightstand',
-        price: '$249',
-        description: 'Minimalist walnut nightstand with soft-close drawer and cable management slot.',
-        image: 'https://picsum.photos/320/180?random=21',
+        title: 'Round Coffee Table',
+        price: '$299',
+        description: 'Modern round coffee table with solid wood top and powder-coated steel legs.',
+        image: 'https://fbmjmuoeb.filerobot.com/1fidnzvvFvvbbo8rSzb4mtmnq_sNTgwNjg0MWYyYjJhMzJl/coffee%20table.png',
         ctaText: 'Add to Cart',
       },
     },
@@ -60,7 +58,7 @@ function makeHotspots(style: MarkerStyle, animation: HotspotAnimation) {
       y: '61.66%',
       startTime: 1.4,
       endTime: 19.8,
-      label: 'Linen Bedding',
+      label: 'Pillow',
       interpolation: 'catmull-rom' as const,
       keyframes: [
         { time: 1.4, x: '51.04%', y: '61.66%' },
@@ -69,12 +67,12 @@ function makeHotspots(style: MarkerStyle, animation: HotspotAnimation) {
       markerStyle: style !== 'dot' ? style : undefined,
       animation: animation !== 'fade' ? animation : undefined,
       data: {
-        title: 'Stonewashed Linen Set',
-        price: '$189',
-        originalPrice: '$229',
-        badge: 'Best Seller',
-        description: 'Premium stonewashed linen duvet cover and pillowcases. Breathable and naturally soft.',
-        image: 'https://picsum.photos/320/180?random=22',
+        title: 'Velvet Throw Pillow',
+        price: '$49',
+        originalPrice: '$65',
+        badge: '-25%',
+        description: 'Soft velvet decorative pillow with premium filling. Adds a cozy accent to any sofa or bed.',
+        image: 'https://fbmjmuoeb.filerobot.com/1fiLmArwnw5dzXLnowL4Ayyog_sMjFkMmE4N2FiNGQ3ZjNk/pillow.png',
         ctaText: 'Shop Now',
       },
     },
