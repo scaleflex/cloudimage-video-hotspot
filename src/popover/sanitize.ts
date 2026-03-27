@@ -20,7 +20,7 @@ export function escapeAttr(str: string): string {
 /** Check if a URL is safe (http(s), relative path, or hash) */
 export function isSafeUrl(url: string): boolean {
   // eslint-disable-next-line no-control-regex
-  const normalized = url.replace(/[\s\x00-\x1f]/g, '');
+  const normalized = url.replace(/[\s\u0000-\u001f]/g, '');
   return /^https?:\/\//i.test(normalized) || /^\/(?!\/)/.test(normalized) || /^#/.test(normalized);
 }
 

@@ -62,7 +62,7 @@ npm install @cloudimage/video-hotspot
 ### CDN
 
 ```html
-<script src="https://scaleflex.cloudimg.io/v7/plugins/cloudimage/video-hotspot/1.0.0/video-hotspot.min.js?vh=626ad0&func=proxy"></script>
+<script src="https://scaleflex.cloudimg.io/v7/plugins/cloudimage/video-hotspot/1.3.0/video-hotspot.min.js?vh=298720&func=proxy"></script>
 ```
 
 ### Optional peer dependencies
