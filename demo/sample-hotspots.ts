@@ -1,6 +1,6 @@
 import type { VideoHotspotItem } from '../src/core/types';
 
-const CDN = 'https://fbmjmuoeb.filerobot.com';
+const CDN = 'https://scaleflex.cloudimg.io/v7/plugins/cloudimage/video-hotspot/Assets';
 
 export const HERO_VIDEO = 'https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-video-hotspot/Rest%20room.mp4?vh=152b41&func=proxy';
 
@@ -34,7 +34,7 @@ export const viewerHotspots: VideoHotspotItem[] = [
       originalPrice: '$1,199',
       badge: '-25%',
       description: 'Ultra HD smart TV with immersive sound and streaming built-in.',
-      image: `${CDN}/1fitLvCgnzqCtypFLmwh8q67C_sNDgzM2Y3YzMwYTgyOTYw/modern%20smart%20TV.png`,
+      image: `${CDN}/modern%20smart%20TV.png?vh=0be5eb`,
       ctaText: 'Shop Now',
     },
   },
@@ -61,7 +61,7 @@ export const viewerHotspots: VideoHotspotItem[] = [
       title: 'Knitted Pouf',
       price: '$79',
       description: 'Handcrafted knitted pouf — perfect as extra seating or a footrest.',
-      image: `${CDN}/1fitqmAvAn6Lt8nbLptq45noC_sMGY3NzM3YmUwZWQ3YmM2/leather%20pouf.png`,
+      image: `${CDN}/leather%20pouf.png?vh=73e6a4`,
       ctaText: 'Add to Cart',
     },
   },
@@ -88,7 +88,7 @@ export const viewerHotspots: VideoHotspotItem[] = [
       originalPrice: '$499',
       badge: '-30%',
       description: 'Modern electric fireplace with realistic flame effect and remote control.',
-      image: `${CDN}/1fid5j3do5vhzpp2vmo3Ah4gX_sMzM1ZTg4MzNjMDlkZmE1/freestanding%20fireplace.png`,
+      image: `${CDN}/freestanding%20fireplace.png?vh=b99fe7`,
       ctaText: 'Shop Now',
     },
   },
